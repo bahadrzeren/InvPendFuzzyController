@@ -1,9 +1,9 @@
-import org.fuzzy.controller.FuzzyController;
+import org.fuzzy.controller.FuzzyControllerG;
 
 public class ControllerMain {
 
 	public static void main(String[] args) {
-		new FuzzyController();
+		new FuzzyControllerG();
 	}
 
 }

@@ -15,7 +15,7 @@ import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
 import type1.system.T1_Rulebase;
 
-public class FuzzyController {
+public class FuzzyControllerT {
 
 	private static int discritisationLevel = 50;
 
@@ -24,7 +24,7 @@ public class FuzzyController {
 	private Output f = null;
 	private T1_Rulebase rulebase = null;
 
-	public FuzzyController() {
+	public FuzzyControllerT() {
 		this.t = new Input("Theta", new Tuple(-40, 40));
 		this.d = new Input("ThetaD", new Tuple(-8, 8));
 		this.f = new Output("Force", new Tuple(-32, 32));
