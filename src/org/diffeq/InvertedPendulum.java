@@ -2,96 +2,67 @@ package org.diffeq;
 
 public class InvertedPendulum {
 
-	private double m = 0.1;	//	kg
-	private double M = 1.0;	//	kg
-	private double l = 2.0;	//	meter
-	private double g = 9.8;	//	meter/sn2
+	private double mp = 0.1;	//	kg
+	private double mc = 1.0;	//	kg
+	private double l = 2.0;		//	meter
+	private double g = 9.8;		//	meter/sn2
 
-	private double force = 0.0;	//	Newton
+	private State s = null;
 
-	private double posXDot = 0.0;	//	meter/sn
-	private double posX = 0.0;		//	meter
-	private double thetaDot = 0.0;	//	deg/sn
-	private double theta = 0.0;		//	deg
-
-	private void setDerivatives(double step, double[] k) {
-		k[0] = step * ();
+	public InvertedPendulum(double mp, double mc, double l, double g, State s) {
+		super();
+		this.mp = mp;
+		this.mc = mc;
+		this.l = l;
+		this.g = g;
+		this.s = s;
 	}
 
-	public void runRungeKutta4(double step) {
+	public double getMp() {
+		return mp;
+	}
 
-        double[] y = new double[12];
-        double[] y2 = new double[12];
-        double[] y3 = new double[12];
-        double[] y4 = new double[12];
+	public double getMc() {
+		return mc;
+	}
 
-        y[0] = odeU;
-        y[1] = odeV;
-        y[2] = odeW;
-        y[3] = odeP;
+	public double getL() {
+		return l;
+	}
 
-        double[] k1;
-        double[] k2;
-        double[] k3;
-        double[] k4;
+	public double getG() {
+		return g;
+	}
 
-        calculateForceAndMomentCoefficients(true);
+	public State getS() {
+		return s;
+	}
 
-//  K1
-        k1 = calculateDerivationsForRungeKutta();
+	private StateDot iterate(State s, double f) {
 
-//  K2
-        for (int i = 0; i < 12; i++) {
-            y2[i] = y[i] + k1[i] / 2;
-        }
+		StateDot res = new StateDot(s.getV(), 0.0, s.getTd(), 0.0);
 
-        setParametersForRungeKutta(y2);
+		res.setA((
+					f + 
+					mp * g * s.cosT() * s.sinT() - 
+					mp * l * s.sqrTd() * s.sinT()
+					) /
+						(mc + mp * s.sqrSinT()));
 
-        push();
-        calculateForceAndMomentCoefficients(true);
+		res.setTdd((
+					g * (mc + mp) * s.sinT() - 
+					s.cosT() * (l * mp * s.sqrTd() * s.sinT() - f)
+					) /
+						(l * (mp * s.sqrSinT() + mc)));
 
-        k2 = calculateDerivationsForRungeKutta();
+		return res;
+	}
 
-        pop();
-//  K3
-        for (int i = 0; i < 12; i++) {
-            y3[i] = y[i] + k2[i] / 2;
-        }
-
-        setParametersForRungeKutta(y3);
-
-        push();
-        calculateForceAndMomentCoefficients(true);
-
-        k3 = calculateDerivationsForRungeKutta();
-
-        pop();
-
-
-//  K4
-        for (int i = 0; i < 12; i++) {
-            y4[i] = y[i] + k3[i];
-        }
-
-        setParametersForRungeKutta(y4);
-
-        push();
-        calculateForceAndMomentCoefficients(true);
-
-        k4 = calculateDerivationsForRungeKutta();
-
-        pop();
-
-        for (int i = 0; i < 12; i++) {
-            y[i] = y[i] + (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]) / 6.0;
-        }
-
-        setParametersForRungeKutta(y);
-
-        calculateForceAndMomentCoefficients(true);
-
-        printSimulationStep(step);
-    }
-
-
+	public void move(double step, double f) {
+		StateDot k1 = this.iterate(s, f);
+		StateDot k2 = this.iterate(s.iterate(k1, step / 2.0), f);
+		StateDot k3 = this.iterate(s.iterate(k2, step / 2.0), f);
+		StateDot k4 = this.iterate(s.iterate(k3, step), f);
+		this.s.rungeKutta4merge(k1, k2, k3, k4, step);
+	}
 }
