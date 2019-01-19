@@ -65,4 +65,11 @@ public class InvertedPendulum {
 		StateDot k4 = this.iterate(s.iterate(k3, step), f);
 		this.s.rungeKutta4merge(k1, k2, k3, k4, step);
 	}
+
+	public String toString() {
+		return "x: " + s.getX() +
+				", t: " + s.getT() + 
+				", v: " + s.getV() +
+				", td: " + s.getTd();
+	}
 }
