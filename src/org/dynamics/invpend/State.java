@@ -1,4 +1,7 @@
-package org.diffeq;
+package org.dynamics.invpend;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class State {
 	private double x = 0.0;
@@ -12,6 +15,10 @@ public class State {
 		this.v = v;
 		this.t = t;
 		this.td = td;
+	}
+
+	public State getCopy() {
+		return new State(this.x, this.v, this.t, this.td);
 	}
 
 	public double sinT() {
@@ -71,5 +78,14 @@ public class State {
 	}
 	public void setTd(double td) {
 		this.td = td;
+	}
+
+	private NumberFormat formatter = new DecimalFormat("#0.0000");
+
+	public String toString() {
+		return "x: " + this.formatter.format(x) +
+				", t: " + this.formatter.format(t) + 
+				", v: " + this.formatter.format(v) +
+				", td: " + this.formatter.format(td);
 	}
 }

@@ -1,4 +1,4 @@
-package org.diffeq;
+package org.dynamics.invpend;
 
 public class StateDot {
 	private double v = 0.0;

@@ -11,6 +11,7 @@ import generic.Tuple;
 import tools.JMathPlotter;
 import type1.sets.T1MF_Gaussian;
 import type1.sets.T1MF_Interface;
+import type1.sets.T1MF_Prototype;
 import type1.system.T1_Antecedent;
 import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
@@ -33,35 +34,35 @@ public class FuzzyControllerG {
 		/*
 		 * Membership functions of Theta angle (Input 1).
 		 */
-		T1MF_Gaussian tNVBMF = new T1MF_Gaussian("Theta negative very big", -40, 5);
-		T1MF_Gaussian tNBMF = new T1MF_Gaussian("Theta negative big",-25, 5);
-		T1MF_Gaussian tNMF = new T1MF_Gaussian("Theta negative", -10, 3.33);
-		T1MF_Gaussian tZMF = new T1MF_Gaussian("Theta zero", 0, 1.67);
-		T1MF_Gaussian tPMF = new T1MF_Gaussian("Theta positive", 10, 3.33);
-		T1MF_Gaussian tPBMF = new T1MF_Gaussian("Theta positive big", 25, 5);
-		T1MF_Gaussian tPVBMF = new T1MF_Gaussian("Theta positive very big", 40, 5);
+		T1MF_Prototype tNVBMF = new T1MF_Gaussian("Theta negative very big", -40, 5);
+		T1MF_Prototype tNBMF = new T1MF_Gaussian("Theta negative big",-25, 5);
+		T1MF_Prototype tNMF = new T1MF_Gaussian("Theta negative", -10, 3.33);
+		T1MF_Prototype tZMF = new T1MF_Gaussian("Theta zero", 0, 1.67);
+		T1MF_Prototype tPMF = new T1MF_Gaussian("Theta positive", 10, 3.33);
+		T1MF_Prototype tPBMF = new T1MF_Gaussian("Theta positive big", 25, 5);
+		T1MF_Prototype tPVBMF = new T1MF_Gaussian("Theta positive very big", 40, 5);
 
 		/*
 		 * Membership functions of change in theta angle (Input 2).
 		 */
-		T1MF_Gaussian dNBMF = new T1MF_Gaussian("ThetaD negative big", -8, 1.67);
-		T1MF_Gaussian dNMF = new T1MF_Gaussian("ThetaD negative", -3, 1);
-		T1MF_Gaussian dZMF = new T1MF_Gaussian("ThetaD zero", 0, 0.33);
-		T1MF_Gaussian dPMF = new T1MF_Gaussian("ThetaD positive", 3, 1);
-		T1MF_Gaussian dPBMF = new T1MF_Gaussian("ThetaD positive big", 8, 1.67);
+		T1MF_Prototype dNBMF = new T1MF_Gaussian("ThetaD negative big", -8, 1.67);
+		T1MF_Prototype dNMF = new T1MF_Gaussian("ThetaD negative", -3, 1);
+		T1MF_Prototype dZMF = new T1MF_Gaussian("ThetaD zero", 0, 0.33);
+		T1MF_Prototype dPMF = new T1MF_Gaussian("ThetaD positive", 3, 1);
+		T1MF_Prototype dPBMF = new T1MF_Gaussian("ThetaD positive big", 8, 1.67);
 
 		/*
 		 * Membership functions of force (Output).
 		 */
-		T1MF_Gaussian fNVVBMF = new T1MF_Gaussian("Force negative very very big", -32, 2.67);
-		T1MF_Gaussian fNVBMF = new T1MF_Gaussian("Force negative very big", -24, 2.67);
-		T1MF_Gaussian fNBMF = new T1MF_Gaussian("Force negative big", -16, 2.67);
-		T1MF_Gaussian fNMF = new T1MF_Gaussian("Force negative", -8, 2.67);
-		T1MF_Gaussian fZMF = new T1MF_Gaussian("Force zero", 0, 1.33);
-		T1MF_Gaussian fPMF = new T1MF_Gaussian("Force positive", 8, 2.67);
-		T1MF_Gaussian fPBMF = new T1MF_Gaussian("Force positive big", 16, 2.67);
-		T1MF_Gaussian fPVBMF = new T1MF_Gaussian("Force positive very big", 24, 2.67);
-		T1MF_Gaussian fPVVBMF = new T1MF_Gaussian("Force positive very very big", 32, 2.67);
+		T1MF_Prototype fNVVBMF = new T1MF_Gaussian("Force negative very very big", -32, 2.67);
+		T1MF_Prototype fNVBMF = new T1MF_Gaussian("Force negative very big", -24, 2.67);
+		T1MF_Prototype fNBMF = new T1MF_Gaussian("Force negative big", -16, 2.67);
+		T1MF_Prototype fNMF = new T1MF_Gaussian("Force negative", -8, 2.67);
+		T1MF_Prototype fZMF = new T1MF_Gaussian("Force zero", 0, 1.33);
+		T1MF_Prototype fPMF = new T1MF_Gaussian("Force positive", 8, 2.67);
+		T1MF_Prototype fPBMF = new T1MF_Gaussian("Force positive big", 16, 2.67);
+		T1MF_Prototype fPVBMF = new T1MF_Gaussian("Force positive very big", 24, 2.67);
+		T1MF_Prototype fPVVBMF = new T1MF_Gaussian("Force positive very very big", 32, 2.67);
 
 		/*
 		 * Theta MF associations.
