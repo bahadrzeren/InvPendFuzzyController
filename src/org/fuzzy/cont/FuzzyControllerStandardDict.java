@@ -44,7 +44,7 @@ public class FuzzyControllerStandardDict extends FuzzyInvPendController {
 		/*
 		 * Membership functions of force (Output).
 		 */
-		this.fNVVBMF = new T1MF_Gaussian("Force very very small", -30.72, 10.6387);
+		this.fNVVBMF = new T1MF_Gaussian("Force very small", -30.72, 10.6387);
 		this.fNVBMF = new T1MF_Gaussian("Force very small", -30.72, 10.6387);
 		this.fNBMF = new T1MF_Gaussian("Force small", -21.12, 11.5213);
 		this.fNMF = new T1MF_Gaussian("Force some to moderate", -1.92, 9.58118);
@@ -77,7 +77,7 @@ public class FuzzyControllerStandardDict extends FuzzyInvPendController {
 		/*
 		 * Force MF associations.
 		 */
-		T1_Consequent fVVS = new T1_Consequent("Very very small force", fNVVBMF, this.f);
+		T1_Consequent fVVS = new T1_Consequent("Very small force", fNVVBMF, this.f);
 		T1_Consequent fVS = new T1_Consequent("Very small force", fNVBMF, this.f);
 		T1_Consequent fS = new T1_Consequent("Small force", fNBMF, this.f);
 		T1_Consequent fSM = new T1_Consequent("Some to moderate force", fNMF, this.f);
