@@ -1,29 +1,29 @@
 package org.dynamics.invpend;
 
 public class StateDot {
-	private double v = 0.0;
-	private double a = 0.0;
+	private double xd = 0.0;
+	private double xdd = 0.0;
 	private double td = 0.0;
 	private double tdd = 0.0;
 
-	public StateDot(double v, double a, double td, double tdd) {
-		this.v = v;
-		this.a = a;
+	public StateDot(double xd, double xdd, double td, double tdd) {
+		this.xd = xd;
+		this.xdd = xdd;
 		this.td = td;
 		this.tdd = tdd;
 	}
 
-	public double getV() {
-		return v;
+	public double getXd() {
+		return xd;
 	}
-	public void setV(double v) {
-		this.v = v;
+	public void setXd(double xd) {
+		this.xd = xd;
 	}
-	public double getA() {
-		return a;
+	public double geXdd() {
+		return xdd;
 	}
-	public void setA(double a) {
-		this.a = a;
+	public void setXdd(double xdd) {
+		this.xdd = xdd;
 	}
 	public double getTd() {
 		return td;

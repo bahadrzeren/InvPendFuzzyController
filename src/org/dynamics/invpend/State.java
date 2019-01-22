@@ -5,20 +5,20 @@ import java.text.NumberFormat;
 
 public class State {
 	private double x = 0.0;
-	private double v = 0.0;
+	private double xd = 0.0;
 	private double t = 0.0;
 	private double td = 0.0;
 
-	public State(double x, double v, double t, double td) {
+	public State(double x, double xd, double t, double td) {
 		super();
 		this.x = x;
-		this.v = v;
+		this.xd = xd;
 		this.t = t;
 		this.td = td;
 	}
 
 	public State getCopy() {
-		return new State(this.x, this.v, this.t, this.td);
+		return new State(this.x, this.xd, this.t, this.td);
 	}
 
 	public double sinT() {
@@ -38,8 +38,8 @@ public class State {
 	}
 
 	public State iterate(StateDot sd, double c) {
-		return new State(this.x + sd.getV() * c,
-							this.v + sd.getA() * c,
+		return new State(this.x + sd.getXd() * c,
+							this.xd + sd.geXdd() * c,
 							this.t + sd.getTd() * c,
 							this.td + sd.getTdd() * c);
 	}
@@ -49,8 +49,8 @@ public class State {
 									StateDot k3,
 									StateDot k4,
 									double step) {
-		this.x += (k1.getV() + k2.getV() * 2.0 + k3.getV() * 2.0 + k4.getV()) * (step / 6.0); 
-		this.v += (k1.getA() + k2.getA() * 2.0 + k3.getA() * 2.0 + k4.getA()) * (step / 6.0);
+		this.x += (k1.getXd() + k2.getXd() * 2.0 + k3.getXd() * 2.0 + k4.getXd()) * (step / 6.0); 
+		this.xd += (k1.geXdd() + k2.geXdd() * 2.0 + k3.geXdd() * 2.0 + k4.geXdd()) * (step / 6.0);
 		this.t += (k1.getTd() + k2.getTd() * 2.0 + k3.getTd() * 2.0 + k4.getTd()) * (step / 6.0);
 		this.td += (k1.getTdd() + k2.getTdd() * 2.0 + k3.getTdd() * 2.0 + k4.getTdd()) * (step / 6.0);
 	}
@@ -61,11 +61,11 @@ public class State {
 	public void setX(double x) {
 		this.x = x;
 	}
-	public double getV() {
-		return v;
+	public double getXd() {
+		return xd;
 	}
-	public void setV(double v) {
-		this.v = v;
+	public void setXd(double xd) {
+		this.xd = xd;
 	}
 	public double getT() {
 		return t;
@@ -85,7 +85,7 @@ public class State {
 	public String toString() {
 		return "x: " + this.formatter.format(x) +
 				", t: " + this.formatter.format(t) + 
-				", v: " + this.formatter.format(v) +
+				", xd: " + this.formatter.format(xd) +
 				", td: " + this.formatter.format(td);
 	}
 }

@@ -33,10 +33,10 @@ public class Simulator {
 	/*
 	 * Initial state.
 	 */
-	private static double x = 0.0;
-	private static double v = 0.0;
-	private static double t = - 30.0 * Math.PI / 180.0;
-	private static double td = 10.0 * Math.PI / 180.0;
+	private static double xInit = 0.0;
+	private static double xdInit = 0.0;
+	private static double tInit = - 30.0 * Math.PI / 180.0;
+	private static double tdInit = 10.0 * Math.PI / 180.0;
 
 	/*
 	 * Test duration.
@@ -49,11 +49,11 @@ public class Simulator {
 	 */
 	private static double appStart = 1.0;
 	private static double appEnd = 1.1;
-	private static double d = 0.0;	//	newton
+	private static double dist = 0.0;	//	newton
 
 
 	private static InvertedPendulum generateNewPendulum() {
-		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(x, v, t, td));
+		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(xInit, xdInit, tInit, tdInit));
 	}
 
 	public static void main(String[] args) {
@@ -74,13 +74,13 @@ public class Simulator {
 		systemPairs[1].pend = generateNewPendulum();
 		//	Standard dictionary reference
 		systemPairs[2] = new SystemPair();
-		systemPairs[2].color = Color.GREEN;
+		systemPairs[2].color = new Color(60, 180, 100);
 		systemPairs[2].caption = "Standard Dictionary";
 		systemPairs[2].cont = new FuzzyControllerStandardDict();
 		systemPairs[2].pend = generateNewPendulum();
 		//	Normalized dictionary reference
 		systemPairs[3] = new SystemPair();
-		systemPairs[3].color = Color.DARK_GRAY;
+		systemPairs[3].color = new Color(128, 64, 64);
 		systemPairs[3].caption = "Normalized Dictionary";
 		systemPairs[3].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[3].pend = generateNewPendulum();
@@ -93,18 +93,18 @@ public class Simulator {
 			times[times.length - 1] = time;
 
 			for (int i = 0; i < systemPairs.length; i++) {
-				double controllerOutput = Math.floor(systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd()) * 10000.0) / 10000.0;
+				double force = Math.floor(systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd()) * 10000.0) / 10000.0;
 				State prevState = systemPairs[i].pend.getS().getCopy();
 				if ((time >= appStart)
 						&& (time < appEnd)) {
-					systemPairs[i].pend.move(step, controllerOutput, d);
+					systemPairs[i].pend.move(step, force, dist);
 					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState +
-							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(controllerOutput) + " + " + d + " -> " + systemPairs[i].pend);
+							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + " + dist + " -> " + systemPairs[i].pend);
 	
 				} else {
-					systemPairs[i].pend.move(step, controllerOutput, 0.0);
+					systemPairs[i].pend.move(step, force, 0.0);
 					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState + 
-							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(controllerOutput) + " + 0.0 -> " + systemPairs[i].pend);
+							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + 0.0 -> " + systemPairs[i].pend);
 				}
 			}
 
@@ -132,27 +132,27 @@ public class Simulator {
         	for (int j = 0; j < times.length; j++)
         		td[i][j] = systemPairs[i].pend.getStateHistory()[j].getTd() * 180.0 / Math.PI;
 
-        plotResponse(systemPairs, "Td response", "ThetaD (degree/sec)", times, td, duration);
+        plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td, duration);
 
         double[][] x = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++)
         		x[i][j] = systemPairs[i].pend.getStateHistory()[j].getX();
 
-        plotResponse(systemPairs, "X response", "X (meters)", times, x, duration);
+        plotResponse(systemPairs, "X response", "Position (meters)", times, x, duration);
 
         double[][] v = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++)
-        		v[i][j] = systemPairs[i].pend.getStateHistory()[j].getV();
+        		v[i][j] = systemPairs[i].pend.getStateHistory()[j].getXd();
 
-        plotResponse(systemPairs, "V response", "V (meters/sec)", times, v, duration);
+        plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v, duration);
 
         double[][] f = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	f[i] = systemPairs[i].pend.getForceHistory();
 
-        plotResponse(systemPairs, "Controller Output", "F (Newton)", times, f, duration);
+        plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);
 	}
 
 	private static void plotResponse(SystemPair[] systemPairs, String title, String fieldName, double[] times, double[][] values, double duration) {
