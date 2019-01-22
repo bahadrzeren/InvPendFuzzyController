@@ -12,7 +12,10 @@ public class InvertedPendulum {
 	private double fcc = 0.5;
 
 	private State s = null;
-	private State[] history = new State[0];
+
+	private State[] stateHistory = new State[0];
+	private double[] forceHistory = new double[0];
+	private double[] disturbanceHistory = new double[0];
 
 	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, State s) {
 		super();
@@ -23,8 +26,6 @@ public class InvertedPendulum {
 		this.fcp = fcp;
 		this.fcc = fcc;
 		this.s = s;
-		this.history = Arrays.copyOf(this.history, this.history.length + 1);
-		this.history[this.history.length - 1] = s.getCopy();
 	}
 
 	public double getMp() {
@@ -62,28 +63,41 @@ public class InvertedPendulum {
 
 		res.setTdd((
 					s.cosT() * l * mp * s.sqrTd() * s.sinT()
-					- g * (mc + mp) * s.sinT() 
+					- g * (mc + mp + mp) * s.sinT() 
 					- s.cosT() * f
 					+ fcc * s.getV() * s.cosT()
-					- (1 + mc / mp) * (fcp / l) * s.getTd()
+					- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
 					) /
-						(l * (mc + mp + mp * s.sqrSinT())));
+						(l * (mc + mp + mp * s.sinT())));
 
 		return res;
 	}
 
-	public void move(double step, double f) {
-		StateDot k1 = this.iterate(s, f);
-		StateDot k2 = this.iterate(s.iterate(k1, step / 2.0), f);
-		StateDot k3 = this.iterate(s.iterate(k2, step / 2.0), f);
-		StateDot k4 = this.iterate(s.iterate(k3, step), f);
+	public void move(double step, double f, double d) {
+		this.stateHistory = Arrays.copyOf(this.stateHistory, this.stateHistory.length + 1);
+		this.stateHistory[this.stateHistory.length - 1] = s.getCopy();
+		this.forceHistory = Arrays.copyOf(this.forceHistory, this.forceHistory.length + 1);
+		this.forceHistory[this.forceHistory.length - 1] = f;
+		this.disturbanceHistory = Arrays.copyOf(this.disturbanceHistory, this.disturbanceHistory.length + 1);
+		this.disturbanceHistory[this.disturbanceHistory.length - 1] = d;
+
+		StateDot k1 = this.iterate(s, f + d);
+		StateDot k2 = this.iterate(s.iterate(k1, step / 2.0), f + d);
+		StateDot k3 = this.iterate(s.iterate(k2, step / 2.0), f + d);
+		StateDot k4 = this.iterate(s.iterate(k3, step), f + d);
 		this.s.rungeKutta4merge(k1, k2, k3, k4, step);
-		this.history = Arrays.copyOf(this.history, this.history.length + 1);
-		this.history[this.history.length - 1] = s.getCopy();
 	}
 
-	public State[] getHistory() {
-		return history;
+	public State[] getStateHistory() {
+		return stateHistory;
+	}
+
+	public double[] getForceHistory() {
+		return forceHistory;
+	}
+
+	public double[] getDisturbanceHistory() {
+		return disturbanceHistory;
 	}
 
 	public String toString() {

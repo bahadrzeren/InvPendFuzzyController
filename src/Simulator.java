@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.text.DecimalFormat;
@@ -8,8 +9,10 @@ import javax.swing.JFrame;
 
 import org.dynamics.invpend.InvertedPendulum;
 import org.dynamics.invpend.State;
+import org.fuzzy.cont.FuzzyControllerStandardDict;
+import org.fuzzy.cont.FuzzyControllerNormalizedDict;
+import org.fuzzy.cont.FuzzyControllerGaussian;
 import org.fuzzy.cont.FuzzyControllerTriangular;
-import org.fuzzy.cont.FuzzyInvPendController;
 import org.math.plot.Plot2DPanel;
 
 public class Simulator {
@@ -17,110 +20,177 @@ public class Simulator {
 	public static NumberFormat formatter1 = new DecimalFormat("#0.0");
 	public static NumberFormat formatter4 = new DecimalFormat("#0.0000");
 
+	/*
+	 * Pendulum properties.
+	 */
+	private static double mp = 0.2;	//	kg
+	private static double mc = 1.0;	//	kg
+	private static double l = 2.0;		//	meter
+	private static double g = 9.8;		//	meter/sn2
+	private static double fcp = 0.1;
+	private static double fcc = 1.0;
+
+	/*
+	 * Initial state.
+	 */
+	private static double x = 0.0;
+	private static double v = 0.0;
+	private static double t = - 30.0 * Math.PI / 180.0;
+	private static double td = 10.0 * Math.PI / 180.0;
+
+	/*
+	 * Test duration.
+	 */
+	private static double step = 0.1;	//	sn
+	private static double duration = 20.0;	//	sn
+
+	/*
+	 * Disturbance.
+	 */
+	private static double appStart = 1.0;
+	private static double appEnd = 1.1;
+	private static double d = 0.0;	//	newton
+
+
+	private static InvertedPendulum generateNewPendulum() {
+		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(x, v, t, td));
+	}
+
 	public static void main(String[] args) {
 
-		double mp = 0.2;	//	kg
-		double mc = 1.0;	//	kg
-		double l = 2.0;		//	meter
-		double g = 9.8;		//	meter/sn2
-		double fcp = 0.0;
-		double fcc = 0.0;
+		SystemPair[] systemPairs = new SystemPair[4];
 
-		double x = 0.0;
-		double v = 0.0;
-		double t = - 30.0 * Math.PI / 180.0;
-		double td = 2.0 * Math.PI / 180.0;
-
-		State s = new State(x, v, t, td);
-
-		InvertedPendulum p = new InvertedPendulum(mp, mc, l, g, fcp, fcc, s);
-
-		double step = 0.1;	//	sn
-		double duration = 10.0;	//	sn
-
-		FuzzyInvPendController contTriangularRef = new FuzzyControllerTriangular();
-////		contTriangularRef.plotControlSurface();
-//		FuzzyInvPendController contGaussianRef = new FuzzyControllerGaussian();
-////		contGaussianRef.plotControlSurface();
-//		FuzzyInvPendController contGaussianSft = new FuzzyControllerDictSft();
-////		contGaussianSft.plotControlSurface();
-//		FuzzyInvPendController contGaussianSftSn = new FuzzyControllerDictSftSn();
-////		contGaussianSftSn.plotControlSurface();
+		//	Triangular reference
+		systemPairs[0] = new SystemPair();
+		systemPairs[0].caption = "Triangular Reference";
+		systemPairs[0].color = Color.RED;
+		systemPairs[0].cont = new FuzzyControllerTriangular();
+		systemPairs[0].pend = generateNewPendulum();
+		//	Gaussian reference
+		systemPairs[1] = new SystemPair();
+		systemPairs[1].color = Color.BLUE;
+		systemPairs[1].caption = "Gaussian Reference";
+		systemPairs[1].cont = new FuzzyControllerGaussian();
+		systemPairs[1].pend = generateNewPendulum();
+		//	Standard dictionary reference
+		systemPairs[2] = new SystemPair();
+		systemPairs[2].color = Color.GREEN;
+		systemPairs[2].caption = "Standard Dictionary";
+		systemPairs[2].cont = new FuzzyControllerStandardDict();
+		systemPairs[2].pend = generateNewPendulum();
+		//	Normalized dictionary reference
+		systemPairs[3] = new SystemPair();
+		systemPairs[3].color = Color.DARK_GRAY;
+		systemPairs[3].caption = "Normalized Dictionary";
+		systemPairs[3].cont = new FuzzyControllerNormalizedDict();
+		systemPairs[3].pend = generateNewPendulum();
 
 		double time = 0.0;
-
-		double appStart = 1.0;
-		double appEnd = 1.1;
-		double f = 0.0;	//	newton
 
 		double[] times = new double[0];
 		while (time < duration) {
 			times = Arrays.copyOf(times, times.length + 1);
 			times[times.length - 1] = time;
 
-			double extF = 0.0;
-
-			if ((time >= appStart)
-					&& (time < appEnd))
-				extF = f;
-
-			double controllerOutput = Math.floor(contTriangularRef.getControlInput(p.getS().getT(), p.getS().getTd()) * 10000.0) / 10000.0;
-
-			controllerOutput += extF;
-
-			State prevState = p.getS().getCopy();
-			p.move(step, controllerOutput);
-			System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState + 
-								"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(controllerOutput) + " + " + extF + " -> " + p);
+			for (int i = 0; i < systemPairs.length; i++) {
+				double controllerOutput = Math.floor(systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd()) * 10000.0) / 10000.0;
+				State prevState = systemPairs[i].pend.getS().getCopy();
+				if ((time >= appStart)
+						&& (time < appEnd)) {
+					systemPairs[i].pend.move(step, controllerOutput, d);
+					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState +
+							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(controllerOutput) + " + " + d + " -> " + systemPairs[i].pend);
+	
+				} else {
+					systemPairs[i].pend.move(step, controllerOutput, 0.0);
+					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState + 
+							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(controllerOutput) + " + 0.0 -> " + systemPairs[i].pend);
+				}
+			}
 
 			time += step;
 		}
 
-		plotT(contTriangularRef, times, p.getHistory(), 40.0 * Math.PI /180.0, 10.0, duration);
+		plot(systemPairs, times, duration);
 	}
 
 	private static Container plot = null;
-	private static Font legendFont = new Font("SansSerif",1,17);
-	private static Font axisFont = new Font("SansSerif",1,17);
-	private static Font axisLightFont = new Font("SansSerif",1,15);
+	private static Font legendFont = new Font("Tahoma", 1, 12);
+	private static Font axisFont = new Font("Tahoma", 1, 12);
+	private static Font axisLightFont = new Font("Tahoma", 1, 10);
 
-	private static void plotT(FuzzyInvPendController cont, double[] times, State[] s, double tLimit, double xLimit, double duration) {
-//		JMathPlotter plotter = new JMathPlotter(12,12,12);
-//		plotter.plotInputOutput(cont.getControllerName() + " T response", t, new Tuple(- tLimit, tLimit), new Tuple(0, duration));
-//		plotter.plotInputOutput(cont.getControllerName() + " X response", x, new Tuple(- xLimit, xLimit), new Tuple(0, duration));
-    
-        double[] t = new double[s.length];
-        for (int i = 0; i < s.length; i++)
-			t[i] = s[i].getT();
+	private static void plot(SystemPair[] systemPairs, double[] times, double duration) {    
+		double[][] t = new double[systemPairs.length][times.length];
+        for (int i = 0; i < systemPairs.length; i++)
+        	for (int j = 0; j < times.length; j++)
+        		t[i][j] = systemPairs[i].pend.getStateHistory()[j].getT() * 180.0 / Math.PI;
 
-        plotT(cont.getControllerName() + " T response", "Theta", times, t, tLimit, duration);
+        plotResponse(systemPairs, "T response", "Theta (degree)", times, t, duration);
 
-        double[] x = new double[s.length];
-        for (int i = 0; i < s.length; i++)
-			x[i] = s[i].getT();
+        double[][] td = new double[systemPairs.length][times.length];
+        for (int i = 0; i < systemPairs.length; i++)
+        	for (int j = 0; j < times.length; j++)
+        		td[i][j] = systemPairs[i].pend.getStateHistory()[j].getTd() * 180.0 / Math.PI;
 
-        plotT(cont.getControllerName() + " X response", "X", times, x, xLimit, duration);
+        plotResponse(systemPairs, "Td response", "ThetaD (degree/sec)", times, td, duration);
+
+        double[][] x = new double[systemPairs.length][times.length];
+        for (int i = 0; i < systemPairs.length; i++)
+        	for (int j = 0; j < times.length; j++)
+        		x[i][j] = systemPairs[i].pend.getStateHistory()[j].getX();
+
+        plotResponse(systemPairs, "X response", "X (meters)", times, x, duration);
+
+        double[][] v = new double[systemPairs.length][times.length];
+        for (int i = 0; i < systemPairs.length; i++)
+        	for (int j = 0; j < times.length; j++)
+        		v[i][j] = systemPairs[i].pend.getStateHistory()[j].getV();
+
+        plotResponse(systemPairs, "V response", "V (meters/sec)", times, v, duration);
+
+        double[][] f = new double[systemPairs.length][times.length];
+        for (int i = 0; i < systemPairs.length; i++)
+        	f[i] = systemPairs[i].pend.getForceHistory();
+
+        plotResponse(systemPairs, "Controller Output", "F (Newton)", times, f, duration);
 	}
 
-	private static void plotT(String title, String fieldName, double[] times, double[] values, double limit, double duration) {
+	private static void plotResponse(SystemPair[] systemPairs, String title, String fieldName, double[] times, double[][] values, double duration) {
 
-        plot = new Plot2DPanel();
+		double minV = Integer.MAX_VALUE;
+		double maxV = Integer.MIN_VALUE;
+
+        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < values[i].length; j++) {
+            	if (values[i][j] > maxV) maxV = values[i][j];
+            	if (values[i][j] < minV) minV = values[i][j];
+            }
+        }
+
+        if (minV > 0) minV *= 0.9; else minV *= 1.1;
+        if (maxV < 0) maxV *= 0.9; else maxV *= 1.1;
+
+		plot = new Plot2DPanel();
         ((Plot2DPanel)plot).setFont(legendFont);
+        ((Plot2DPanel)plot).getAxis(0).setLabelText("Time (sec)");
         ((Plot2DPanel)plot).getAxis(0).setLabelFont(axisFont);
         ((Plot2DPanel)plot).getAxis(0).setLightLabelFont(axisLightFont);
+        ((Plot2DPanel)plot).getAxis(1).setLabelText(fieldName);
         ((Plot2DPanel)plot).getAxis(1).setLabelFont(axisFont);
         ((Plot2DPanel)plot).getAxis(1).setLightLabelFont(axisLightFont);
         // define the legend position
         ((Plot2DPanel)plot).addLegend("SOUTH");            
 
-        // add a line plot to the PlotPanel
-        ((Plot2DPanel)plot).addLinePlot(fieldName, times, values);
-        ((Plot2DPanel)plot).setFixedBounds(1, -limit, limit);
-        ((Plot2DPanel)plot).setFixedBounds(0, 0, duration);
+        for (int i = 0; i < values.length; i++) {
+	        // add a line plot to the PlotPanel
+	        ((Plot2DPanel)plot).addLinePlot(systemPairs[i].caption, systemPairs[i].color, times, values[i]);
+	        ((Plot2DPanel)plot).setFixedBounds(1, minV, maxV);
+	        ((Plot2DPanel)plot).setFixedBounds(0, 0, duration);
+        }
 
         JFrame frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
+        frame.setSize(1000, 500);
         frame.setContentPane(plot);
         frame.setVisible(true);
 	}

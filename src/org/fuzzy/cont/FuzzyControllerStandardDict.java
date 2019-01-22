@@ -9,9 +9,9 @@ import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
 import type1.system.T1_Rulebase;
 
-public class FuzzyControllerDictSft extends FuzzyInvPendController {
+public class FuzzyControllerStandardDict extends FuzzyInvPendController {
 
-	public FuzzyControllerDictSft() {
+	public FuzzyControllerStandardDict() {
 		super("Gaussian Dictionary Interpered Fuzzy Controller");
 	}
 
