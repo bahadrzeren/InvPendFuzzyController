@@ -49,7 +49,7 @@ public class Simulator {
 	 */
 	private static double appStart = 1.0;
 	private static double appEnd = 1.1;
-	private static double dist = 0.0;	//	newton
+	private static double dist = 0.0;	//	Newton
 
 
 	private static InvertedPendulum generateNewPendulum() {

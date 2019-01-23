@@ -51,7 +51,7 @@ public class InvertedPendulum {
 	private StateDot iterate(State s, double f) {
 
 		StateDot res = new StateDot(s.getXd(), 0.0, s.getTd(), 0.0);
-
+//	BAHADIR
 		res.setXdd((
 					mp * g * s.cosT() * s.sinT()
 					+ mp * l * s.sqrTd() * s.sinT()
@@ -68,7 +68,12 @@ public class InvertedPendulum {
 					+ fcc * s.getXd() * s.cosT()
 					- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
 					) /
-						(l * (mc + mp + mp * s.sinT())));
+						(l * (mc + mp + mp * s.sqrSinT())));
+
+//		res.setXdd(((f + mp * l * s.sqrTd() * s.sinT()) * 4.0 / 3.0 - mp * g * s.sinT() * s.cosT()) /
+//					((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT()));
+//		res.setTdd(((mc + mp) * g * s.sinT() - (f + mp * l * s.sqrTd() * s.sinT()) * s.cosT()) /
+//						(l * ((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT())));
 
 		return res;
 	}

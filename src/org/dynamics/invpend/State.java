@@ -37,6 +37,10 @@ public class State {
 		return Math.sin(this.t) * Math.sin(this.t);
 	}
 
+	public double sqrCosT() {
+		return Math.cos(this.t) * Math.cos(this.t);
+	}
+
 	public State iterate(StateDot sd, double c) {
 		return new State(this.x + sd.getXd() * c,
 							this.xd + sd.geXdd() * c,
