@@ -11,6 +11,5 @@ Those are fuzzy controllers that have:
 
 Libraries used:
 
-Juzzy, http://juzzy.wagnerweb.net/
-
-JMathPlot, http://code.google.com/p/jmathplot
+- Juzzy, http://juzzy.wagnerweb.net/
+- JMathPlot, http://code.google.com/p/jmathplot
