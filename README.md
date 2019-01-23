@@ -2,16 +2,12 @@
 
 Simulates and report behaviour of an Inverted Pendulum system under the control of four different fuzzy controllers.
 
-Those are Fuzzy controller with:
+Those are fuzzy controllers that have:
 
-1- Triangular membership functions.
-
-2- Gaussian membership functions.
-
-3- Gaussian membership functions that are generated through Standard Fuzzy Transfer using the dictionary.
-
-4- Gaussian membership functions that are generated through Normalized Fuzzy Transfer using the dictionary.
-
+- Triangular membership functions.
+- Gaussian membership functions.
+- Gaussian membership functions that are generated through Standard Fuzzy Transfer using the dictionary.
+- Gaussian membership functions that are generated through Normalized Fuzzy Transfer using the dictionary.
 
 Libraries used:
 
