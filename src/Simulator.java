@@ -36,7 +36,7 @@ public class Simulator {
 	private static double xInit = 0.0;
 	private static double xdInit = 0.0;
 	private static double tInit = - 30.0 * Math.PI / 180.0;
-	private static double tdInit = 10.0 * Math.PI / 180.0;
+	private static double tdInit = 4.0 * Math.PI / 180.0;
 
 	/*
 	 * Test duration.
@@ -85,6 +85,18 @@ public class Simulator {
 		systemPairs[3].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[3].pend = generateNewPendulum();
 
+//		for (int i = 0; i < systemPairs.length; i++) {
+//			for (int ts = -40; ts < 41; ts++) {
+//				for (int ds = -8; ds < 9; ds++) {
+//					double output = systemPairs[i].cont.getControlInput(ts * Math.PI / 180.0, ds * Math.PI / 180.0);
+//					System.out.println("Cont" + i +
+//										" > Theta: " + formatter1.format(ts) + 
+//										", ThetaD: " + formatter1.format(ds) + 
+//										" -> Centroid defuzzification: " + formatter4.format(output));
+//				}
+//			}
+//		}
+
 		double time = 0.0;
 
 		double[] times = new double[0];
@@ -98,12 +110,12 @@ public class Simulator {
 				if ((time >= appStart)
 						&& (time < appEnd)) {
 					systemPairs[i].pend.move(step, force, dist);
-					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState +
+					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState +
 							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + " + dist + " -> " + systemPairs[i].pend);
 	
 				} else {
 					systemPairs[i].pend.move(step, force, 0.0);
-					System.out.println("sec: " + formatter1.format(time) + " -> state: " + prevState + 
+					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState + 
 							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + 0.0 -> " + systemPairs[i].pend);
 				}
 			}

@@ -54,85 +54,85 @@ public class FuzzyControllerNormalizedDict extends FuzzyInvPendController {
 		this.fPVBMF = new T1MF_Gaussian("Force high amount", 25.6001, 2.87835);
 		this.fPVVBMF = new T1MF_Gaussian("Force very high amount", 31.3601, 2.2755);
 
+
 		/*
 		 * Theta MF associations.
 		 */
-		T1_Antecedent tNVL = new T1_Antecedent("None to very little theta", tNVBMF, this.t);
-		T1_Antecedent tSS = new T1_Antecedent("Somewhat small theta", tNBMF, this.t);
-		T1_Antecedent tS = new T1_Antecedent("Some theta", tNMF, this.t);
-		T1_Antecedent tM = new T1_Antecedent("Medium theta", tZMF, this.t);
-		T1_Antecedent tGA = new T1_Antecedent("Good amount theta", tPMF, this.t);
-		T1_Antecedent tVS = new T1_Antecedent("Very sizeable theta", tPBMF, this.t);
-		T1_Antecedent tHA = new T1_Antecedent("Humongous amount theta", tPVBMF, this.t);
+		T1_Antecedent tNVB = new T1_Antecedent("Very small theta", tNVBMF, this.t);
+		T1_Antecedent tNB = new T1_Antecedent("Very little theta", tNBMF, this.t);
+		T1_Antecedent tN = new T1_Antecedent("Some to moderate theta", tNMF, this.t);
+		T1_Antecedent tZ = new T1_Antecedent("Medium theta", tZMF, this.t);
+		T1_Antecedent tP = new T1_Antecedent("Moderate amount theta", tPMF, this.t);
+		T1_Antecedent tPB = new T1_Antecedent("Large theta", tPBMF, this.t);
+		T1_Antecedent tPVB = new T1_Antecedent("Maximum amount theta", tPVBMF, this.t);
 
 		/*
 		 * ThetaD MF associations.
 		 */
-		T1_Antecedent dTW = new T1_Antecedent("Teeny-weeny thetaD", dNBMF, this.d);
-		T1_Antecedent dS = new T1_Antecedent("Some thetaD", dNMF, this.d);
-		T1_Antecedent dM = new T1_Antecedent("Medium thetaD", dZMF, this.d);
-		T1_Antecedent dCA = new T1_Antecedent("Considerable amount thetaD", dPMF, this.d);
-		T1_Antecedent dVL = new T1_Antecedent("Very large thetaD", dPBMF, this.d);
+		T1_Antecedent dNB = new T1_Antecedent("Very small thetaD", dNBMF, this.d);
+		T1_Antecedent dN = new T1_Antecedent("Somewhat small thetaD", dNMF, this.d);
+		T1_Antecedent dZ = new T1_Antecedent("Medium thetaD", dZMF, this.d);
+		T1_Antecedent dP = new T1_Antecedent("Good amount thetaD", dPMF, this.d);
+		T1_Antecedent dPB = new T1_Antecedent("Maximum amount thetaD", dPBMF, this.d);
 
 		/*
 		 * Force MF associations.
 		 */
-		T1_Consequent fNVL = new T1_Consequent("None to very little force", fNVVBMF, this.f);
-		T1_Consequent fLA = new T1_Consequent("Low amount force", fNVBMF, this.f);
-		T1_Consequent fSS = new T1_Consequent("Somewhat small force", fNBMF, this.f);
-		T1_Consequent fMM = new T1_Consequent("Modest amount force", fNMF, this.f);
-		T1_Consequent fM = new T1_Consequent("Medium force", fZMF, this.f);
-		T1_Consequent fGA = new T1_Consequent("Good amount force", fPMF, this.f);
-		T1_Consequent fSA = new T1_Consequent("Substantial amount force", fPBMF, this.f);
-		T1_Consequent fHA = new T1_Consequent("High amount force", fPVBMF, this.f);
-		T1_Consequent fVHA = new T1_Consequent("Very high amount force", fPVVBMF, this.f);
+		T1_Consequent fNVVB = new T1_Consequent("Very small force", fNVVBMF, this.f);
+		T1_Consequent fNVB = new T1_Consequent("Very small force", fNVBMF, this.f);
+		T1_Consequent fNB = new T1_Consequent("Small force", fNBMF, this.f);
+		T1_Consequent fN = new T1_Consequent("Some to moderate force", fNMF, this.f);
+		T1_Consequent fZ = new T1_Consequent("Medium force", fZMF, this.f);
+		T1_Consequent fP = new T1_Consequent("Moderate amount force", fPMF, this.f);
+		T1_Consequent fPB = new T1_Consequent("Little force", fPBMF, this.f);
+		T1_Consequent fPVB = new T1_Consequent("Very high amount force", fPVBMF, this.f);
+		T1_Consequent fPVVB = new T1_Consequent("Maximum amount force", fPVVBMF, this.f);
 
 		/*
 		 * Rulebase.
 		 */
 		this.rulebase = new T1_Rulebase(35);
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tHA, dVL}, fVHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tHA, dCA}, fVHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tHA, dM}, fHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tHA, dS}, fSA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tHA, dTW}, fGA));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPVB, dPB}, fPVVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPVB, dP}, fPVVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPVB, dZ}, fPVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPVB, dN}, fPB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPVB, dNB}, fP));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tVS, dVL}, fVHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tVS, dCA}, fHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tVS, dM}, fSA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tVS, dS}, fGA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tVS, dTW}, fM));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPB, dPB}, fPVVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPB, dP}, fPVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPB, dZ}, fPB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPB, dN}, fP));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tPB, dNB}, fZ));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tGA, dVL}, fHA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tGA, dCA}, fSA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tGA, dM}, fGA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tGA, dS}, fM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tGA, dTW}, fMM));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tP, dPB}, fPVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tP, dP}, fPB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tP, dZ}, fP));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tP, dN}, fZ));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tP, dNB}, fN));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tM, dVL}, fSA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tM, dCA}, fGA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tM, dM}, fM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tM, dS}, fMM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tM, dTW}, fSS));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tZ, dPB}, fPB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tZ, dP}, fP));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tZ, dZ}, fZ));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tZ, dN}, fN));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tZ, dNB}, fNB));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tS, dVL}, fGA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tS, dCA}, fM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tS, dM}, fMM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tS, dS}, fSS));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tS, dTW}, fLA));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tN, dPB}, fP));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tN, dP}, fZ));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tN, dZ}, fN));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tN, dN}, fNB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tN, dNB}, fNVB));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tSS, dVL}, fM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tSS, dCA}, fMM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tSS, dM}, fSS));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tSS, dS}, fLA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tSS, dTW}, fNVL));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNB, dPB}, fZ));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNB, dP}, fN));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNB, dZ}, fNB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNB, dN}, fNVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNB, dNB}, fNVVB));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVL, dVL}, fMM));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVL, dCA}, fSS));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVL, dM}, fLA));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVL, dS}, fNVL));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVL, dTW}, fNVL));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVB, dPB}, fN));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVB, dP}, fNB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVB, dZ}, fNVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVB, dN}, fNVVB));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tNVB, dNB}, fNVVB));
 
-		this.f.setDiscretisationLevel(discritisationLevel);
-	}
+		this.f.setDiscretisationLevel(discritisationLevel);	}
 }

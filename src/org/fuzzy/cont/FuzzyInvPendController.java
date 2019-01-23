@@ -65,7 +65,6 @@ public abstract class FuzzyInvPendController {
 	public double getControlInput(double theta, double thetaD) {
 		this.t.setInput(theta);
 		this.d.setInput(thetaD);
-		this.d.setInput(thetaD);
 		return rulebase.evaluate(1).get(this.f);
 	}
 
