@@ -88,8 +88,8 @@ public class State {
 
 	public String toString() {
 		return "x: " + this.formatter.format(x) +
-				", t: " + this.formatter.format(t) + 
+				", t: " + this.formatter.format(t * 180.0 / Math.PI) + 
 				", xd: " + this.formatter.format(xd) +
-				", td: " + this.formatter.format(td);
+				", td: " + this.formatter.format(td * 180.0 / Math.PI);
 	}
 }

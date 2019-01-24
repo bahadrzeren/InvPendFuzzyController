@@ -8,8 +8,8 @@ public class InvertedPendulum {
 	private double mc = 1.0;	//	kg
 	private double l = 2.0;		//	meter
 	private double g = 9.8;		//	meter/sn2
-	private double fcp = 0.1;	//	newton
-	private double fcc = 0.5;
+	private double fcp = 0.0;	//	newton
+	private double fcc = 0.0;
 
 	private State s = null;
 
@@ -51,7 +51,7 @@ public class InvertedPendulum {
 	private StateDot iterate(State s, double f) {
 
 		StateDot res = new StateDot(s.getXd(), 0.0, s.getTd(), 0.0);
-//	BAHADIR
+//	https://github.com/gordwilling/runge-kutta
 		res.setXdd((
 					mp * g * s.cosT() * s.sinT()
 					+ mp * l * s.sqrTd() * s.sinT()
@@ -70,6 +70,23 @@ public class InvertedPendulum {
 					) /
 						(l * (mc + mp + mp * s.sqrSinT())));
 
+/*
+ * BECERIKLI
+ */
+//		res.setTdd((g * s.sinT()
+//					- mp * l * s.sqrTd() * s.cosT() * s.sinT() / (mc + mp)
+//					+ f * s.cosT() / (mc + mp)) /
+//					(l * (4.0 / 3.0 - mp * s.sqrCosT() / (mc + mp))));
+//
+//		res.setXdd((f 
+//					+ mp * l * s.sqrTd() * s.sinT()
+//					- mp * l * res.getTdd() * s.cosT()
+//					) /
+//					(mc + mp));
+
+/*
+ * https://www.sciencedirect.com/science/article/pii/S0954181000000078
+ */
 //		res.setXdd(((f + mp * l * s.sqrTd() * s.sinT()) * 4.0 / 3.0 - mp * g * s.sinT() * s.cosT()) /
 //					((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT()));
 //		res.setTdd(((mc + mp) * g * s.sinT() - (f + mp * l * s.sqrTd() * s.sinT()) * s.cosT()) /
