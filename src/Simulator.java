@@ -17,15 +17,15 @@ import org.math.plot.Plot2DPanel;
 
 public class Simulator {
 
-	public static NumberFormat formatter1 = new DecimalFormat("#0.0");
+	public static NumberFormat formatter1 = new DecimalFormat("#0.00");
 	public static NumberFormat formatter4 = new DecimalFormat("#0.0000");
 
 	/*
 	 * Pendulum properties.
 	 */
-	private static double mp = 0.2;	//	kg
+	private static double mp = 0.1;	//	kg
 	private static double mc = 1.0;	//	kg
-	private static double l = 2.0;		//	meter
+	private static double l = 1.0;		//	meter
 	private static double g = 9.8;		//	meter/sn2
 	private static double fcp = 0.0;
 	private static double fcc = 0.0;
@@ -41,7 +41,7 @@ public class Simulator {
 	/*
 	 * Test duration.
 	 */
-	private static double step = 0.1;	//	sn
+	private static double step = 0.01;	//	sn
 	private static double duration = 12.0;	//	sn
 
 	/*
@@ -49,7 +49,7 @@ public class Simulator {
 	 */
 	private static double appStart = 1.0;
 	private static double appEnd = 1.1;
-	private static double disturbance = 1.0;	//	Newton
+	private static double disturbance = 0.0;	//	Newton
 
 
 	private static InvertedPendulum generateNewPendulum() {
@@ -58,32 +58,36 @@ public class Simulator {
 
 	public static void main(String[] args) {
 
-		SystemPair[] systemPairs = new SystemPair[4];
+		SystemPair[] systemPairs = new SystemPair[0];
 
 		//	Triangular reference
-		systemPairs[0] = new SystemPair();
-		systemPairs[0].caption = "Triangular Reference (T)";
-		systemPairs[0].color = Color.RED;
-		systemPairs[0].cont = new FuzzyControllerTriangular();
-		systemPairs[0].pend = generateNewPendulum();
+		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
+		systemPairs[systemPairs.length - 1] = new SystemPair();
+		systemPairs[systemPairs.length - 1].caption = "Triangular Reference (T)";
+		systemPairs[systemPairs.length - 1].color = Color.RED;
+		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerTriangular();
+		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
 		//	Gaussian reference
-		systemPairs[1] = new SystemPair();
-		systemPairs[1].color = Color.BLUE;
-		systemPairs[1].caption = "Gaussian Reference (G)";
-		systemPairs[1].cont = new FuzzyControllerGaussian();
-		systemPairs[1].pend = generateNewPendulum();
+		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
+		systemPairs[systemPairs.length - 1] = new SystemPair();
+		systemPairs[systemPairs.length - 1].color = Color.BLUE;
+		systemPairs[systemPairs.length - 1].caption = "Gaussian Reference (G)";
+		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerGaussian();
+		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
 		//	Standard dictionary reference
-		systemPairs[2] = new SystemPair();
-		systemPairs[2].color = new Color(60, 180, 100);
-		systemPairs[2].caption = "Standard Fuzzy Transfer (S)";
-		systemPairs[2].cont = new FuzzyControllerStandardDict();
-		systemPairs[2].pend = generateNewPendulum();
+		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
+		systemPairs[systemPairs.length - 1] = new SystemPair();
+		systemPairs[systemPairs.length - 1].color = new Color(60, 180, 100);
+		systemPairs[systemPairs.length - 1].caption = "Standard Fuzzy Transfer (S)";
+		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerStandardDict();
+		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
 		//	Normalized dictionary reference
-		systemPairs[3] = new SystemPair();
-		systemPairs[3].color = new Color(128, 64, 64);
-		systemPairs[3].caption = "Normalised Standard Fuzzy Transfer (SN)";
-		systemPairs[3].cont = new FuzzyControllerNormalizedDict();
-		systemPairs[3].pend = generateNewPendulum();
+		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
+		systemPairs[systemPairs.length - 1] = new SystemPair();
+		systemPairs[systemPairs.length - 1].color = new Color(128, 64, 64);
+		systemPairs[systemPairs.length - 1].caption = "Normalised Standard Fuzzy Transfer (SN)";
+		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
+		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
 
 //		for (int i = 0; i < systemPairs.length; i++) {
 //			for (int ts = -40; ts < 41; ts++) {
@@ -105,7 +109,8 @@ public class Simulator {
 			times[times.length - 1] = time;
 
 			for (int i = 0; i < systemPairs.length; i++) {
-				double force = Math.floor(systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd()) * 10000.0) / 10000.0;
+				double force = systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd());
+				force = Math.floor(force * 10000.0) / 10000.0;
 				State prevState = systemPairs[i].pend.getS().getCopy();
 				if ((time >= appStart)
 						&& (time < appEnd)) {
