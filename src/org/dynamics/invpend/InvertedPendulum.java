@@ -51,22 +51,26 @@ public class InvertedPendulum {
 	private StateDot iterate(State s, double f) {
 
 		StateDot res = new StateDot(s.getXd(), 0.0, s.getTd(), 0.0);
-//	https://github.com/gordwilling/runge-kutta
+/*
+ * https://github.com/gordwilling/runge-kutta
+ * https://physics.stackexchange.com/questions/35000/elementary-derivation-of-the-motion-equations-for-an-inverted-pendulum-on-a-cart
+ * https://betterexplained.com/articles/cross-product/
+ * 
+ */
 		res.setXdd((
-					mp * g * s.cosT() * s.sinT()
+					mp * g * s.sinT() * s.cosT()
 					+ mp * l * s.sqrTd() * s.sinT()
 					+ f
-					+ (s.getTd() * s.cosT() * fcp / l)
-					- fcc * s.getXd()
+//					- fcc * s.getXd()
+//					+ (s.getTd() * s.cosT() * fcp / l)
 					) /
 						(mc + mp + mp * s.sqrSinT()));
 
 		res.setTdd((
-					s.cosT() * l * mp * s.sqrTd() * s.sinT()
 					- g * (mc + mp + mp) * s.sinT() 
-					- s.cosT() * f
-					+ fcc * s.getXd() * s.cosT()
-					- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
+					+ s.cosT() * (l * mp * s.sqrTd() * s.sinT() - f)
+//					+ fcc * s.getXd() * s.cosT()
+//					- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
 					) /
 						(l * (mc + mp + mp * s.sqrSinT())));
 
@@ -87,10 +91,10 @@ public class InvertedPendulum {
 /*
  * https://www.sciencedirect.com/science/article/pii/S0954181000000078
  */
+//		res.setTdd(((mc + mp) * g * s.sinT() - (f + mp * l * s.sqrTd() * s.sinT()) * s.cosT()) /
+//				(l * ((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT())));
 //		res.setXdd(((f + mp * l * s.sqrTd() * s.sinT()) * 4.0 / 3.0 - mp * g * s.sinT() * s.cosT()) /
 //					((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT()));
-//		res.setTdd(((mc + mp) * g * s.sinT() - (f + mp * l * s.sqrTd() * s.sinT()) * s.cosT()) /
-//						(l * ((mc + mp) * 4.0 / 3.0 - mp * s.sqrCosT())));
 
 		return res;
 	}
