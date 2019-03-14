@@ -6,7 +6,7 @@ public class InvertedPendulum {
 
 	private double mp = 0.1;	//	kg
 	private double mc = 1.0;	//	kg
-	private double l = 2.0;		//	meter
+	private double l = 1.0;		//	meter
 	private double g = 9.8;		//	meter/sn2
 	private double fcp = 0.0;	//	newton
 	private double fcc = 0.0;
