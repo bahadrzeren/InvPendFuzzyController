@@ -1,4 +1,4 @@
-package org.fuzzy.cont;
+package org.fuzzy.opt;
 
 import generic.Input;
 import generic.Output;
@@ -10,6 +10,15 @@ import type1.system.T1_Rulebase;
 
 public abstract class FuzzyInvPendController {
 	protected static int discritisationLevel = 50;
+	protected static double xMin = 0.0;
+	protected static double xMax = 10.0;
+
+	protected static double tMin = -40.0;
+	protected static double tMax = 40.0;
+	protected static double dMin = -8.0;
+	protected static double dMax = 8.0;
+	protected static double fMin = -32.0;
+	protected static double fMax = 32.0;
 
 	protected String controllerName = null;
 
@@ -21,40 +30,37 @@ public abstract class FuzzyInvPendController {
 	/*
 	 * Membership functions of Theta angle (Input 1).
 	 */
-	protected T1MF_Prototype tNVBMF = null;
-	protected T1MF_Prototype tNBMF = null;
-	protected T1MF_Prototype tNMF = null;
-	protected T1MF_Prototype tZMF = null;
-	protected T1MF_Prototype tPMF = null;
-	protected T1MF_Prototype tPBMF = null;
-	protected T1MF_Prototype tPVBMF = null;
+	protected T1MF_Prototype tMfNMin = null;
+	protected T1MF_Prototype tMfN1 = null;
+	protected T1MF_Prototype tMf0 = null;
+	protected T1MF_Prototype tMfP1 = null;
+	protected T1MF_Prototype tMfPMax = null;
 
 	/*
 	 * Membership functions of change in theta angle (Input 2).
 	 */
-	protected T1MF_Prototype dNBMF = null;
-	protected T1MF_Prototype dNMF = null;
-	protected T1MF_Prototype dZMF = null;
-	protected T1MF_Prototype dPMF = null;
-	protected T1MF_Prototype dPBMF = null;
+	protected T1MF_Prototype dMfNMin = null;
+	protected T1MF_Prototype dMf0 = null;
+	protected T1MF_Prototype dMfPMax = null;
 
 	/*
 	 * Membership functions of force (Output).
 	 */
-	protected T1MF_Prototype fNVVBMF = null;
-	protected T1MF_Prototype fNVBMF = null;
-	protected T1MF_Prototype fNBMF = null;
-	protected T1MF_Prototype fNMF = null;
-	protected T1MF_Prototype fZMF = null;
-	protected T1MF_Prototype fPMF = null;
-	protected T1MF_Prototype fPBMF = null;
-	protected T1MF_Prototype fPVBMF = null;
-	protected T1MF_Prototype fPVVBMF = null;
+	protected T1MF_Prototype fMfNMin = null;
+	protected T1MF_Prototype fMfN2 = null;
+	protected T1MF_Prototype fMfN1 = null;
+	protected T1MF_Prototype fMf0 = null;
+	protected T1MF_Prototype fMfP1 = null;
+	protected T1MF_Prototype fMfP2 = null;
+	protected T1MF_Prototype fMfPMax = null;
 
 	protected abstract void initialize();
 
 	public FuzzyInvPendController(String controllerName) {
 		this.controllerName = controllerName;
+		this.t = new Input("Theta", new Tuple(xMin, xMax));
+		this.d = new Input("ThetaD", new Tuple(xMin, xMax));
+		this.f = new Output("Force", new Tuple(xMin, xMax));
 		this.initialize();
 	}
 
@@ -70,13 +76,34 @@ public abstract class FuzzyInvPendController {
 
 	public void plotMembershipFunctions() {
 		//plot some sets, discretizing each input into 100 steps.
-        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel); 
-        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel);
-        plotMFs("Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel);
+        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel); 
+        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel);
+        plotMFs("Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel);
 	}
 
 	public void plotControlSurface() {
         plotControlSurface(true, 80, 16);
+	}
+
+	public double getNormalizedTValue(double realValue) {
+		return xMin + (xMax - xMin) * (realValue - tMin) / (tMax - tMin);
+	}
+	public double getRealTValue(double normalizedValue) {
+		return tMin + (tMax - tMin) * (normalizedValue - xMin) / (xMax - xMin);
+	}
+
+	public double getNormalizedDValue(double realValue) {
+		return xMin + (xMax - xMin) * (realValue - dMin) / (dMax - dMin);
+	}
+	public double getRealDValue(double normalizedValue) {
+		return dMin + (dMax - dMin) * (normalizedValue - xMin) / (xMax - xMin);
+	}
+
+	public double getNormalizedFValue(double realValue) {
+		return xMin + (xMax - xMin) * (realValue - fMin) / (fMax - fMin);
+	}
+	public double getRealFValue(double normalizedValue) {
+		return fMin + (fMax - fMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
 	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
