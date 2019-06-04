@@ -70,13 +70,13 @@ public abstract class FuzzyInvPendController {
 
 	public void plotMembershipFunctions() {
 		//plot some sets, discretizing each input into 100 steps.
-        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel); 
-        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel);
-        plotMFs("Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel);
+        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel * 2); 
+        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel * 2);
+        plotMFs("Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel * 2);
 	}
 
 	public void plotControlSurface() {
-        plotControlSurface(true, 80, 16);
+        plotControlSurface(true);
 	}
 
 	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
@@ -87,7 +87,7 @@ public abstract class FuzzyInvPendController {
         plotter.show(name);
     }
 
-	private void plotControlSurface(boolean useCentroidDefuzzification, int input1Discs, int input2Discs) {
+	private void plotControlSurface(boolean useCentroidDefuzzification) {
         double output;
         double[] x = new double[(int) Math.floor(this.t.getDomain().getSize()) + 1];
         double[] y = new double[(int) Math.floor(this.d.getDomain().getSize()) + 1];

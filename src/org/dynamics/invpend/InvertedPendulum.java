@@ -28,6 +28,21 @@ public class InvertedPendulum {
 		this.s = s;
 	}
 
+	public void reset(double mp, double mc, double l, double g, double fcp, double fcc, double x, double xd, double t, double td) {
+		this.stateHistory = new State[0];
+		this.forceHistory = new double[0];
+		this.disturbanceHistory = new double[0];
+
+		this.mp = mp;
+		this.mc = mc;
+		this.l = l;
+		this.g = g;
+		this.fcp = fcp;
+		this.fcc = fcc;
+
+		this.s.reset(x, xd, t, td);
+	}
+
 	public double getMp() {
 		return mp;
 	}

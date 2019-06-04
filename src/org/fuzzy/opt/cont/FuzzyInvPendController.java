@@ -1,4 +1,6 @@
-package org.fuzzy.opt;
+package org.fuzzy.opt.cont;
+
+import java.util.List;
 
 import generic.Input;
 import generic.Output;
@@ -54,14 +56,14 @@ public abstract class FuzzyInvPendController {
 	protected T1MF_Prototype fMfP2 = null;
 	protected T1MF_Prototype fMfPMax = null;
 
-	protected abstract void initialize();
+	protected abstract void initialize(List<Double> variables);
 
-	public FuzzyInvPendController(String controllerName) {
+	public FuzzyInvPendController(String controllerName, List<Double> variables) {
 		this.controllerName = controllerName;
 		this.t = new Input("Theta", new Tuple(xMin, xMax));
 		this.d = new Input("ThetaD", new Tuple(xMin, xMax));
 		this.f = new Output("Force", new Tuple(xMin, xMax));
-		this.initialize();
+		this.initialize(variables);
 	}
 
 	public String getControllerName() {
@@ -72,17 +74,6 @@ public abstract class FuzzyInvPendController {
 		this.t.setInput(theta);
 		this.d.setInput(thetaD);
 		return rulebase.evaluate(1).get(this.f);
-	}
-
-	public void plotMembershipFunctions() {
-		//plot some sets, discretizing each input into 100 steps.
-        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel); 
-        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel);
-        plotMFs("Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel);
-	}
-
-	public void plotControlSurface() {
-        plotControlSurface(true, 80, 16);
 	}
 
 	public double getNormalizedTValue(double realValue) {
@@ -106,6 +97,17 @@ public abstract class FuzzyInvPendController {
 		return fMin + (fMax - fMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
+	public void plotMembershipFunctions() {
+		//plot some sets, discretizing each input into 100 steps.
+        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
+        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
+        plotMFs("Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
+	}
+
+	public void plotControlSurface() {
+        plotControlSurface(true);
+	}
+
 	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
         for (int i=0;i<sets.length;i++) {
@@ -114,7 +116,7 @@ public abstract class FuzzyInvPendController {
         plotter.show(name);
     }
 
-	private void plotControlSurface(boolean useCentroidDefuzzification, int input1Discs, int input2Discs) {
+	private void plotControlSurface(boolean useCentroidDefuzzification) {
         double output;
         double[] x = new double[(int) Math.floor(this.t.getDomain().getSize()) + 1];
         double[] y = new double[(int) Math.floor(this.d.getDomain().getSize()) + 1];
@@ -124,25 +126,38 @@ public abstract class FuzzyInvPendController {
         int min = (int) Math.floor(this.t.getDomain().getLeft());
         int len = (int) Math.floor(this.t.getDomain().getSize() + 1);
         for(int currentX = 0; currentX < len; currentX++) {
-            x[currentX] = min + currentX;        
+            x[currentX] = getRealTValue(min + currentX);
+            System.out.print("[" + (min + currentX) + " " + x[currentX] + "]");
+            System.out.print(", ");
         }
+        System.out.println();
+
         min = (int) Math.floor(this.d.getDomain().getLeft());
         len = (int) Math.floor(this.d.getDomain().getSize() + 1);
         for(int currentY = 0; currentY < len; currentY++) {
-            y[currentY] = min + currentY;
+            y[currentY] = getRealDValue(min + currentY);
+            System.out.print("[" + (min + currentY) + " " + y[currentY] + "]");
+            System.out.print(", ");
         }
-        
+        System.out.println();
+
         for(int currentX=0; currentX < x.length; currentX++) {
-            this.t.setInput(x[currentX]);
+            this.t.setInput(getNormalizedTValue(x[currentX]));
             for(int currentY=0; currentY < y.length; currentY++) {
-                this.d.setInput(y[currentY]);
+                this.d.setInput(getNormalizedDValue(y[currentY]));
                 if(useCentroidDefuzzification)
                     output = rulebase.evaluate(1).get(this.f);
                 else
                     output = rulebase.evaluate(0).get(this.f);
-                z[currentY][currentX] = output;
+
+                z[currentY][currentX] = getRealFValue(output);
+
+                System.out.print("[" + output + " " + z[currentY][currentX] + "]");
+                System.out.print(", ");
             }    
+            System.out.println();
         }
+        System.out.println();
 
         //now do the plotting
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);

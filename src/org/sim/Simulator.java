@@ -1,3 +1,4 @@
+package org.sim;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -52,7 +53,7 @@ public class Simulator {
 	private static double disturbance = 0.0;	//	Newton
 
 
-	private static InvertedPendulum generateNewPendulum() {
+	public static InvertedPendulum generateNewPendulum() {
 		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(xInit, xdInit, tInit, tdInit));
 	}
 
@@ -67,7 +68,7 @@ public class Simulator {
 		systemPairs[systemPairs.length - 1].color = Color.RED;
 		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerTriangular();
 		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
-		//	Gaussian reference
+				//	Gaussian reference
 		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
 		systemPairs[systemPairs.length - 1] = new SystemPair();
 		systemPairs[systemPairs.length - 1].color = Color.BLUE;
@@ -89,6 +90,8 @@ public class Simulator {
 		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
 
+//systemPairs[3].cont.plotControlSurface();
+
 //		for (int i = 0; i < systemPairs.length; i++) {
 //			for (int ts = -40; ts < 41; ts++) {
 //				for (int ds = -8; ds < 9; ds++) {
@@ -101,6 +104,10 @@ public class Simulator {
 //			}
 //		}
 
+		simulate(systemPairs, true);
+	}
+
+	public static void simulate(SystemPair[] systemPairs, boolean plotSimulation) {
 		double time = 0.0;
 
 		double[] times = new double[0];
@@ -128,74 +135,83 @@ public class Simulator {
 			time += step;
 		}
 
-		plot(systemPairs, times, duration);
+		calculateError(systemPairs, times, duration, plotSimulation);
 	}
+
 
 	private static Container plot = null;
 	private static Font legendFont = new Font("Tahoma", 1, 12);
 	private static Font axisFont = new Font("Tahoma", 1, 12);
 	private static Font axisLightFont = new Font("Tahoma", 1, 10);
 
-	private static void plot(SystemPair[] systemPairs, double[] times, double duration) {
-		double[] rmseT = new double[systemPairs.length];
-		double[] rmseTd = new double[systemPairs.length];
-		double[] rmseF = new double[systemPairs.length];
-		double[] rmseX = new double[systemPairs.length];
-		double[] rmseXd = new double[systemPairs.length];
+	private static void calculateError(SystemPair[] systemPairs, double[] times, double duration, boolean plotSimulation) {
 
 		double[][] t = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++) {
         		t[i][j] = systemPairs[i].pend.getStateHistory()[j].getT() * 180.0 / Math.PI;
-        		rmseT[i] += (t[i][j] * t[i][j]);
+        		systemPairs[i].rmseT += (t[i][j] * t[i][j]);
         	}
 
-        plotResponse(systemPairs, "T response", "Theta (degree)", times, t, duration);
+        if (plotSimulation)
+        	plotResponse(systemPairs, "T response", "Theta (degree)", times, t, duration);
 
         double[][] td = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++) {
         		td[i][j] = systemPairs[i].pend.getStateHistory()[j].getTd() * 180.0 / Math.PI;
-        		rmseTd[i] += (td[i][j] * td[i][j]);
+        		systemPairs[i].rmseTd += (td[i][j] * td[i][j]);
         	}
 
-        plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td, duration);
+        if (plotSimulation)
+        	plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td, duration);
 
         double[][] x = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++) {
         		x[i][j] = systemPairs[i].pend.getStateHistory()[j].getX();
-        		rmseX[i] += (x[i][j] * x[i][j]);
+        		systemPairs[i].rmseX += (x[i][j] * x[i][j]);
         	}
 
-        plotResponse(systemPairs, "X response", "Position (meters)", times, x, duration);
+        if (plotSimulation)
+        	plotResponse(systemPairs, "X response", "Position (meters)", times, x, duration);
 
         double[][] v = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
         	for (int j = 0; j < times.length; j++) {
         		v[i][j] = systemPairs[i].pend.getStateHistory()[j].getXd();
-        		rmseXd[i] += (v[i][j] * v[i][j]);
+        		systemPairs[i].rmseXd += (v[i][j] * v[i][j]);
         	}
 
-        plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v, duration);
+        if (plotSimulation)
+        	plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v, duration);
 
         double[][] f = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++) {
         	f[i] = systemPairs[i].pend.getForceHistory();
         	for (int j = 0; j < f[i].length; j++)
-        		rmseF[i] += (f[i][j] * f[i][j]);
+        		systemPairs[i].rmseF += (f[i][j] * f[i][j]);
         }
 
         for (int i = 0; i < systemPairs.length; i++) {
-        	System.out.println(systemPairs[i].cont.getControllerName() + " - RMSE");
-        	System.out.println("rmseT: " + Math.sqrt(rmseT[i] / times.length));
-        	System.out.println("rmseTd: " + Math.sqrt(rmseTd[i] / times.length));
-        	System.out.println("rmseF: " + Math.sqrt(rmseF[i] / times.length));
-        	System.out.println("rmseX: " + Math.sqrt(rmseX[i] / times.length));
-        	System.out.println("rmseXd: " + Math.sqrt(rmseXd[i] / times.length));
+        	systemPairs[i].rmseT = Math.sqrt(systemPairs[i].rmseT / times.length);
+        	systemPairs[i].rmseTd = Math.sqrt(systemPairs[i].rmseTd / times.length);
+        	systemPairs[i].rmseF = Math.sqrt(systemPairs[i].rmseF / times.length);
+        	systemPairs[i].rmseX = Math.sqrt(systemPairs[i].rmseX / times.length);
+        	systemPairs[i].rmseXd = Math.sqrt(systemPairs[i].rmseXd / times.length);
     	}
 
-        plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);
+        for (int i = 0; i < systemPairs.length; i++) {
+        	System.out.println(systemPairs[i].cont.getControllerName() + " - RMSE");
+        	System.out.println("rmseT: " + systemPairs[i].rmseT);
+        	System.out.println("rmseTd: " + systemPairs[i].rmseTd);
+        	System.out.println("rmseF: " + systemPairs[i].rmseF);
+        	System.out.println("rmseX: " + systemPairs[i].rmseX);
+        	System.out.println("rmseXd: " + systemPairs[i].rmseXd);
+    	}
+
+        if (plotSimulation)
+        	plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);
 	}
 
 	private static void plotResponse(SystemPair[] systemPairs, String title, String fieldName, double[] times, double[][] values, double duration) {

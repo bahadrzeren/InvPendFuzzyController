@@ -17,6 +17,13 @@ public class State {
 		this.td = td;
 	}
 
+	public void reset(double x, double xd, double t, double td) {
+		this.x = x;
+		this.xd = xd;
+		this.t = t;
+		this.td = td;
+	}
+
 	public State getCopy() {
 		return new State(this.x, this.xd, this.t, this.td);
 	}
