@@ -1,6 +1,8 @@
-package org.fuzzy.opt.cont;
+package org.fuzzy.invpend.opt.cont;
 
 import java.util.List;
+
+import org.fuzzy.invpend.cont.FuzzyController;
 
 import generic.Input;
 import generic.Output;
@@ -10,7 +12,7 @@ import type1.sets.T1MF_Interface;
 import type1.sets.T1MF_Prototype;
 import type1.system.T1_Rulebase;
 
-public abstract class FuzzyInvPendController {
+public abstract class FuzzyInvPendController implements FuzzyController {
 	protected static int discritisationLevel = 50;
 	protected static double xMin = 0.0;
 	protected static double xMax = 10.0;
@@ -66,16 +68,6 @@ public abstract class FuzzyInvPendController {
 		this.initialize(variables);
 	}
 
-	public String getControllerName() {
-		return controllerName;
-	}
-
-	public double getControlInput(double theta, double thetaD) {
-		this.t.setInput(theta);
-		this.d.setInput(thetaD);
-		return rulebase.evaluate(1).get(this.f);
-	}
-
 	public double getNormalizedTValue(double realValue) {
 		return xMin + (xMax - xMin) * (realValue - tMin) / (tMax - tMin);
 	}
@@ -97,6 +89,19 @@ public abstract class FuzzyInvPendController {
 		return fMin + (fMax - fMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
+	@Override
+	public String getControllerName() {
+		return controllerName;
+	}
+
+	@Override
+	public double getControlInput(double theta, double thetaD) {
+		this.t.setInput(getNormalizedTValue(theta));
+		this.d.setInput(getNormalizedDValue(thetaD));
+		return getRealFValue(rulebase.evaluate(1).get(this.f));
+	}
+
+	@Override
 	public void plotMembershipFunctions() {
 		//plot some sets, discretizing each input into 100 steps.
         plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 

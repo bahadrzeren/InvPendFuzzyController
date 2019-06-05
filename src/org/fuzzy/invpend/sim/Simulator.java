@@ -1,5 +1,4 @@
-package org.sim;
-import java.awt.Color;
+package org.fuzzy.invpend.sim;
 import java.awt.Container;
 import java.awt.Font;
 import java.text.DecimalFormat;
@@ -10,10 +9,6 @@ import javax.swing.JFrame;
 
 import org.dynamics.invpend.InvertedPendulum;
 import org.dynamics.invpend.State;
-import org.fuzzy.cont.FuzzyControllerStandardDict;
-import org.fuzzy.cont.FuzzyControllerNormalizedDict;
-import org.fuzzy.cont.FuzzyControllerGaussian;
-import org.fuzzy.cont.FuzzyControllerTriangular;
 import org.math.plot.Plot2DPanel;
 
 public class Simulator {
@@ -57,54 +52,8 @@ public class Simulator {
 		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(xInit, xdInit, tInit, tdInit));
 	}
 
-	public static void main(String[] args) {
-
-		SystemPair[] systemPairs = new SystemPair[0];
-
-		//	Triangular reference
-		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
-		systemPairs[systemPairs.length - 1] = new SystemPair();
-		systemPairs[systemPairs.length - 1].caption = "Triangular Reference (T)";
-		systemPairs[systemPairs.length - 1].color = Color.RED;
-		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerTriangular();
-		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
-				//	Gaussian reference
-		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
-		systemPairs[systemPairs.length - 1] = new SystemPair();
-		systemPairs[systemPairs.length - 1].color = Color.BLUE;
-		systemPairs[systemPairs.length - 1].caption = "Gaussian Reference (G)";
-		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerGaussian();
-		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
-		//	Standard dictionary reference
-		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
-		systemPairs[systemPairs.length - 1] = new SystemPair();
-		systemPairs[systemPairs.length - 1].color = new Color(60, 180, 100);
-		systemPairs[systemPairs.length - 1].caption = "Standard Fuzzy Transfer (S)";
-		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerStandardDict();
-		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
-		//	Normalized dictionary reference
-		systemPairs = Arrays.copyOf(systemPairs, systemPairs.length + 1);
-		systemPairs[systemPairs.length - 1] = new SystemPair();
-		systemPairs[systemPairs.length - 1].color = new Color(128, 64, 64);
-		systemPairs[systemPairs.length - 1].caption = "Normalised Standard Fuzzy Transfer (SN)";
-		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
-		systemPairs[systemPairs.length - 1].pend = generateNewPendulum();
-
-//systemPairs[3].cont.plotControlSurface();
-
-//		for (int i = 0; i < systemPairs.length; i++) {
-//			for (int ts = -40; ts < 41; ts++) {
-//				for (int ds = -8; ds < 9; ds++) {
-//					double output = systemPairs[i].cont.getControlInput(ts * Math.PI / 180.0, ds * Math.PI / 180.0);
-//					System.out.println("Cont" + i +
-//										" > Theta: " + formatter1.format(ts) + 
-//										", ThetaD: " + formatter1.format(ds) + 
-//										" -> Centroid defuzzification: " + formatter4.format(output));
-//				}
-//			}
-//		}
-
-		simulate(systemPairs, true);
+	public static void resetPendulum(InvertedPendulum pend) {
+		pend.reset(mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
 	public static void simulate(SystemPair[] systemPairs, boolean plotSimulation) {
@@ -118,17 +67,17 @@ public class Simulator {
 			for (int i = 0; i < systemPairs.length; i++) {
 				double force = systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd());
 				force = Math.floor(force * 10000.0) / 10000.0;
-				State prevState = systemPairs[i].pend.getS().getCopy();
+//				State prevState = systemPairs[i].pend.getS().getCopy();
 				if ((time >= appStart)
 						&& (time < appEnd)) {
 					systemPairs[i].pend.move(step, force, disturbance);
-					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState +
-							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + " + disturbance + " -> " + systemPairs[i].pend);
+//					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState +
+//							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + " + disturbance + " -> " + systemPairs[i].pend);
 	
 				} else {
 					systemPairs[i].pend.move(step, force, 0.0);
-					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState + 
-							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + 0.0 -> " + systemPairs[i].pend);
+//					System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState + 
+//							"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + 0.0 -> " + systemPairs[i].pend);
 				}
 			}
 
@@ -201,14 +150,14 @@ public class Simulator {
         	systemPairs[i].rmseXd = Math.sqrt(systemPairs[i].rmseXd / times.length);
     	}
 
-        for (int i = 0; i < systemPairs.length; i++) {
-        	System.out.println(systemPairs[i].cont.getControllerName() + " - RMSE");
-        	System.out.println("rmseT: " + systemPairs[i].rmseT);
-        	System.out.println("rmseTd: " + systemPairs[i].rmseTd);
-        	System.out.println("rmseF: " + systemPairs[i].rmseF);
-        	System.out.println("rmseX: " + systemPairs[i].rmseX);
-        	System.out.println("rmseXd: " + systemPairs[i].rmseXd);
-    	}
+//        for (int i = 0; i < systemPairs.length; i++) {
+//        	System.out.println(systemPairs[i].cont.getControllerName() + " - RMSE");
+//        	System.out.println("rmseT: " + systemPairs[i].rmseT);
+//        	System.out.println("rmseTd: " + systemPairs[i].rmseTd);
+//        	System.out.println("rmseF: " + systemPairs[i].rmseF);
+//        	System.out.println("rmseX: " + systemPairs[i].rmseX);
+//        	System.out.println("rmseXd: " + systemPairs[i].rmseXd);
+//    	}
 
         if (plotSimulation)
         	plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);

@@ -1,4 +1,6 @@
-package org.fuzzy.cont;
+package org.fuzzy.invpend.intrpr.cont;
+
+import org.fuzzy.invpend.cont.FuzzyController;
 
 import generic.Input;
 import generic.Output;
@@ -8,7 +10,7 @@ import type1.sets.T1MF_Interface;
 import type1.sets.T1MF_Prototype;
 import type1.system.T1_Rulebase;
 
-public abstract class FuzzyInvPendController {
+public abstract class FuzzyInvPendController implements FuzzyController {
 	protected static int discritisationLevel = 50;
 
 	protected String controllerName = null;
@@ -58,16 +60,19 @@ public abstract class FuzzyInvPendController {
 		this.initialize();
 	}
 
+	@Override
 	public String getControllerName() {
 		return controllerName;
 	}
 
+	@Override
 	public double getControlInput(double theta, double thetaD) {
 		this.t.setInput(theta);
 		this.d.setInput(thetaD);
 		return rulebase.evaluate(1).get(this.f);
 	}
 
+	@Override
 	public void plotMembershipFunctions() {
 		//plot some sets, discretizing each input into 100 steps.
         plotMFs("Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel * 2); 
@@ -75,6 +80,7 @@ public abstract class FuzzyInvPendController {
         plotMFs("Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel * 2);
 	}
 
+	@Override
 	public void plotControlSurface() {
         plotControlSurface(true);
 	}

@@ -1,4 +1,4 @@
-package org.fuzzy.opt.cont;
+package org.fuzzy.invpend.opt.cont;
 
 import java.util.List;
 

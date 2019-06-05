@@ -1,18 +1,18 @@
-package org.fuzzy.cont;
+package org.fuzzy.invpend.intrpr.cont;
 
 import generic.Input;
 import generic.Output;
 import generic.Tuple;
-import type1.sets.T1MF_Triangular;
+import type1.sets.T1MF_Gaussian;
 import type1.system.T1_Antecedent;
 import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
 import type1.system.T1_Rulebase;
 
-public class FuzzyControllerTriangular extends FuzzyInvPendController {
+public class FuzzyControllerStandardDict extends FuzzyInvPendController {
 
-	public FuzzyControllerTriangular() {
-		super("Triangular Reference Fuzzy Controller");
+	public FuzzyControllerStandardDict() {
+		super("Gaussian Dictionary Interpered Fuzzy Controller");
 	}
 
 	@Override
@@ -24,68 +24,68 @@ public class FuzzyControllerTriangular extends FuzzyInvPendController {
 		/*
 		 * Membership functions of Theta angle (Input 1).
 		 */
-		this.tNVBMF = new T1MF_Triangular("Theta negative very big", -40, -40, -25);
-		this.tNBMF = new T1MF_Triangular("Theta negative big", -40, -25, -10);
-		this.tNMF = new T1MF_Triangular("Theta negative", -20, -10, 0);
-		this.tZMF = new T1MF_Triangular("Theta zero", -5, 0, 5);
-		this.tPMF = new T1MF_Triangular("Theta positive", 0, 10, 20);
-		this.tPBMF = new T1MF_Triangular("Theta positive big", 10, 25, 40);
-		this.tPVBMF = new T1MF_Triangular("Theta positive very big", 25, 40, 40);
+		this.tNVBMF = new T1MF_Gaussian("Theta very small", -38.4, 13.2984);
+		this.tNBMF = new T1MF_Gaussian("Theta very little",-37.2, 14.3811);
+		this.tNMF = new T1MF_Gaussian("Theta some to moderate", -2.4, 11.9765);
+		this.tZMF = new T1MF_Gaussian("Theta medium", 0.2, 8.78504);
+		this.tPMF = new T1MF_Gaussian("Theta moderate amount", 1, 11.0384);
+		this.tPBMF = new T1MF_Gaussian("Theta large", 26.8001, 11.9698);
+		this.tPVBMF = new T1MF_Gaussian("Theta maximum amount", 39.2002, 7.2627);
 
 		/*
 		 * Membership functions of change in theta angle (Input 2).
 		 */
-		this.dNBMF = new T1MF_Triangular("ThetaD negative big", -8, -8, -3);
-		this.dNMF = new T1MF_Triangular("ThetaD negative", -6, -3, 0);
-		this.dZMF = new T1MF_Triangular("ThetaD zero", -1, 0, 1);
-		this.dPMF = new T1MF_Triangular("ThetaD positive", 0, 3, 6);
-		this.dPBMF = new T1MF_Triangular("ThetaD positive big", 3, 8, 8);
+		this.dNBMF = new T1MF_Gaussian("ThetaD very small", -7.68, 2.65968);
+		this.dNMF = new T1MF_Gaussian("ThetaD somewhat small", -5.16, 2.92957);
+		this.dZMF = new T1MF_Gaussian("ThetaD medium", 0.04, 1.75701);
+		this.dPMF = new T1MF_Gaussian("ThetaD good amount", 2.34667, 2.78923);
+		this.dPBMF = new T1MF_Gaussian("ThetaD maximum amount", 7.84003, 1.45254);
 
 		/*
 		 * Membership functions of force (Output).
 		 */
-		this.fNVVBMF = new T1MF_Triangular("Force negative very very big", -32, -32, -24);
-		this.fNVBMF = new T1MF_Triangular("Force negative very big", -32, -24, -16);
-		this.fNBMF = new T1MF_Triangular("Force negative big", -24, -16, -8);
-		this.fNMF = new T1MF_Triangular("Force negative", -16, -8, 0);
-		this.fZMF = new T1MF_Triangular("Force zero", -4, 0, 4);
-		this.fPMF = new T1MF_Triangular("Force positive", 0, 8, 16);
-		this.fPBMF = new T1MF_Triangular("Force positive big", 8, 16, 24);
-		this.fPVBMF = new T1MF_Triangular("Force positive very big", 16, 24, 32);
-		this.fPVVBMF = new T1MF_Triangular("Force positive very very big", 24, 32, 32);
+		this.fNVVBMF = new T1MF_Gaussian("Force very small", -30.72, 10.6387);
+		this.fNVBMF = new T1MF_Gaussian("Force very small", -30.72, 10.6387);
+		this.fNBMF = new T1MF_Gaussian("Force small", -21.12, 11.5213);
+		this.fNMF = new T1MF_Gaussian("Force some to moderate", -1.92, 9.58118);
+		this.fZMF = new T1MF_Gaussian("Force medium", 0.16, 7.02803);
+		this.fPMF = new T1MF_Gaussian("Force moderate amount", 0.8, 8.83072);
+		this.fPBMF = new T1MF_Gaussian("Force little", 21.4401, 9.57581);
+		this.fPVBMF = new T1MF_Gaussian("Force very high amount", 31.3601, 11.1254);
+		this.fPVVBMF = new T1MF_Gaussian("Force maximum amount", 31.3601, 5.81016);
 
 		/*
 		 * Theta MF associations.
 		 */
-		T1_Antecedent tNVB = new T1_Antecedent("Negative very big theta", tNVBMF, this.t);
-		T1_Antecedent tNB = new T1_Antecedent("Negative big theta", tNBMF, this.t);
-		T1_Antecedent tN = new T1_Antecedent("Negative theta", tNMF, this.t);
-		T1_Antecedent tZ = new T1_Antecedent("Zero theta", tZMF, this.t);
-		T1_Antecedent tP = new T1_Antecedent("Positive theta", tPMF, this.t);
-		T1_Antecedent tPB = new T1_Antecedent("Positive big theta", tPBMF, this.t);
-		T1_Antecedent tPVB = new T1_Antecedent("Positive very big theta", tPVBMF, this.t);
+		T1_Antecedent tNVB = new T1_Antecedent("Very small theta", tNVBMF, this.t);
+		T1_Antecedent tNB = new T1_Antecedent("Very little theta", tNBMF, this.t);
+		T1_Antecedent tN = new T1_Antecedent("Some to moderate theta", tNMF, this.t);
+		T1_Antecedent tZ = new T1_Antecedent("Medium theta", tZMF, this.t);
+		T1_Antecedent tP = new T1_Antecedent("Moderate amount theta", tPMF, this.t);
+		T1_Antecedent tPB = new T1_Antecedent("Large theta", tPBMF, this.t);
+		T1_Antecedent tPVB = new T1_Antecedent("Maximum amount theta", tPVBMF, this.t);
 
 		/*
 		 * ThetaD MF associations.
 		 */
-		T1_Antecedent dNB = new T1_Antecedent("Negative big thetaD", dNBMF, this.d);
-		T1_Antecedent dN = new T1_Antecedent("Negative thetaD", dNMF, this.d);
-		T1_Antecedent dZ = new T1_Antecedent("Zero thetaD", dZMF, this.d);
-		T1_Antecedent dP = new T1_Antecedent("Positive thetaD", dPMF, this.d);
-		T1_Antecedent dPB = new T1_Antecedent("Positive big thetaD", dPBMF, this.d);
+		T1_Antecedent dNB = new T1_Antecedent("Very small thetaD", dNBMF, this.d);
+		T1_Antecedent dN = new T1_Antecedent("Somewhat small thetaD", dNMF, this.d);
+		T1_Antecedent dZ = new T1_Antecedent("Medium thetaD", dZMF, this.d);
+		T1_Antecedent dP = new T1_Antecedent("Good amount thetaD", dPMF, this.d);
+		T1_Antecedent dPB = new T1_Antecedent("Maximum amount thetaD", dPBMF, this.d);
 
 		/*
 		 * Force MF associations.
 		 */
-		T1_Consequent fNVVB = new T1_Consequent("Negative very very big force", fNVVBMF, this.f);
-		T1_Consequent fNVB = new T1_Consequent("Negative very big force", fNVBMF, this.f);
-		T1_Consequent fNB = new T1_Consequent("Negative big force", fNBMF, this.f);
-		T1_Consequent fN = new T1_Consequent("Negative force", fNMF, this.f);
-		T1_Consequent fZ = new T1_Consequent("Zero force", fZMF, this.f);
-		T1_Consequent fP = new T1_Consequent("Positive force", fPMF, this.f);
-		T1_Consequent fPB = new T1_Consequent("Positive big force", fPBMF, this.f);
-		T1_Consequent fPVB = new T1_Consequent("Positive very big force", fPVBMF, this.f);
-		T1_Consequent fPVVB = new T1_Consequent("Positive very very big force", fPVVBMF, this.f);
+		T1_Consequent fNVVB = new T1_Consequent("Very small force", fNVVBMF, this.f);
+		T1_Consequent fNVB = new T1_Consequent("Very small force", fNVBMF, this.f);
+		T1_Consequent fNB = new T1_Consequent("Small force", fNBMF, this.f);
+		T1_Consequent fN = new T1_Consequent("Some to moderate force", fNMF, this.f);
+		T1_Consequent fZ = new T1_Consequent("Medium force", fZMF, this.f);
+		T1_Consequent fP = new T1_Consequent("Moderate amount force", fPMF, this.f);
+		T1_Consequent fPB = new T1_Consequent("Little force", fPBMF, this.f);
+		T1_Consequent fPVB = new T1_Consequent("Very high amount force", fPVBMF, this.f);
+		T1_Consequent fPVVB = new T1_Consequent("Maximum amount force", fPVVBMF, this.f);
 
 		/*
 		 * Rulebase.

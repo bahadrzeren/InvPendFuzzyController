@@ -1,4 +1,4 @@
-package org.fuzzy.cont;
+package org.fuzzy.invpend.intrpr.cont;
 
 import generic.Input;
 import generic.Output;
