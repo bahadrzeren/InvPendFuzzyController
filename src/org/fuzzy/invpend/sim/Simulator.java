@@ -65,7 +65,9 @@ public class Simulator {
 			times[times.length - 1] = time;
 
 			for (int i = 0; i < systemPairs.length; i++) {
-				double force = systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd());
+				double force = 0.0;
+				force = systemPairs[i].cont.getControlInput(systemPairs[i].pend.getS().getT(), systemPairs[i].pend.getS().getTd());
+
 				force = Math.floor(force * 10000.0) / 10000.0;
 //				State prevState = systemPairs[i].pend.getS().getCopy();
 				if ((time >= appStart)

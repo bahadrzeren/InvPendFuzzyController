@@ -18,6 +18,7 @@ public class FuzzyControllerTriangular extends FuzzyInvPendController {
 	@Override
 	protected void initialize() {
 		this.t = new Input("Theta", new Tuple(-40, 40));
+//		this.d = new Input("ThetaD", new Tuple(-120, 120));
 		this.d = new Input("ThetaD", new Tuple(-8, 8));
 		this.f = new Output("Force", new Tuple(-32, 32));
 
@@ -35,6 +36,11 @@ public class FuzzyControllerTriangular extends FuzzyInvPendController {
 		/*
 		 * Membership functions of change in theta angle (Input 2).
 		 */
+//		this.dNBMF = new T1MF_Triangular("ThetaD negative big", -120, -120, -45);
+//		this.dNMF = new T1MF_Triangular("ThetaD negative", -90, -45, 0);
+//		this.dZMF = new T1MF_Triangular("ThetaD zero", -15, 0, 15);
+//		this.dPMF = new T1MF_Triangular("ThetaD positive", 0, 45, 90);
+//		this.dPBMF = new T1MF_Triangular("ThetaD positive big", 45, 120, 120);
 		this.dNBMF = new T1MF_Triangular("ThetaD negative big", -8, -8, -3);
 		this.dNMF = new T1MF_Triangular("ThetaD negative", -6, -3, 0);
 		this.dZMF = new T1MF_Triangular("ThetaD zero", -1, 0, 1);

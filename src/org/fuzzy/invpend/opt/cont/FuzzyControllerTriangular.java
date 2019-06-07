@@ -2,16 +2,16 @@ package org.fuzzy.invpend.opt.cont;
 
 import java.util.List;
 
-import type1.sets.T1MF_Gaussian;
+import type1.sets.T1MF_Triangular;
 import type1.system.T1_Antecedent;
 import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
 import type1.system.T1_Rulebase;
 
-public class FuzzyControllerOpt extends FuzzyInvPendController {
+public class FuzzyControllerTriangular extends FuzzyInvPendController {
 
-	public FuzzyControllerOpt(List<Double> variables) {
-		super("Gaussian Dictionary Interpered Normalized Fuzzy Controller", variables);
+	public FuzzyControllerTriangular(List<Double> variables) {
+		super("Triangular Reference Fuzzy Controller", variables);
 	}
 
 	@Override
@@ -19,56 +19,29 @@ public class FuzzyControllerOpt extends FuzzyInvPendController {
 		/*
 		 * Membership functions of Theta angle (Input 1).
 		 */
-		this.tMfNMin = new T1MF_Gaussian("Theta Tiny", variables.get(0), variables.get(1));
-		this.tMfN1 = new T1MF_Gaussian("Theta Some", variables.get(2), variables.get(3));
-		this.tMf0 = new T1MF_Gaussian("Theta Medium", variables.get(4), variables.get(5));
-		this.tMfP1 = new T1MF_Gaussian("Theta Good amount", variables.get(6), variables.get(7));
-		this.tMfPMax = new T1MF_Gaussian("Theta Very large", variables.get(8), variables.get(9));
+		this.tMfNMin = new T1MF_Triangular("Theta negative big", 0, 0, 2.5);
+		this.tMfN1 = new T1MF_Triangular("Theta negative", 0, 2.5, 5);
+		this.tMf0 = new T1MF_Triangular("Theta zero", 3, 5, 7);
+		this.tMfP1 = new T1MF_Triangular("Theta positive", 5, 7.5, 10);
+		this.tMfPMax = new T1MF_Triangular("Theta positive big", 7.5, 10, 10);
 
 		/*
 		 * Membership functions of change in theta angle (Input 2).
 		 */
-		this.dMfNMin = new T1MF_Gaussian("ThetaD Tiny", variables.get(10), variables.get(11));
-		this.dMf0 = new T1MF_Gaussian("ThetaD Medium", variables.get(12), variables.get(13));
-		this.dMfPMax = new T1MF_Gaussian("ThetaD Very large", variables.get(14), variables.get(15));
+		this.dMfNMin = new T1MF_Triangular("ThetaD negative", 0, 0, 4);
+		this.dMf0 = new T1MF_Triangular("ThetaD zero", 2, 5, 8);
+		this.dMfPMax = new T1MF_Triangular("ThetaD positive", 6, 10, 10);
 
 		/*
 		 * Membership functions of force (Output).
 		 */
-		this.fMfNMin = new T1MF_Gaussian("Force Tiny", variables.get(16), variables.get(17));
-		this.fMfN2 = new T1MF_Gaussian("Force Small", variables.get(18), variables.get(19));
-		this.fMfN1 = new T1MF_Gaussian("Force Some", variables.get(20), variables.get(21));
-		this.fMf0 = new T1MF_Gaussian("Force Medium", variables.get(22), variables.get(23));
-		this.fMfP1 = new T1MF_Gaussian("Force Good amount", variables.get(24), variables.get(25));
-		this.fMfP2 = new T1MF_Gaussian("Force Large", variables.get(26), variables.get(27));
-		this.fMfPMax = new T1MF_Gaussian("Force Very large", variables.get(28), variables.get(29));
-
-//		/*
-//		 * Membership functions of Theta angle (Input 1).
-//		 */
-//		this.tMfNMin = new T1MF_Gaussian("Theta Tiny", 0.15, 2.00546);
-//		this.tMfN1 = new T1MF_Gaussian("Theta Some", 3.31, 1.93929);
-//		this.tMf0 = new T1MF_Gaussian("Theta Medium", 5.025, 1.09813);
-//		this.tMfP1 = new T1MF_Gaussian("Theta Good amount", 6.46667, 1.74327);
-//		this.tMfPMax = new T1MF_Gaussian("Theta Very large", 9.95002, 2.42824);
-//
-//		/*
-//		 * Membership functions of change in theta angle (Input 2).
-//		 */
-//		this.dMfNMin = new T1MF_Gaussian("ThetaD Tiny", 0.15, 2.00546);
-//		this.dMf0 = new T1MF_Gaussian("ThetaD Medium", 5.025, 1.09813);
-//		this.dMfPMax = new T1MF_Gaussian("ThetaD Very large", 9.95002, 2.42824);
-//
-//		/*
-//		 * Membership functions of force (Output).
-//		 */
-//		this.fMfNMin = new T1MF_Gaussian("Force Tiny", 0.15, 2.00546);
-//		this.fMfN2 = new T1MF_Gaussian("Force Small", 1.7, 1.80021);
-//		this.fMfN1 = new T1MF_Gaussian("Force Some", 3.31, 1.93929);
-//		this.fMf0 = new T1MF_Gaussian("Force Medium", 5.025, 1.09813);
-//		this.fMfP1 = new T1MF_Gaussian("Force Good amount", 6.46667, 1.74327);
-//		this.fMfP2 = new T1MF_Gaussian("Force Large", 8.35001, 1.49622);
-//		this.fMfPMax = new T1MF_Gaussian("Force Very large", 9.95002, 2.42824);
+		this.fMfNMin = new T1MF_Triangular("Force negative very big", 0, 0, 1.5);
+		this.fMfN2 = new T1MF_Triangular("Force negative big", 0, 1.5, 3);
+		this.fMfN1 = new T1MF_Triangular("Force negative", 1.5, 3, 4.5);
+		this.fMf0 = new T1MF_Triangular("Force zero", 3.5, 5, 6.5);
+		this.fMfP1 = new T1MF_Triangular("Force positive", 5.5, 7, 8.5);
+		this.fMfP2 = new T1MF_Triangular("Force positive big", 7, 8.5, 10);
+		this.fMfPMax = new T1MF_Triangular("Force positive very big", 8.5, 10, 10);
 
 		/*
 		 * Theta MF associations.

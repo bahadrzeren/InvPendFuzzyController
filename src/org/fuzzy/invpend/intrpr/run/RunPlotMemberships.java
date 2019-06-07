@@ -1,6 +1,8 @@
 package org.fuzzy.invpend.intrpr.run;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
 
 import org.fuzzy.invpend.intrpr.cont.FuzzyControllerGaussian;
@@ -10,7 +12,11 @@ import org.fuzzy.invpend.intrpr.cont.FuzzyControllerTriangular;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.SystemPair;
 
-public class RunInterpretability {
+public class RunPlotMemberships {
+
+	public static NumberFormat formatter1 = new DecimalFormat("#0.00");
+	public static NumberFormat formatter4 = new DecimalFormat("#0.0000");
+
 	public static void main(String[] args) {
 
 		SystemPair[] systemPairs = new SystemPair[0];
@@ -44,6 +50,22 @@ public class RunInterpretability {
 		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[systemPairs.length - 1].pend = Simulator.generateNewPendulum();
 
-		Simulator.simulate(systemPairs, true);
+		systemPairs[1].cont.plotMembershipFunctions();
+		systemPairs[1].cont.plotControlSurface();
+
+////		for (int i = 0; i < systemPairs.length; i++) {
+////			for (int ts = -40; ts < 41; ts++) {
+////				for (int ds = -8; ds < 9; ds++) {
+////					double output = systemPairs[i].cont.getControlInput(ts, ds);
+////					System.out.println("Cont" + i +
+////										" > Theta: " + formatter1.format(ts) + 
+////										", ThetaD: " + formatter1.format(ds) + 
+////										" -> Centroid defuzzification: " + formatter4.format(output));
+////				}
+////			}
+////			System.out.println();
+////		}
+//
+//		Simulator.simulate(systemPairs, true);
 	}
 }

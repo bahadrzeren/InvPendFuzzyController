@@ -88,7 +88,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
         for (int i=0;i<sets.length;i++) {
-            plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0,1.0), false);
+            plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
         plotter.show(name);
     }
@@ -110,7 +110,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         for(int currentY = 0; currentY < len; currentY++) {
             y[currentY] = min + currentY;
         }
-        
+
         for(int currentX=0; currentX < x.length; currentX++) {
             this.t.setInput(x[currentX]);
             for(int currentY=0; currentY < y.length; currentY++) {

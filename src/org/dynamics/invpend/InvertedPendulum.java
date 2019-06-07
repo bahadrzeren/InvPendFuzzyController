@@ -89,6 +89,23 @@ public class InvertedPendulum {
 					) /
 						(l * (mc + mp + mp * s.sqrSinT())));
 
+//		res.setXdd((
+//				f
+//				+ mp * g * s.sinT() * s.cosT()
+//				- mp * l * s.sqrTd() * s.sinT()
+////				- fcc * s.getXd()
+////				+ (s.getTd() * s.cosT() * fcp / l)
+//				) /
+//					(mc + mp + mp * s.sqrSinT()));
+//
+//		res.setTdd((
+//				g * (mc + mp + mp) * s.sinT() 
+//				- s.cosT() * (l * mp * s.sqrTd() * s.sinT() - f)
+////				+ fcc * s.getXd() * s.cosT()
+////				- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
+//				) /
+//					(l * (mc + mp + mp * s.sqrSinT())));
+
 /*
  * BECERIKLI
  */

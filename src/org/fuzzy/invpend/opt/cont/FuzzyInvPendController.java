@@ -1,5 +1,7 @@
 package org.fuzzy.invpend.opt.cont;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 
 import org.fuzzy.invpend.cont.FuzzyController;
@@ -17,10 +19,10 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	protected static double xMin = 0.0;
 	protected static double xMax = 10.0;
 
-	protected static double tMin = -40.0;
-	protected static double tMax = 40.0;
-	protected static double dMin = -8.0;
-	protected static double dMax = 8.0;
+	protected static double tMin = -40.0 * Math.PI / 180.0;
+	protected static double tMax = 40.0 * Math.PI / 180.0;
+	protected static double dMin = -90.0 * Math.PI / 180.0;
+	protected static double dMax = 90.0 * Math.PI / 180.0;
 	protected static double fMin = -32.0;
 	protected static double fMax = 32.0;
 
@@ -68,24 +70,24 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		this.initialize(variables);
 	}
 
-	public double getNormalizedTValue(double realValue) {
+	private double getNormalizedTValue(double realValue) {
 		return xMin + (xMax - xMin) * (realValue - tMin) / (tMax - tMin);
 	}
-	public double getRealTValue(double normalizedValue) {
+	private double getRealTValue(double normalizedValue) {
 		return tMin + (tMax - tMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
-	public double getNormalizedDValue(double realValue) {
+	private double getNormalizedDValue(double realValue) {
 		return xMin + (xMax - xMin) * (realValue - dMin) / (dMax - dMin);
 	}
-	public double getRealDValue(double normalizedValue) {
+	private double getRealDValue(double normalizedValue) {
 		return dMin + (dMax - dMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
-	public double getNormalizedFValue(double realValue) {
-		return xMin + (xMax - xMin) * (realValue - fMin) / (fMax - fMin);
-	}
-	public double getRealFValue(double normalizedValue) {
+//	private double getNormalizedFValue(double realValue) {
+//		return xMin + (xMax - xMin) * (realValue - fMin) / (fMax - fMin);
+//	}
+	private double getRealFValue(double normalizedValue) {
 		return fMin + (fMax - fMin) * (normalizedValue - xMin) / (xMax - xMin);
 	}
 
@@ -94,11 +96,21 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		return controllerName;
 	}
 
+	public static NumberFormat formatter1 = new DecimalFormat("#0.0000");
+//	private int itr = 0;
+
 	@Override
 	public double getControlInput(double theta, double thetaD) {
 		this.t.setInput(getNormalizedTValue(theta));
 		this.d.setInput(getNormalizedDValue(thetaD));
-		return getRealFValue(rulebase.evaluate(1).get(this.f));
+		double res = rulebase.evaluate(1).get(this.f);
+
+//		System.out.println(itr++ + "; "
+//						+ "TDF: " + formatter1.format(theta) + ", " + formatter1.format(thetaD) + ", " + formatter1.format(getRealFValue(res)) + "; "
+//						+ "degTDF: " + formatter1.format(theta * 180.0 / Math.PI) + ", " + formatter1.format(thetaD * 180.0 / Math.PI) + ", " + formatter1.format(getRealFValue(res)) + "; "
+//						+ "normTDF: " + formatter1.format(getNormalizedTValue(theta)) + ", " + formatter1.format(getNormalizedDValue(thetaD)) + ", " + formatter1.format(res));
+
+		return getRealFValue(res);
 	}
 
 	@Override
@@ -116,7 +128,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
         for (int i=0;i<sets.length;i++) {
-            plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0,1.0), false);
+            plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
         plotter.show(name);
     }
@@ -166,7 +178,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
         //now do the plotting
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);
-        plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(-32.0, 32.0), true);   
+        plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(fMin, fMax), true);   
         plotter.show(this.controllerName);
     }
 }
