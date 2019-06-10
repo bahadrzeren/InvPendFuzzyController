@@ -1,7 +1,5 @@
 package org.fuzzy.invpend.opt.cont;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 
 import org.fuzzy.invpend.cont.FuzzyController;
@@ -96,7 +94,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		return controllerName;
 	}
 
-	public static NumberFormat formatter1 = new DecimalFormat("#0.0000");
+//	public static NumberFormat formatter1 = new DecimalFormat("#0.0000");
 //	private int itr = 0;
 
 	@Override

@@ -22,19 +22,28 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 public class RunDeOptimization {
 
-//	private static final int DEFAULT_NUMBER_OF_CORES = 1;
+	private static final int maxItr = 10000;
+	private static final int popSize = 100;
+
+	private static final double cr = 0.5;
+	private static final double f = 0.5;
+
+	private static final double centerSearchRange = 0.3;
+	private static final double sigmaSearchRange = 0.6;
+	private static final double centerWeight = 0.5;
+	private static final double sigmaWeight = 0.5;
 
 	public static void main(String[] args) {
-	    DoubleProblem problem = new InvPendFuzzyContParamOpt(0.2, 0.75);
+	    DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
 	    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
-	    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(0.5, 0.5, "rand/1/bin");
+	    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 	    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
 
 	    Algorithm<DoubleSolution> algorithm = new DifferentialEvolutionBuilder(problem).setCrossover(crossover)
 																			            .setSelection(selection)
 																			            .setSolutionListEvaluator(evaluator)
-																			            .setMaxEvaluations(10000)
-																			            .setPopulationSize(100)
+																			            .setMaxEvaluations(maxItr)
+																			            .setPopulationSize(popSize)
 																			            .build();
 
 	    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
@@ -80,6 +89,8 @@ public class RunDeOptimization {
 		systemPairs[1].cont.plotControlSurface();
 
 		Simulator.simulate(systemPairs, true);
+
+		InvPendFuzzyContParamOpt.calculateSimilarity(solution.getVariables(), centerSearchRange * 2.0, sigmaSearchRange * 2.0, centerWeight, sigmaWeight);
 	}
 
 }

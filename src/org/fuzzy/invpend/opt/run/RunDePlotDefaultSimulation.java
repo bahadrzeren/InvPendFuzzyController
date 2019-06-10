@@ -3,7 +3,6 @@ package org.fuzzy.invpend.opt.run;
 import java.awt.Color;
 
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
-import org.fuzzy.invpend.opt.cont.FuzzyControllerTriangular;
 import org.fuzzy.invpend.opt.prob.InvPendFuzzyContParamOpt;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.SystemPair;
