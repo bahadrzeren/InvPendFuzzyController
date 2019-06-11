@@ -19,8 +19,8 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	protected static double tMin = -40.0 * Math.PI / 180.0;
 	protected static double tMax = 40.0 * Math.PI / 180.0;
-	protected static double dMin = -90.0 * Math.PI / 180.0;
-	protected static double dMax = 90.0 * Math.PI / 180.0;
+	protected static double dMin = -120.0 * Math.PI / 180.0;
+	protected static double dMax = 120.0 * Math.PI / 180.0;
 	protected static double fMin = -32.0;
 	protected static double fMax = 32.0;
 

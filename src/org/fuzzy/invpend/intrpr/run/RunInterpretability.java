@@ -44,6 +44,6 @@ public class RunInterpretability {
 		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[systemPairs.length - 1].pend = Simulator.generateNewPendulum();
 
-		Simulator.simulate(systemPairs, true);
+		Simulator.simulate(systemPairs, 40);	//	plotLen %
 	}
 }

@@ -88,7 +88,7 @@ public class RunDeOptimization {
 		systemPairs[1].cont.plotMembershipFunctions();
 		systemPairs[1].cont.plotControlSurface();
 
-		Simulator.simulate(systemPairs, true);
+		Simulator.simulate(systemPairs, 40);	//	plotLen %
 
 		InvPendFuzzyContParamOpt.calculateSimilarity(solution.getVariables(), centerSearchRange * 2.0, sigmaSearchRange * 2.0, centerWeight, sigmaWeight);
 	}

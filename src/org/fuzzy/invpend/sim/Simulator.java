@@ -38,7 +38,7 @@ public class Simulator {
 	 * Test duration.
 	 */
 	private static double step = 0.01;	//	sn
-	private static double duration = 12.0;	//	sn
+	private static double duration = 20.0;	//	sn
 
 	/*
 	 * Disturbance.
@@ -56,7 +56,7 @@ public class Simulator {
 		pend.reset(mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
-	public static void simulate(SystemPair[] systemPairs, boolean plotSimulation) {
+	public static void simulate(SystemPair[] systemPairs, int plotLen) {
 		double time = 0.0;
 
 		double[] times = new double[0];
@@ -86,7 +86,7 @@ public class Simulator {
 			time += step;
 		}
 
-		calculateError(systemPairs, times, duration, plotSimulation);
+		calculateError(systemPairs, times, plotLen);
 	}
 
 
@@ -95,7 +95,7 @@ public class Simulator {
 	private static Font axisFont = new Font("Tahoma", 1, 12);
 	private static Font axisLightFont = new Font("Tahoma", 1, 10);
 
-	private static void calculateError(SystemPair[] systemPairs, double[] times, double duration, boolean plotSimulation) {
+	private static void calculateError(SystemPair[] systemPairs, double[] times, int plotLen) {
 
 		double[][] t = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
@@ -104,7 +104,7 @@ public class Simulator {
         		systemPairs[i].rmseT += (t[i][j] * t[i][j]);
         	}
 
-        if (plotSimulation)
+        if (plotLen > 0)
         	plotResponse(systemPairs, "T response", "Theta (degree)", times, t, duration);
 
         double[][] td = new double[systemPairs.length][times.length];
@@ -114,7 +114,7 @@ public class Simulator {
         		systemPairs[i].rmseTd += (td[i][j] * td[i][j]);
         	}
 
-        if (plotSimulation)
+        if (plotLen > 0)
         	plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td, duration);
 
         double[][] x = new double[systemPairs.length][times.length];
@@ -124,7 +124,7 @@ public class Simulator {
         		systemPairs[i].rmseX += (x[i][j] * x[i][j]);
         	}
 
-        if (plotSimulation)
+        if (plotLen > 0)
         	plotResponse(systemPairs, "X response", "Position (meters)", times, x, duration);
 
         double[][] v = new double[systemPairs.length][times.length];
@@ -134,7 +134,7 @@ public class Simulator {
         		systemPairs[i].rmseXd += (v[i][j] * v[i][j]);
         	}
 
-        if (plotSimulation)
+        if (plotLen > 0)
         	plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v, duration);
 
         double[][] f = new double[systemPairs.length][times.length];
@@ -161,7 +161,7 @@ public class Simulator {
 //        	System.out.println("rmseXd: " + systemPairs[i].rmseXd);
 //    	}
 
-        if (plotSimulation)
+        if (plotLen > 0)
         	plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);
 	}
 

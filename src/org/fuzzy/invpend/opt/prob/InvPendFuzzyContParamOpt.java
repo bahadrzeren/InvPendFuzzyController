@@ -337,7 +337,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		systemPairs[0].cont = new FuzzyControllerOpt(solution.getVariables());
 		Simulator.resetPendulum(systemPairs[0].pend);
 
-		Simulator.simulate(systemPairs, false);
+		Simulator.simulate(systemPairs, 0);
 
 		solution.setObjective(0, systemPairs[0].rmseT);
 

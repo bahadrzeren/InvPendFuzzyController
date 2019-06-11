@@ -21,7 +21,7 @@ public class RunDePlotDefaultSimulation {
 		systemPairs[0].cont = new FuzzyControllerOpt(InvPendFuzzyContParamOpt.defaultVariables);
 //		systemPairs[0].cont = new FuzzyControllerTriangular(null);
 
-		Simulator.simulate(systemPairs, true);
+		Simulator.simulate(systemPairs, 40);	//	plotLen %
 	}
 
 }
