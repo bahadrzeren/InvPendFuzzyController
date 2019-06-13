@@ -38,7 +38,8 @@ public class Simulator {
 	 * Test duration.
 	 */
 	private static double step = 0.01;	//	sn
-	private static double duration = 20.0;	//	sn
+	private static double duration = 5.0;	//	sn
+	private static double plotDuration = 5.0;	//	sn
 
 	/*
 	 * Disturbance.
@@ -56,7 +57,7 @@ public class Simulator {
 		pend.reset(mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
-	public static void simulate(SystemPair[] systemPairs, int plotLen) {
+	public static void simulate(SystemPair[] systemPairs, boolean plot) {
 		double time = 0.0;
 
 		double[] times = new double[0];
@@ -86,7 +87,7 @@ public class Simulator {
 			time += step;
 		}
 
-		calculateError(systemPairs, times, plotLen);
+		calculateError(systemPairs, times, plot);
 	}
 
 
@@ -95,7 +96,7 @@ public class Simulator {
 	private static Font axisFont = new Font("Tahoma", 1, 12);
 	private static Font axisLightFont = new Font("Tahoma", 1, 10);
 
-	private static void calculateError(SystemPair[] systemPairs, double[] times, int plotLen) {
+	private static void calculateError(SystemPair[] systemPairs, double[] times, boolean plot) {
 
 		double[][] t = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
@@ -104,8 +105,8 @@ public class Simulator {
         		systemPairs[i].rmseT += (t[i][j] * t[i][j]);
         	}
 
-        if (plotLen > 0)
-        	plotResponse(systemPairs, "T response", "Theta (degree)", times, t, duration);
+        if (plot)
+        	plotResponse(systemPairs, "T response", "Theta (degree)", times, t);
 
         double[][] td = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
@@ -114,8 +115,8 @@ public class Simulator {
         		systemPairs[i].rmseTd += (td[i][j] * td[i][j]);
         	}
 
-        if (plotLen > 0)
-        	plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td, duration);
+        if (plot)
+        	plotResponse(systemPairs, "Td response", "ThetaDelta (degree/sec)", times, td);
 
         double[][] x = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
@@ -124,8 +125,8 @@ public class Simulator {
         		systemPairs[i].rmseX += (x[i][j] * x[i][j]);
         	}
 
-        if (plotLen > 0)
-        	plotResponse(systemPairs, "X response", "Position (meters)", times, x, duration);
+        if (plot)
+        	plotResponse(systemPairs, "X response", "Position (meters)", times, x);
 
         double[][] v = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++)
@@ -134,8 +135,8 @@ public class Simulator {
         		systemPairs[i].rmseXd += (v[i][j] * v[i][j]);
         	}
 
-        if (plotLen > 0)
-        	plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v, duration);
+        if (plot)
+        	plotResponse(systemPairs, "Xd response", "PositionDelta (meters/sec)", times, v);
 
         double[][] f = new double[systemPairs.length][times.length];
         for (int i = 0; i < systemPairs.length; i++) {
@@ -161,17 +162,19 @@ public class Simulator {
 //        	System.out.println("rmseXd: " + systemPairs[i].rmseXd);
 //    	}
 
-        if (plotLen > 0)
-        	plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f, duration);
+        if (plot)
+        	plotResponse(systemPairs, "Controller Output", "Force (Newton)", times, f);
 	}
 
-	private static void plotResponse(SystemPair[] systemPairs, String title, String fieldName, double[] times, double[][] values, double duration) {
+	private static void plotResponse(SystemPair[] systemPairs, String title, String fieldName, double[] times, double[][] values) {
+
+		int plotLength = (int) Math.round(times.length * plotDuration / duration);
 
 		double minV = Integer.MAX_VALUE;
 		double maxV = Integer.MIN_VALUE;
 
         for (int i = 0; i < values.length; i++) {
-            for (int j = 0; j < values[i].length; j++) {
+            for (int j = 0; j < plotLength; j++) {
             	if (values[i][j] > maxV) maxV = values[i][j];
             	if (values[i][j] < minV) minV = values[i][j];
             }
@@ -193,9 +196,9 @@ public class Simulator {
 
         for (int i = 0; i < values.length; i++) {
 	        // add a line plot to the PlotPanel
-	        ((Plot2DPanel)plot).addLinePlot(systemPairs[i].caption, systemPairs[i].color, times, values[i]);
+	        ((Plot2DPanel)plot).addLinePlot(systemPairs[i].caption, systemPairs[i].color, Arrays.copyOf(times, plotLength), Arrays.copyOf(values[i], plotLength));
 	        ((Plot2DPanel)plot).setFixedBounds(1, minV, maxV);
-	        ((Plot2DPanel)plot).setFixedBounds(0, 0, duration);
+	        ((Plot2DPanel)plot).setFixedBounds(0, 0, plotDuration);
         }
 
         JFrame frame = new JFrame(title);

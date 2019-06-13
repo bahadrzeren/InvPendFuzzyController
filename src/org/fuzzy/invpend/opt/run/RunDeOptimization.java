@@ -22,7 +22,7 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 public class RunDeOptimization {
 
-	private static final int maxItr = 10000;
+	private static final int maxItr = 5000;
 	private static final int popSize = 100;
 
 	private static final double cr = 0.5;
@@ -88,7 +88,7 @@ public class RunDeOptimization {
 		systemPairs[1].cont.plotMembershipFunctions();
 		systemPairs[1].cont.plotControlSurface();
 
-		Simulator.simulate(systemPairs, 40);	//	plotLen %
+		Simulator.simulate(systemPairs, true);	//	plotLen %
 
 		InvPendFuzzyContParamOpt.calculateSimilarity(solution.getVariables(), centerSearchRange * 2.0, sigmaSearchRange * 2.0, centerWeight, sigmaWeight);
 	}

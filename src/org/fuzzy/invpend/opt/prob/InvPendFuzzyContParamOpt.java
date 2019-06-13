@@ -203,6 +203,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(0.15 + centerSearchRage);
 		//	Tiny Sigma
 		lowerLimit.add(2.00546 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.00546 + sigmaSearchRage);
 
 	    //	Some Center
@@ -210,6 +211,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(3.31 + centerSearchRage);
 		//	Some Sigma
 		lowerLimit.add(1.93929 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.93929 + sigmaSearchRage);
 
 	    //	Medium Center
@@ -217,6 +219,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(5.025 + centerSearchRage);
 		//	Medium Sigma
 		lowerLimit.add(1.09813 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.09813 + sigmaSearchRage);
 
 	    //	Good amount Center
@@ -224,6 +227,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(6.46667 + centerSearchRage);
 		//	Good amount Sigma
 		lowerLimit.add(1.74327 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.74327 + sigmaSearchRage);
 
 	    //	Very large Center
@@ -231,6 +235,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(9.95002 + centerSearchRage);
 		//	Very large Sigma
 		lowerLimit.add(2.42824 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.42824 + sigmaSearchRage);
 
 	    /*
@@ -241,6 +246,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(0.15 + centerSearchRage);
 		//	Tiny Sigma
 		lowerLimit.add(2.00546 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.00546 + sigmaSearchRage);
 
 	    //	Medium Center
@@ -248,6 +254,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(5.025 + centerSearchRage);
 		//	Medium Sigma
 		lowerLimit.add(1.09813 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.09813 + sigmaSearchRage);
 
 	    //	Very large Center
@@ -255,6 +262,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(9.95002 + centerSearchRage);
 		//	Very large Sigma
 		lowerLimit.add(2.42824 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.42824 + sigmaSearchRage);
 
 
@@ -266,6 +274,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(0.15 + centerSearchRage);
 		//	Tiny Sigma
 		lowerLimit.add(2.00546 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.00546 + sigmaSearchRage);
 
 	    //	Small Center
@@ -273,6 +282,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(1.7 + centerSearchRage);
 		//	Small Sigma
 		lowerLimit.add(1.80021 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.80021 + sigmaSearchRage);
 
 	    //	Some Center
@@ -280,6 +290,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(3.31 + centerSearchRage);
 		//	Some Sigma
 		lowerLimit.add(1.93929 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.93929 + sigmaSearchRage);
 
 	    //	Medium Center
@@ -287,6 +298,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(5.025 + centerSearchRage);
 		//	Medium Sigma
 		lowerLimit.add(1.09813 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.09813 + sigmaSearchRage);
 
 	    //	Good amount Center
@@ -294,6 +306,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(6.46667 + centerSearchRage);
 		//	Good amount Sigma
 		lowerLimit.add(1.74327 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.74327 + sigmaSearchRage);
 
 	    //	Large Center
@@ -301,6 +314,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(8.35001 + centerSearchRage);
 		//	Large Sigma
 		lowerLimit.add(1.49622 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(1.49622 + sigmaSearchRage);
 
 	    //	Very large Center
@@ -308,6 +322,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		upperLimit.add(9.95002 + centerSearchRage);
 		//	Very large Sigma
 		lowerLimit.add(2.42824 - sigmaSearchRage);
+		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 		upperLimit.add(2.42824 + sigmaSearchRage);
 
 	    setLowerLimit(lowerLimit);
@@ -326,6 +341,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	private SystemPair[] systemPairs = null;
 
 	private int itr = 0;
+	private double bestValue = Integer.MAX_VALUE;
 
 	@Override
 	public synchronized void evaluate(DoubleSolution solution) {
@@ -337,10 +353,13 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		systemPairs[0].cont = new FuzzyControllerOpt(solution.getVariables());
 		Simulator.resetPendulum(systemPairs[0].pend);
 
-		Simulator.simulate(systemPairs, 0);
+		Simulator.simulate(systemPairs, false);
 
 		solution.setObjective(0, systemPairs[0].rmseT);
 
-		System.out.println((++itr) + " - " + systemPairs[0].rmseT);
+		System.out.println((++itr) + " - " + systemPairs[0].rmseT + " - " + bestValue);
+
+		if (bestValue > systemPairs[0].rmseT)
+			bestValue = systemPairs[0].rmseT;
 	}
 }

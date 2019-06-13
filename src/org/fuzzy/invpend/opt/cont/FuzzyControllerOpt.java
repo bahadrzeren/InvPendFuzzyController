@@ -102,23 +102,23 @@ public class FuzzyControllerOpt extends FuzzyInvPendController {
 		 */
 		this.rulebase = new T1_Rulebase(15);
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tINMin, dINMin}, fONMin));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tINMin, dI0}, fON1));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tINMin, dI0}, fON2));
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tINMin, dIPMax}, fO0));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIN1, dINMin}, fON2));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIN1, dINMin}, fONMin));
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIN1, dI0}, fON1));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIN1, dIPMax}, fO0));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIN1, dIPMax}, fOP1));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tI0, dINMin}, fON1));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tI0, dINMin}, fON2));
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tI0, dI0}, fO0));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tI0, dIPMax}, fOP1));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tI0, dIPMax}, fOP2));
 
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIP1, dINMin}, fO0));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIP1, dINMin}, fON1));
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIP1, dI0}, fOP1));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIP1, dIPMax}, fOP2));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIP1, dIPMax}, fOPMax));
 
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIPMax, dINMin}, fO0));
-		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIPMax, dI0}, fOP1));
+		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIPMax, dI0}, fOP2));
 		this.rulebase.addRule(new T1_Rule(new T1_Antecedent[]{tIPMax, dIPMax}, fOPMax));
 
 		this.f.setDiscretisationLevel(discritisationLevel);
