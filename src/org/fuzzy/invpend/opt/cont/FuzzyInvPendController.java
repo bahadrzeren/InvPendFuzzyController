@@ -1,15 +1,20 @@
 package org.fuzzy.invpend.opt.cont;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fuzzy.invpend.cont.FuzzyController;
 
+import generalType2zSlices.sets.GenT2zMF_Interface;
 import generic.Input;
 import generic.Output;
 import generic.Tuple;
+import similarity.JaccardSimilarityEngine;
 import tools.JMathPlotter;
+import type1.sets.T1MF_Gaussian;
 import type1.sets.T1MF_Interface;
-import type1.sets.T1MF_Prototype;
 import type1.system.T1_Rulebase;
 
 public abstract class FuzzyInvPendController implements FuzzyController {
@@ -34,29 +39,29 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	/*
 	 * Membership functions of Theta angle (Input 1).
 	 */
-	protected T1MF_Prototype tMfNMin = null;
-	protected T1MF_Prototype tMfN1 = null;
-	protected T1MF_Prototype tMf0 = null;
-	protected T1MF_Prototype tMfP1 = null;
-	protected T1MF_Prototype tMfPMax = null;
+	protected T1MF_Gaussian tMfNMin = null;
+	protected T1MF_Gaussian tMfN1 = null;
+	protected T1MF_Gaussian tMf0 = null;
+	protected T1MF_Gaussian tMfP1 = null;
+	protected T1MF_Gaussian tMfPMax = null;
 
 	/*
 	 * Membership functions of change in theta angle (Input 2).
 	 */
-	protected T1MF_Prototype dMfNMin = null;
-	protected T1MF_Prototype dMf0 = null;
-	protected T1MF_Prototype dMfPMax = null;
+	protected T1MF_Gaussian dMfNMin = null;
+	protected T1MF_Gaussian dMf0 = null;
+	protected T1MF_Gaussian dMfPMax = null;
 
 	/*
 	 * Membership functions of force (Output).
 	 */
-	protected T1MF_Prototype fMfNMin = null;
-	protected T1MF_Prototype fMfN2 = null;
-	protected T1MF_Prototype fMfN1 = null;
-	protected T1MF_Prototype fMf0 = null;
-	protected T1MF_Prototype fMfP1 = null;
-	protected T1MF_Prototype fMfP2 = null;
-	protected T1MF_Prototype fMfPMax = null;
+	protected T1MF_Gaussian fMfNMin = null;
+	protected T1MF_Gaussian fMfN2 = null;
+	protected T1MF_Gaussian fMfN1 = null;
+	protected T1MF_Gaussian fMf0 = null;
+	protected T1MF_Gaussian fMfP1 = null;
+	protected T1MF_Gaussian fMfP2 = null;
+	protected T1MF_Gaussian fMfPMax = null;
 
 	protected abstract void initialize(List<Double> variables);
 
@@ -179,4 +184,94 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(fMin, fMax), true);   
         plotter.show(this.controllerName);
     }
+
+	private static JaccardSimilarityEngine jse = new JaccardSimilarityEngine();
+
+	public double getJaccardSimilarity(FuzzyInvPendController optFuzzyCont) {
+		double sI11 = jse.getSimilarity(this.tMfNMin, optFuzzyCont.tMfNMin, discritisationLevel);
+		double sI12 = jse.getSimilarity(this.tMfN1, optFuzzyCont.tMfN1, discritisationLevel);
+		double sI13 = jse.getSimilarity(this.tMf0, optFuzzyCont.tMf0, discritisationLevel);
+		double sI14 = jse.getSimilarity(this.tMfP1, optFuzzyCont.tMfP1, discritisationLevel);
+		double sI15 = jse.getSimilarity(this.tMfPMax, optFuzzyCont.tMfPMax, discritisationLevel);
+
+		double sI21 = jse.getSimilarity(this.dMfNMin, optFuzzyCont.dMfNMin, discritisationLevel);
+		double sI22 = jse.getSimilarity(this.dMf0, optFuzzyCont.dMf0, discritisationLevel);
+		double sI23 = jse.getSimilarity(this.dMfPMax, optFuzzyCont.dMfPMax, discritisationLevel);
+
+		double sO1 = jse.getSimilarity(this.fMfNMin, optFuzzyCont.fMfNMin, discritisationLevel);
+		double sO2 = jse.getSimilarity(this.fMfN2, optFuzzyCont.fMfN2, discritisationLevel);
+		double sO3 = jse.getSimilarity(this.fMfN1, optFuzzyCont.fMfN1, discritisationLevel);
+		double sO4 = jse.getSimilarity(this.fMf0, optFuzzyCont.fMf0, discritisationLevel);
+		double sO5 = jse.getSimilarity(this.fMfP1, optFuzzyCont.fMfP1, discritisationLevel);
+		double sO6 = jse.getSimilarity(this.fMfP2, optFuzzyCont.fMfP2, discritisationLevel);
+		double sO7 = jse.getSimilarity(this.fMfPMax, optFuzzyCont.fMfPMax, discritisationLevel);
+
+		return sI11 + sI12 + sI13 + sI14 + sI15
+				+ sI21 + sI22 + sI23
+				+ sO1 + sO2 + sO3 + sO4 + sO5 + sO6 + sO7; 
+	}
+
+	public static NumberFormat formatter = new DecimalFormat("#0.0000");
+
+	private static void reportSimilarity(String mfName, T1MF_Gaussian dictFuzzyMF, T1MF_Gaussian optFuzzyMF, List<Double> jacSim) {
+		double jaccard = jse.getSimilarity(dictFuzzyMF, optFuzzyMF, discritisationLevel);
+		jacSim.add(jaccard);
+		System.out.println(mfName + " Center/Sigma#" + formatter.format(dictFuzzyMF.getMean()) + "/" + formatter.format(dictFuzzyMF.getSpread()) + "#"
+														+ formatter.format(optFuzzyMF.getMean()) + "/" + formatter.format(optFuzzyMF.getSpread()) + "#jaccard = " + formatter.format(jaccard));
+	}
+
+	public static void reportSimilarity(FuzzyInvPendController dictFuzzyCont,
+										FuzzyInvPendController optFuzzyCont) {
+
+		List<Double> jacSim = new ArrayList<Double>();
+
+		System.out.println("#DICTIONARY#OPTIMIZED#JACCARD SIMILARITY");
+
+
+		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin, optFuzzyCont.tMfNMin, jacSim);
+		reportSimilarity("Some", dictFuzzyCont.tMfN1, optFuzzyCont.tMfN1, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.tMf0, optFuzzyCont.tMf0, jacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.tMfP1, optFuzzyCont.tMfP1, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.tMfPMax, optFuzzyCont.tMfPMax, jacSim);
+                         
+		reportSimilarity("Tiny", dictFuzzyCont.dMfNMin, optFuzzyCont.dMfNMin, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.dMf0, optFuzzyCont.dMf0, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.dMfPMax, optFuzzyCont.dMfPMax, jacSim);
+                         
+		reportSimilarity("Tiny", dictFuzzyCont.fMfNMin, optFuzzyCont.fMfNMin, jacSim);
+		reportSimilarity("Small", dictFuzzyCont.fMfN2, optFuzzyCont.fMfN2, jacSim);
+		reportSimilarity("Some", dictFuzzyCont.fMfN1, optFuzzyCont.fMfN1, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.fMf0, optFuzzyCont.fMf0, jacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.fMfP1, optFuzzyCont.fMfP1, jacSim);
+		reportSimilarity("Large", dictFuzzyCont.fMfP2, optFuzzyCont.fMfP2, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.fMfPMax, optFuzzyCont.fMfPMax, jacSim);
+
+
+		double simCmin = Integer.MAX_VALUE;
+		double simCmax = Integer.MIN_VALUE;
+		double simCtot = 0.0;
+		double simCavg = 0.0;
+		double simSmin = Integer.MAX_VALUE;
+		double simSmax = Integer.MIN_VALUE;
+		double simStot = 0.0;
+		double simSavg = 0.0;
+
+		for (int i = 0; i < varNdx / 2; i++) {
+			if (simCmin > cSim.get(i)) simCmin = cSim.get(i);
+			if (simCmax < cSim.get(i)) simCmax = cSim.get(i);
+			simCtot += cSim.get(i);
+			if (simSmin > sSim.get(i)) simSmin = sSim.get(i);
+			if (simSmax < sSim.get(i)) simSmax = sSim.get(i);
+			simStot += sSim.get(i);
+		}
+		simCavg = 2.0 * simCtot / varNdx;
+		simSavg = 2.0 * simStot / varNdx;
+
+		System.out.println("Center similarity (max/avg/min/tot): ###" + formatter.format(simCmax) + "/" + formatter.format(simCavg) + "/" + formatter.format(simCmin) + "/" + formatter.format(simCtot));
+		System.out.println("Sigma similarity (max/avg/min/tot): ###" + formatter.format(simSmax) + "/" + formatter.format(simSavg) + "/" + formatter.format(simSmin) + "/" + formatter.format(simStot));
+		System.out.println("Weighted similarity (max/avg/min/tot): ###" + formatter.format(simCmax * centerW + simSmax * sigmaW) + "/" +
+																		formatter.format(simCavg * centerW + simSavg * sigmaW) + "/" +
+																		formatter.format(simCmin * centerW + simSmin * sigmaW) + "/" +
+																		formatter.format(simCtot * centerW + simStot * sigmaW));
+	}
 }

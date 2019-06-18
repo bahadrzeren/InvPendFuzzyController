@@ -1,12 +1,11 @@
 package org.fuzzy.invpend.opt.prob;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
+import org.fuzzy.invpend.opt.run.RunDeOptimization;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.SystemPair;
 import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
@@ -104,87 +103,87 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		defaultVariables.add(2.42824);
 	}
 
-	public static NumberFormat formatter = new DecimalFormat("#0.0000");
+//	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
-	private static int reportSimilarity(String mfName, int varNdx, double centerRange, double sigmaRange, List<Double> optimizedVariables, List<Double> cSim, List<Double> sSim) {
+//	private static int reportSimilarity(String mfName, int varNdx, double centerRange, double sigmaRange, List<Double> optimizedVariables, List<Double> cSim, List<Double> sSim) {
+//
+//		int res = varNdx;
+//
+//		double similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / centerRange));
+//		cSim.add(similarity);
+//		System.out.println(mfName + " Center#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Cb - Ca|/Crange) = " + formatter.format(similarity));
+//		res++;
+//
+//		similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / sigmaRange));
+//		sSim.add(similarity);
+//		System.out.println(mfName + " Sigma#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Sb - Sa|/Srange) = " + formatter.format(similarity));
+//		res++;
+//
+//		return res;
+//	}
 
-		int res = varNdx;
-
-		double similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / centerRange));
-		cSim.add(similarity);
-		System.out.println(mfName + " Center#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Cb - Ca|/Crange) = " + formatter.format(similarity));
-		res++;
-
-		similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / sigmaRange));
-		sSim.add(similarity);
-		System.out.println(mfName + " Sigma#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Sb - Sa|/Srange) = " + formatter.format(similarity));
-		res++;
-
-		return res;
-	}
-
-	public static void calculateSimilarity(List<Double> optimizedVariables, double centerRange, double sigmaRange, double centerW, double sigmaW) {
-
-		int varNdx = 0;
-		List<Double> cSim = new ArrayList<Double>();
-		List<Double> sSim = new ArrayList<Double>();
-
-		System.out.println("#INTERPRETABLE#OPTIMIZED#SIMILARITY");
-
-		/*
-		 * THETA
-		 */
-		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-
-	    /*
-	     *	THETA DELTA
-	     */
-		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-
-	    /*
-	     *	FORCE
-	     */
-		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Small", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-
-		double simCmin = Integer.MAX_VALUE;
-		double simCmax = Integer.MIN_VALUE;
-		double simCtot = 0.0;
-		double simCavg = 0.0;
-		double simSmin = Integer.MAX_VALUE;
-		double simSmax = Integer.MIN_VALUE;
-		double simStot = 0.0;
-		double simSavg = 0.0;
-
-		for (int i = 0; i < varNdx / 2; i++) {
-			if (simCmin > cSim.get(i)) simCmin = cSim.get(i);
-			if (simCmax < cSim.get(i)) simCmax = cSim.get(i);
-			simCtot += cSim.get(i);
-			if (simSmin > sSim.get(i)) simSmin = sSim.get(i);
-			if (simSmax < sSim.get(i)) simSmax = sSim.get(i);
-			simStot += sSim.get(i);
-		}
-		simCavg = 2.0 * simCtot / varNdx;
-		simSavg = 2.0 * simStot / varNdx;
-
-		System.out.println("Center similarity (max/avg/min/tot): ###" + formatter.format(simCmax) + "/" + formatter.format(simCavg) + "/" + formatter.format(simCmin) + "/" + formatter.format(simCtot));
-		System.out.println("Sigma similarity (max/avg/min/tot): ###" + formatter.format(simSmax) + "/" + formatter.format(simSavg) + "/" + formatter.format(simSmin) + "/" + formatter.format(simStot));
-		System.out.println("Weighted similarity (max/avg/min/tot): ###" + formatter.format(simCmax * centerW + simSmax * sigmaW) + "/" +
-																		formatter.format(simCavg * centerW + simSavg * sigmaW) + "/" +
-																		formatter.format(simCmin * centerW + simSmin * sigmaW) + "/" +
-																		formatter.format(simCtot * centerW + simStot * sigmaW));
-	}
+//	public static void calculateSimilarity(List<Double> optimizedVariables, double centerRange, double sigmaRange, double centerW, double sigmaW) {
+//
+//		int varNdx = 0;
+//		List<Double> cSim = new ArrayList<Double>();
+//		List<Double> sSim = new ArrayList<Double>();
+//
+//		System.out.println("#INTERPRETABLE#OPTIMIZED#SIMILARITY");
+//
+//		/*
+//		 * THETA
+//		 */
+//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//
+//	    /*
+//	     *	THETA DELTA
+//	     */
+//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//
+//	    /*
+//	     *	FORCE
+//	     */
+//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Small", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
+//
+//		double simCmin = Integer.MAX_VALUE;
+//		double simCmax = Integer.MIN_VALUE;
+//		double simCtot = 0.0;
+//		double simCavg = 0.0;
+//		double simSmin = Integer.MAX_VALUE;
+//		double simSmax = Integer.MIN_VALUE;
+//		double simStot = 0.0;
+//		double simSavg = 0.0;
+//
+//		for (int i = 0; i < varNdx / 2; i++) {
+//			if (simCmin > cSim.get(i)) simCmin = cSim.get(i);
+//			if (simCmax < cSim.get(i)) simCmax = cSim.get(i);
+//			simCtot += cSim.get(i);
+//			if (simSmin > sSim.get(i)) simSmin = sSim.get(i);
+//			if (simSmax < sSim.get(i)) simSmax = sSim.get(i);
+//			simStot += sSim.get(i);
+//		}
+//		simCavg = 2.0 * simCtot / varNdx;
+//		simSavg = 2.0 * simStot / varNdx;
+//
+//		System.out.println("Center similarity (max/avg/min/tot): ###" + formatter.format(simCmax) + "/" + formatter.format(simCavg) + "/" + formatter.format(simCmin) + "/" + formatter.format(simCtot));
+//		System.out.println("Sigma similarity (max/avg/min/tot): ###" + formatter.format(simSmax) + "/" + formatter.format(simSavg) + "/" + formatter.format(simSmin) + "/" + formatter.format(simStot));
+//		System.out.println("Weighted similarity (max/avg/min/tot): ###" + formatter.format(simCmax * centerW + simSmax * sigmaW) + "/" +
+//																		formatter.format(simCavg * centerW + simSavg * sigmaW) + "/" +
+//																		formatter.format(simCmin * centerW + simSmin * sigmaW) + "/" +
+//																		formatter.format(simCtot * centerW + simStot * sigmaW));
+//	}
 
 	public InvPendFuzzyContParamOpt(double centerSearchRage,
 									double sigmaSearchRage) {
@@ -338,28 +337,40 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		systemPairs[0].pend = Simulator.generateNewPendulum();
 	}
 
+	private FuzzyControllerOpt dictBasedFuzzyCont = new FuzzyControllerOpt(defaultVariables);
+
 	private SystemPair[] systemPairs = null;
 
 	private int itr = 0;
+	public List<Double> bestVariables = null;
+	public List<Double> midVariables = null;
 	private double bestValue = Integer.MAX_VALUE;
 
 	@Override
 	public synchronized void evaluate(DoubleSolution solution) {
+		FuzzyControllerOpt solCont = new FuzzyControllerOpt(solution.getVariables());
+
 		systemPairs[0].rmseT = 0.0;
 		systemPairs[0].rmseTd = 0.0;
 		systemPairs[0].rmseF = 0.0;
 		systemPairs[0].rmseX = 0.0;
 		systemPairs[0].rmseXd = 0.0;
-		systemPairs[0].cont = new FuzzyControllerOpt(solution.getVariables());
+		systemPairs[0].cont = solCont;
 		Simulator.resetPendulum(systemPairs[0].pend);
 
 		Simulator.simulate(systemPairs, false);
 
-		solution.setObjective(0, systemPairs[0].rmseT);
+		double jaccardSimilarity = dictBasedFuzzyCont.getJaccardSimilarity(solCont);
+
+		solution.setObjective(0, 0.5 * systemPairs[0].rmseT + 0.5 * jaccardSimilarity);
 
 		System.out.println((++itr) + " - " + systemPairs[0].rmseT + " - " + bestValue);
 
-		if (bestValue > systemPairs[0].rmseT)
+		if (bestValue > systemPairs[0].rmseT) {
 			bestValue = systemPairs[0].rmseT;
+			bestVariables = (ArrayList<Double>) ((ArrayList<Double>) solution.getVariables()).clone();
+			if (itr == RunDeOptimization.maxItr)
+				midVariables = bestVariables;
+		}
 	}
 }

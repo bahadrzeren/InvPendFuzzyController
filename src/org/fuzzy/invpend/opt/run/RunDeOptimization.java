@@ -22,7 +22,7 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 public class RunDeOptimization {
 
-	private static final int maxItr = 5000;
+	public static final int maxItr = 5000;
 	private static final int popSize = 100;
 
 	private static final double cr = 0.5;
@@ -51,8 +51,8 @@ public class RunDeOptimization {
 	    DoubleSolution solution = algorithm.getResult();
 	    long computingTime = algorithmRunner.getComputingTime();
 
-	    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1) ;
-	    population.add(solution) ;
+	    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1);
+	    population.add(solution);
 	    new SolutionListOutput(population).setSeparator("\t")
 									        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
 									        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
