@@ -50,7 +50,7 @@ public class RunPlotMemberships {
 		systemPairs[systemPairs.length - 1].cont = new FuzzyControllerNormalizedDict();
 		systemPairs[systemPairs.length - 1].pend = Simulator.generateNewPendulum();
 
-		systemPairs[1].cont.plotMembershipFunctions();
+		systemPairs[1].cont.plotMembershipFunctions(false);
 		systemPairs[1].cont.plotControlSurface();
 
 ////		for (int i = 0; i < systemPairs.length; i++) {

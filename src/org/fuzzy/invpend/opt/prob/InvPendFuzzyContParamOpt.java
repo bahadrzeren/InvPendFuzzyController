@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.run.RunDeOptimization;
 import org.fuzzy.invpend.sim.Simulator;
@@ -14,176 +15,6 @@ import org.uma.jmetal.solution.DoubleSolution;
 public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	private static final long serialVersionUID = 6052688537783762715L;
-
-	public static List<Double> defaultVariables = new ArrayList<Double>();
-
-	static {
-	    /*
-	     *	THETA
-	     */
-	    //	Tiny Center
-		defaultVariables.add(0.15);
-		//	Tiny Sigma
-		defaultVariables.add(2.00546);
-
-	    //	Some Center
-		defaultVariables.add(3.31);
-		//	Some Sigma
-		defaultVariables.add(1.93929);
-
-	    //	Medium Center
-		defaultVariables.add(5.025);
-		//	Medium Sigma
-		defaultVariables.add(1.09813);
-
-	    //	Good amount Center
-		defaultVariables.add(6.46667);
-		//	Good amount Sigma
-		defaultVariables.add(1.74327);
-
-	    //	Very large Center
-		defaultVariables.add(9.95002);
-		//	Very large Sigma
-		defaultVariables.add(2.42824);
-
-	    /*
-	     *	THETA DELTA
-	     */
-	    //	Tiny Center
-		defaultVariables.add(0.15);
-		//	Tiny Sigma
-		defaultVariables.add(2.00546);
-
-	    //	Medium Center
-		defaultVariables.add(5.025);
-		//	Medium Sigma
-		defaultVariables.add(1.09813);
-
-	    //	Very large Center
-		defaultVariables.add(9.95002);
-		//	Very large Sigma
-		defaultVariables.add(2.42824);
-
-	    /*
-	     *	FORCE
-	     */
-	    //	Tiny Center
-		defaultVariables.add(0.15);
-		//	Tiny Sigma
-		defaultVariables.add(2.00546);
-
-	    //	Small Center
-		defaultVariables.add(1.7);
-		//	Small Sigma
-		defaultVariables.add(1.80021);
-
-	    //	Some Center
-		defaultVariables.add(3.31);
-		//	Some Sigma
-		defaultVariables.add(1.93929);
-
-	    //	Medium Center
-		defaultVariables.add(5.025);
-		//	Medium Sigma
-		defaultVariables.add(1.09813);
-
-	    //	Good amount Center
-		defaultVariables.add(6.46667);
-		//	Good amount Sigma
-		defaultVariables.add(1.74327);
-
-	    //	Large Center
-		defaultVariables.add(8.35001);
-		//	Large Sigma
-		defaultVariables.add(1.49622);
-
-	    //	Very large Center
-		defaultVariables.add(9.95002);
-		//	Very large Sigma
-		defaultVariables.add(2.42824);
-	}
-
-//	public static NumberFormat formatter = new DecimalFormat("#0.0000");
-
-//	private static int reportSimilarity(String mfName, int varNdx, double centerRange, double sigmaRange, List<Double> optimizedVariables, List<Double> cSim, List<Double> sSim) {
-//
-//		int res = varNdx;
-//
-//		double similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / centerRange));
-//		cSim.add(similarity);
-//		System.out.println(mfName + " Center#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Cb - Ca|/Crange) = " + formatter.format(similarity));
-//		res++;
-//
-//		similarity = 1.0 / (1.0 + Math.exp(- Math.abs(optimizedVariables.get(res) - defaultVariables.get(res)) / sigmaRange));
-//		sSim.add(similarity);
-//		System.out.println(mfName + " Sigma#" + formatter.format(defaultVariables.get(res)) + "#" + formatter.format(optimizedVariables.get(res)) + "#sigmoid(|Sb - Sa|/Srange) = " + formatter.format(similarity));
-//		res++;
-//
-//		return res;
-//	}
-
-//	public static void calculateSimilarity(List<Double> optimizedVariables, double centerRange, double sigmaRange, double centerW, double sigmaW) {
-//
-//		int varNdx = 0;
-//		List<Double> cSim = new ArrayList<Double>();
-//		List<Double> sSim = new ArrayList<Double>();
-//
-//		System.out.println("#INTERPRETABLE#OPTIMIZED#SIMILARITY");
-//
-//		/*
-//		 * THETA
-//		 */
-//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//
-//	    /*
-//	     *	THETA DELTA
-//	     */
-//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//
-//	    /*
-//	     *	FORCE
-//	     */
-//		varNdx = reportSimilarity("Tiny", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Small", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Some", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Medium", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Good amount", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//		varNdx = reportSimilarity("Very large", varNdx, centerRange, sigmaRange, optimizedVariables, cSim, sSim);
-//
-//		double simCmin = Integer.MAX_VALUE;
-//		double simCmax = Integer.MIN_VALUE;
-//		double simCtot = 0.0;
-//		double simCavg = 0.0;
-//		double simSmin = Integer.MAX_VALUE;
-//		double simSmax = Integer.MIN_VALUE;
-//		double simStot = 0.0;
-//		double simSavg = 0.0;
-//
-//		for (int i = 0; i < varNdx / 2; i++) {
-//			if (simCmin > cSim.get(i)) simCmin = cSim.get(i);
-//			if (simCmax < cSim.get(i)) simCmax = cSim.get(i);
-//			simCtot += cSim.get(i);
-//			if (simSmin > sSim.get(i)) simSmin = sSim.get(i);
-//			if (simSmax < sSim.get(i)) simSmax = sSim.get(i);
-//			simStot += sSim.get(i);
-//		}
-//		simCavg = 2.0 * simCtot / varNdx;
-//		simSavg = 2.0 * simStot / varNdx;
-//
-//		System.out.println("Center similarity (max/avg/min/tot): ###" + formatter.format(simCmax) + "/" + formatter.format(simCavg) + "/" + formatter.format(simCmin) + "/" + formatter.format(simCtot));
-//		System.out.println("Sigma similarity (max/avg/min/tot): ###" + formatter.format(simSmax) + "/" + formatter.format(simSavg) + "/" + formatter.format(simSmin) + "/" + formatter.format(simStot));
-//		System.out.println("Weighted similarity (max/avg/min/tot): ###" + formatter.format(simCmax * centerW + simSmax * sigmaW) + "/" +
-//																		formatter.format(simCavg * centerW + simSavg * sigmaW) + "/" +
-//																		formatter.format(simCmin * centerW + simSmin * sigmaW) + "/" +
-//																		formatter.format(simCtot * centerW + simStot * sigmaW));
-//	}
 
 	public InvPendFuzzyContParamOpt(double centerSearchRage,
 									double sigmaSearchRage) {
@@ -198,131 +29,130 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	     *	THETA 
 	     */
 	    //	Tiny Center
-		lowerLimit.add(0.15 - centerSearchRage);
-		upperLimit.add(0.15 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(0) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(0) + centerSearchRage);
 		//	Tiny Sigma
-		lowerLimit.add(2.00546 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(1) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.00546 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(1) + sigmaSearchRage);
 
 	    //	Some Center
-		lowerLimit.add(3.31 - centerSearchRage);
-		upperLimit.add(3.31 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(2) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(2) + centerSearchRage);
 		//	Some Sigma
-		lowerLimit.add(1.93929 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(3) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.93929 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(3) + sigmaSearchRage);
 
 	    //	Medium Center
-		lowerLimit.add(5.025 - centerSearchRage);
-		upperLimit.add(5.025 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(4) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(4) + centerSearchRage);
 		//	Medium Sigma
-		lowerLimit.add(1.09813 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(5) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.09813 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(5) + sigmaSearchRage);
 
 	    //	Good amount Center
-		lowerLimit.add(6.46667 - centerSearchRage);
-		upperLimit.add(6.46667 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(6) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(6) + centerSearchRage);
 		//	Good amount Sigma
-		lowerLimit.add(1.74327 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(7) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.74327 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(7) + sigmaSearchRage);
 
 	    //	Very large Center
-		lowerLimit.add(9.95002 - centerSearchRage);
-		upperLimit.add(9.95002 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(8) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(8) + centerSearchRage);
 		//	Very large Sigma
-		lowerLimit.add(2.42824 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(9) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.42824 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(9) + sigmaSearchRage);
 
 	    /*
 	     *	THETA DELTA
 	     */
 	    //	Tiny Center
-		lowerLimit.add(0.15 - centerSearchRage);
-		upperLimit.add(0.15 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(10) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(10) + centerSearchRage);
 		//	Tiny Sigma
-		lowerLimit.add(2.00546 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(11) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.00546 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(11) + sigmaSearchRage);
 
 	    //	Medium Center
-		lowerLimit.add(5.025 - centerSearchRage);
-		upperLimit.add(5.025 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(12) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(12) + centerSearchRage);
 		//	Medium Sigma
-		lowerLimit.add(1.09813 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(13) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.09813 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(13) + sigmaSearchRage);
 
 	    //	Very large Center
-		lowerLimit.add(9.95002 - centerSearchRage);
-		upperLimit.add(9.95002 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(14) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(14) + centerSearchRage);
 		//	Very large Sigma
-		lowerLimit.add(2.42824 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(15) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.42824 + sigmaSearchRage);
-
+		upperLimit.add(Dictionary.dedaultVars.get(15) + sigmaSearchRage);
 
 	    /*
 	     *	FORCE
 	     */
 	    //	Tiny Center
-		lowerLimit.add(0.15 - centerSearchRage);
-		upperLimit.add(0.15 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(16) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(16) + centerSearchRage);
 		//	Tiny Sigma
-		lowerLimit.add(2.00546 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(17) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.00546 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(17) + sigmaSearchRage);
 
 	    //	Small Center
-		lowerLimit.add(1.7 - centerSearchRage);
-		upperLimit.add(1.7 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(18) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(18) + centerSearchRage);
 		//	Small Sigma
-		lowerLimit.add(1.80021 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(19) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.80021 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(19) + sigmaSearchRage);
 
 	    //	Some Center
-		lowerLimit.add(3.31 - centerSearchRage);
-		upperLimit.add(3.31 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(20) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(20) + centerSearchRage);
 		//	Some Sigma
-		lowerLimit.add(1.93929 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(21) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.93929 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(21) + sigmaSearchRage);
 
 	    //	Medium Center
-		lowerLimit.add(5.025 - centerSearchRage);
-		upperLimit.add(5.025 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(22) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(22) + centerSearchRage);
 		//	Medium Sigma
-		lowerLimit.add(1.09813 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(23) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.09813 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(23) + sigmaSearchRage);
 
 	    //	Good amount Center
-		lowerLimit.add(6.46667 - centerSearchRage);
-		upperLimit.add(6.46667 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(24) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(24) + centerSearchRage);
 		//	Good amount Sigma
-		lowerLimit.add(1.74327 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(25) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.74327 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(25) + sigmaSearchRage);
 
 	    //	Large Center
-		lowerLimit.add(8.35001 - centerSearchRage);
-		upperLimit.add(8.35001 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(26) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(26) + centerSearchRage);
 		//	Large Sigma
-		lowerLimit.add(1.49622 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(27) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(1.49622 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(27) + sigmaSearchRage);
 
 	    //	Very large Center
-		lowerLimit.add(9.95002 - centerSearchRage);
-		upperLimit.add(9.95002 + centerSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(28) - centerSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(28) + centerSearchRage);
 		//	Very large Sigma
-		lowerLimit.add(2.42824 - sigmaSearchRage);
+		lowerLimit.add(Dictionary.dedaultVars.get(29) - sigmaSearchRage);
 		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-		upperLimit.add(2.42824 + sigmaSearchRage);
+		upperLimit.add(Dictionary.dedaultVars.get(29) + sigmaSearchRage);
 
 	    setLowerLimit(lowerLimit);
 	    setUpperLimit(upperLimit);
@@ -337,14 +167,15 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		systemPairs[0].pend = Simulator.generateNewPendulum();
 	}
 
-	private FuzzyControllerOpt dictBasedFuzzyCont = new FuzzyControllerOpt(defaultVariables);
-
 	private SystemPair[] systemPairs = null;
 
 	private int itr = 0;
 	public List<Double> bestVariables = null;
-	public List<Double> midVariables = null;
-	private double bestValue = Integer.MAX_VALUE;
+	private double bestObj = Integer.MAX_VALUE;
+	private double bestRmse = Integer.MAX_VALUE;
+	private double bestJaccard = Integer.MAX_VALUE;
+
+	public static FuzzyControllerOpt midOptFuzzyCont = null;
 
 	@Override
 	public synchronized void evaluate(DoubleSolution solution) {
@@ -360,17 +191,23 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 		Simulator.simulate(systemPairs, false);
 
-		double jaccardSimilarity = dictBasedFuzzyCont.getJaccardSimilarity(solCont);
+		double jaccardSimilarity = Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
 
-		solution.setObjective(0, 0.5 * systemPairs[0].rmseT + 0.5 * jaccardSimilarity);
+//		solution.setObjective(0, systemPairs[0].rmseT);
+		solution.setObjective(0, 0.5 * systemPairs[0].rmseT + 0.5 * (1.0 - jaccardSimilarity));
 
-		System.out.println((++itr) + " - " + systemPairs[0].rmseT + " - " + bestValue);
-
-		if (bestValue > systemPairs[0].rmseT) {
-			bestValue = systemPairs[0].rmseT;
-			bestVariables = (ArrayList<Double>) ((ArrayList<Double>) solution.getVariables()).clone();
-			if (itr == RunDeOptimization.maxItr)
-				midVariables = bestVariables;
+		if (bestObj > solution.getObjective(0)) {
+			bestObj = solution.getObjective(0);
+			bestRmse = systemPairs[0].rmseT;
+			bestJaccard = jaccardSimilarity;
+			if (midOptFuzzyCont == null) {
+				bestVariables = (ArrayList<Double>) ((ArrayList<Double>) solution.getVariables()).clone();
+				if (itr >= RunDeOptimization.maxItr / 2) {
+					midOptFuzzyCont = new FuzzyControllerOpt(bestVariables);
+				}
+			}
 		}
+
+		System.out.println((++itr) + " - obj: " + solution.getObjective(0) + "/" + bestObj + " - RMSE: " + systemPairs[0].rmseT + "/" + bestRmse + " - JacSim: "  + jaccardSimilarity + "/" + bestJaccard);
 	}
 }

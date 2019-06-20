@@ -2,8 +2,9 @@ package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
 
+import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
-import org.fuzzy.invpend.opt.prob.InvPendFuzzyContParamOpt;
+import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.SystemPair;
 
@@ -18,10 +19,10 @@ public class RunDePlotDefaultSimulation {
 		systemPairs[0].caption = "Interpretable";
 		systemPairs[0].color = Color.RED;
 		systemPairs[0].pend = Simulator.generateNewPendulum();
-		systemPairs[0].cont = new FuzzyControllerOpt(InvPendFuzzyContParamOpt.defaultVariables);
-//		systemPairs[0].cont = new FuzzyControllerTriangular(null);
+		systemPairs[0].cont = Dictionary.defaultCont;
 
 		Simulator.simulate(systemPairs, true);	//	plotLen %
+		System.out.println("RMSE: " + systemPairs[0].rmseT);
+		FuzzyInvPendController.reportSimilarity(Dictionary.defaultCont, (FuzzyControllerOpt) systemPairs[0].cont);
 	}
-
 }

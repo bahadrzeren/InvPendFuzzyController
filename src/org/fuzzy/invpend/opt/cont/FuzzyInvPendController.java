@@ -5,9 +5,9 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.cont.FuzzyController;
 
-import generalType2zSlices.sets.GenT2zMF_Interface;
 import generic.Input;
 import generic.Output;
 import generic.Tuple;
@@ -18,7 +18,7 @@ import type1.sets.T1MF_Interface;
 import type1.system.T1_Rulebase;
 
 public abstract class FuzzyInvPendController implements FuzzyController {
-	protected static int discritisationLevel = 50;
+	public static int discritisationLevel = 50;
 	protected static double xMin = 0.0;
 	protected static double xMax = 10.0;
 
@@ -117,8 +117,27 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	}
 
 	@Override
-	public void plotMembershipFunctions() {
+	public void plotMembershipFunctions(boolean updateNames) {
 		//plot some sets, discretizing each input into 100 steps.
+		if (updateNames) {
+			tMfNMin.setName(Dictionary.getTheMostSimilarOnesName(tMfNMin));
+			tMfN1.setName(Dictionary.getTheMostSimilarOnesName(tMfN1));
+			tMf0.setName(Dictionary.getTheMostSimilarOnesName(tMf0));
+			tMfP1.setName(Dictionary.getTheMostSimilarOnesName(tMfP1));
+			tMfPMax.setName(Dictionary.getTheMostSimilarOnesName(tMfPMax));
+
+			dMfNMin.setName(Dictionary.getTheMostSimilarOnesName(dMfNMin));
+			dMf0.setName(Dictionary.getTheMostSimilarOnesName(dMf0));
+			dMfPMax.setName(Dictionary.getTheMostSimilarOnesName(dMfPMax));
+
+			fMfNMin.setName(Dictionary.getTheMostSimilarOnesName(fMfNMin));
+			fMfN2.setName(Dictionary.getTheMostSimilarOnesName(fMfN2));
+			fMfN1.setName(Dictionary.getTheMostSimilarOnesName(fMfN1));
+			fMf0.setName(Dictionary.getTheMostSimilarOnesName(fMf0));
+			fMfP1.setName(Dictionary.getTheMostSimilarOnesName(fMfP1));
+			fMfP2.setName(Dictionary.getTheMostSimilarOnesName(fMfP2));
+			fMfPMax.setName(Dictionary.getTheMostSimilarOnesName(fMfPMax));
+		}
         plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
         plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
         plotMFs("Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
@@ -187,7 +206,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	private static JaccardSimilarityEngine jse = new JaccardSimilarityEngine();
 
-	public double getJaccardSimilarity(FuzzyInvPendController optFuzzyCont) {
+	public double getAvgJaccardSimilarity(FuzzyInvPendController optFuzzyCont) {
 		double sI11 = jse.getSimilarity(this.tMfNMin, optFuzzyCont.tMfNMin, discritisationLevel);
 		double sI12 = jse.getSimilarity(this.tMfN1, optFuzzyCont.tMfN1, discritisationLevel);
 		double sI13 = jse.getSimilarity(this.tMf0, optFuzzyCont.tMf0, discritisationLevel);
@@ -206,18 +225,18 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		double sO6 = jse.getSimilarity(this.fMfP2, optFuzzyCont.fMfP2, discritisationLevel);
 		double sO7 = jse.getSimilarity(this.fMfPMax, optFuzzyCont.fMfPMax, discritisationLevel);
 
-		return sI11 + sI12 + sI13 + sI14 + sI15
+		return (sI11 + sI12 + sI13 + sI14 + sI15
 				+ sI21 + sI22 + sI23
-				+ sO1 + sO2 + sO3 + sO4 + sO5 + sO6 + sO7; 
+				+ sO1 + sO2 + sO3 + sO4 + sO5 + sO6 + sO7) / 15.0;
 	}
 
 	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
-	private static void reportSimilarity(String mfName, T1MF_Gaussian dictFuzzyMF, T1MF_Gaussian optFuzzyMF, List<Double> jacSim) {
-		double jaccard = jse.getSimilarity(dictFuzzyMF, optFuzzyMF, discritisationLevel);
+	private static void reportSimilarity(String defaultName, T1MF_Gaussian defaultFuzzyMF, String optName, T1MF_Gaussian optFuzzyMF, List<Double> jacSim) {
+		double jaccard = jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel);
 		jacSim.add(jaccard);
-		System.out.println(mfName + " Center/Sigma#" + formatter.format(dictFuzzyMF.getMean()) + "/" + formatter.format(dictFuzzyMF.getSpread()) + "#"
-														+ formatter.format(optFuzzyMF.getMean()) + "/" + formatter.format(optFuzzyMF.getSpread()) + "#jaccard = " + formatter.format(jaccard));
+		System.out.println(defaultName + "#" + formatter.format(defaultFuzzyMF.getMean()) + "#" + formatter.format(defaultFuzzyMF.getSpread()) + "# " + optName + "#"
+														+ formatter.format(optFuzzyMF.getMean()) + "#" + formatter.format(optFuzzyMF.getSpread()) + "#" + formatter.format(jaccard));
 	}
 
 	public static void reportSimilarity(FuzzyInvPendController dictFuzzyCont,
@@ -225,53 +244,39 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 		List<Double> jacSim = new ArrayList<Double>();
 
-		System.out.println("#DICTIONARY#OPTIMIZED#JACCARD SIMILARITY");
+		System.out.println("DICTIONARY###OPTIMIZED###JACCARD SIMILARITY");
 
-
-		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin, optFuzzyCont.tMfNMin, jacSim);
-		reportSimilarity("Some", dictFuzzyCont.tMfN1, optFuzzyCont.tMfN1, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.tMf0, optFuzzyCont.tMf0, jacSim);
-		reportSimilarity("Good amount", dictFuzzyCont.tMfP1, optFuzzyCont.tMfP1, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.tMfPMax, optFuzzyCont.tMfPMax, jacSim);
+		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfNMin), optFuzzyCont.tMfNMin, jacSim);
+		reportSimilarity("Some", dictFuzzyCont.tMfN1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfN1), optFuzzyCont.tMfN1, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.tMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMf0), optFuzzyCont.tMf0, jacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.tMfP1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfP1), optFuzzyCont.tMfP1, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.tMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfPMax), optFuzzyCont.tMfPMax, jacSim);
                          
-		reportSimilarity("Tiny", dictFuzzyCont.dMfNMin, optFuzzyCont.dMfNMin, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.dMf0, optFuzzyCont.dMf0, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.dMfPMax, optFuzzyCont.dMfPMax, jacSim);
+		reportSimilarity("Tiny", dictFuzzyCont.dMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfNMin), optFuzzyCont.dMfNMin, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.dMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMf0), optFuzzyCont.dMf0, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.dMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfPMax), optFuzzyCont.dMfPMax, jacSim);
                          
-		reportSimilarity("Tiny", dictFuzzyCont.fMfNMin, optFuzzyCont.fMfNMin, jacSim);
-		reportSimilarity("Small", dictFuzzyCont.fMfN2, optFuzzyCont.fMfN2, jacSim);
-		reportSimilarity("Some", dictFuzzyCont.fMfN1, optFuzzyCont.fMfN1, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.fMf0, optFuzzyCont.fMf0, jacSim);
-		reportSimilarity("Good amount", dictFuzzyCont.fMfP1, optFuzzyCont.fMfP1, jacSim);
-		reportSimilarity("Large", dictFuzzyCont.fMfP2, optFuzzyCont.fMfP2, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.fMfPMax, optFuzzyCont.fMfPMax, jacSim);
+		reportSimilarity("Tiny", dictFuzzyCont.fMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfNMin), optFuzzyCont.fMfNMin, jacSim);
+		reportSimilarity("Small", dictFuzzyCont.fMfN2, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN2), optFuzzyCont.fMfN2, jacSim);
+		reportSimilarity("Some", dictFuzzyCont.fMfN1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN1), optFuzzyCont.fMfN1, jacSim);
+		reportSimilarity("Medium", dictFuzzyCont.fMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMf0), optFuzzyCont.fMf0, jacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.fMfP1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP1), optFuzzyCont.fMfP1, jacSim);
+		reportSimilarity("Large", dictFuzzyCont.fMfP2, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP2), optFuzzyCont.fMfP2, jacSim);
+		reportSimilarity("Very large", dictFuzzyCont.fMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfPMax), optFuzzyCont.fMfPMax, jacSim);
 
+		double simmin = Integer.MAX_VALUE;
+		double simmax = Integer.MIN_VALUE;
+		double simtot = 0.0;
+		double simavg = 0.0;
 
-		double simCmin = Integer.MAX_VALUE;
-		double simCmax = Integer.MIN_VALUE;
-		double simCtot = 0.0;
-		double simCavg = 0.0;
-		double simSmin = Integer.MAX_VALUE;
-		double simSmax = Integer.MIN_VALUE;
-		double simStot = 0.0;
-		double simSavg = 0.0;
-
-		for (int i = 0; i < varNdx / 2; i++) {
-			if (simCmin > cSim.get(i)) simCmin = cSim.get(i);
-			if (simCmax < cSim.get(i)) simCmax = cSim.get(i);
-			simCtot += cSim.get(i);
-			if (simSmin > sSim.get(i)) simSmin = sSim.get(i);
-			if (simSmax < sSim.get(i)) simSmax = sSim.get(i);
-			simStot += sSim.get(i);
+		for (int i = 0; i < jacSim.size(); i++) {
+			if (simmin > jacSim.get(i)) simmin = jacSim.get(i);
+			if (simmax < jacSim.get(i)) simmax = jacSim.get(i);
+			simtot += jacSim.get(i);
 		}
-		simCavg = 2.0 * simCtot / varNdx;
-		simSavg = 2.0 * simStot / varNdx;
+		simavg = simtot / jacSim.size();
+		simavg = simtot / jacSim.size();
 
-		System.out.println("Center similarity (max/avg/min/tot): ###" + formatter.format(simCmax) + "/" + formatter.format(simCavg) + "/" + formatter.format(simCmin) + "/" + formatter.format(simCtot));
-		System.out.println("Sigma similarity (max/avg/min/tot): ###" + formatter.format(simSmax) + "/" + formatter.format(simSavg) + "/" + formatter.format(simSmin) + "/" + formatter.format(simStot));
-		System.out.println("Weighted similarity (max/avg/min/tot): ###" + formatter.format(simCmax * centerW + simSmax * sigmaW) + "/" +
-																		formatter.format(simCavg * centerW + simSavg * sigmaW) + "/" +
-																		formatter.format(simCmin * centerW + simSmin * sigmaW) + "/" +
-																		formatter.format(simCtot * centerW + simStot * sigmaW));
+		System.out.println("Jaccard similarity (max/avg/min/tot): ###" + formatter.format(simmax) + "/" + formatter.format(simavg) + "/" + formatter.format(simmin) + "/" + formatter.format(simtot));
 	}
 }
