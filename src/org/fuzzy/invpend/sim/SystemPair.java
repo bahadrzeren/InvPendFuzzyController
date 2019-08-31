@@ -15,4 +15,7 @@ public class SystemPair {
 	public double rmseF = 0.0;
 	public double rmseX = 0.0;
 	public double rmseXd = 0.0;
+
+	public double objective = 0.0;
+	public double dissimilarity = 0.0;
 }

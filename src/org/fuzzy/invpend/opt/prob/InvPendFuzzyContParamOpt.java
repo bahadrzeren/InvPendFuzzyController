@@ -16,9 +16,11 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	private static final long serialVersionUID = 6052688537783762715L;
 
+	public static int numOfVars = 2 * (5 + 3 + 7);
+
 	public InvPendFuzzyContParamOpt(double centerSearchRage,
 									double sigmaSearchRage) {
-	    setNumberOfVariables(2 * (5 + 3 + 7));
+	    setNumberOfVariables(numOfVars);
 	    setNumberOfObjectives(1);
 	    setName("InvPendFuzzyContParamOpt");
 
@@ -171,11 +173,12 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	private int itr = 0;
 	public List<Double> bestVariables = null;
-	private double bestObj = Integer.MAX_VALUE;
-	private double bestRmse = Integer.MAX_VALUE;
-	private double bestJaccard = Integer.MAX_VALUE;
 
-	public static FuzzyControllerOpt midOptFuzzyCont = null;
+	public double bestObj = Integer.MAX_VALUE;
+	public double bestRmse = Integer.MAX_VALUE;
+	public double bestJaccard = Integer.MAX_VALUE;
+
+	public FuzzyControllerOpt midOptFuzzyCont = null;
 
 	@Override
 	public synchronized void evaluate(DoubleSolution solution) {
