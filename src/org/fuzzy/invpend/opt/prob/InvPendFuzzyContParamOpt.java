@@ -172,11 +172,15 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	private SystemPair[] systemPairs = null;
 
 	private int itr = 0;
-	public List<Double> bestVariables = null;
+
+	public List<Double> midVariables = null;
+	public double midObj = Integer.MAX_VALUE;
+	public double midRmse = Integer.MAX_VALUE;
+	public double midDissimilarity = Integer.MAX_VALUE;
 
 	public double bestObj = Integer.MAX_VALUE;
 	public double bestRmse = Integer.MAX_VALUE;
-	public double bestJaccard = Integer.MAX_VALUE;
+	public double bestDissimilarity = Integer.MAX_VALUE;
 
 	public FuzzyControllerOpt midOptFuzzyCont = null;
 
@@ -194,23 +198,26 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 		Simulator.simulate(systemPairs, false);
 
-		double jaccardSimilarity = Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
+		double jaccardDissimilarity = 1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
 
 //		solution.setObjective(0, systemPairs[0].rmseT);
-		solution.setObjective(0, 0.5 * systemPairs[0].rmseT + 0.5 * (1.0 - jaccardSimilarity));
+		solution.setObjective(0, 0.5 * systemPairs[0].rmseT + 0.5 * jaccardDissimilarity);
 
 		if (bestObj > solution.getObjective(0)) {
 			bestObj = solution.getObjective(0);
 			bestRmse = systemPairs[0].rmseT;
-			bestJaccard = jaccardSimilarity;
+			bestDissimilarity = jaccardDissimilarity;
 			if (midOptFuzzyCont == null) {
-				bestVariables = (ArrayList<Double>) ((ArrayList<Double>) solution.getVariables()).clone();
+				midVariables = (ArrayList<Double>) ((ArrayList<Double>) solution.getVariables()).clone();
 				if (itr >= RunDeOptimization.maxItr / 2) {
-					midOptFuzzyCont = new FuzzyControllerOpt(bestVariables);
+					midOptFuzzyCont = new FuzzyControllerOpt(midVariables);
+					midObj = bestObj;
+					midRmse = bestRmse;
+					midDissimilarity = bestDissimilarity;
 				}
 			}
 		}
 
-		System.out.println((++itr) + " - obj: " + solution.getObjective(0) + "/" + bestObj + " - RMSE: " + systemPairs[0].rmseT + "/" + bestRmse + " - JacSim: "  + jaccardSimilarity + "/" + bestJaccard);
+		System.out.println((++itr) + " - obj: " + solution.getObjective(0) + "/" + bestObj + " - RMSE: " + systemPairs[0].rmseT + "/" + bestRmse + " - JacSim: "  + jaccardDissimilarity + "/" + bestDissimilarity);
 	}
 }

@@ -1,5 +1,7 @@
 package org.fuzzy.invpend.sim;
+
 import java.awt.Color;
+import java.util.List;
 
 import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.invpend.cont.FuzzyController;
@@ -16,6 +18,7 @@ public class SystemPair {
 	public double rmseX = 0.0;
 	public double rmseXd = 0.0;
 
+	public List<Double> variables = null;
 	public double objective = 0.0;
 	public double dissimilarity = 0.0;
 }

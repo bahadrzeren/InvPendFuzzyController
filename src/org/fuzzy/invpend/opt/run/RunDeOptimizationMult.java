@@ -39,18 +39,28 @@ public class RunDeOptimizationMult {
 
 	private static SystemPair[] systemPairBest = null;
 
+	private static double[] varsMinMid = new double[InvPendFuzzyContParamOpt.numOfVars];
+	private static double[] varsAvgMid = new double[InvPendFuzzyContParamOpt.numOfVars];
+	private static double[] varsMaxMid = new double[InvPendFuzzyContParamOpt.numOfVars];
+	private static double objBestMid = Integer.MAX_VALUE;
+	private static double objAvgMid = 0.0;
+	private static double objWorstMid = 0.0;
+	private static double rmseBestMid = Integer.MAX_VALUE;
+	private static double rmseAvgMid = 0.0;
+	private static double rmseWorstMid = 0.0;
+	private static double dissimilarityBestMid = Integer.MAX_VALUE;
+	private static double dissimilarityAvgMid = 0.0;
+	private static double dissimilarityWorstMid = 0.0;
+
 	private static double[] varsMin = new double[InvPendFuzzyContParamOpt.numOfVars];
 	private static double[] varsAvg = new double[InvPendFuzzyContParamOpt.numOfVars];
 	private static double[] varsMax = new double[InvPendFuzzyContParamOpt.numOfVars];
-
 	private static double objBest = Integer.MAX_VALUE;
 	private static double objAvg = 0.0;
 	private static double objWorst = 0.0;
-
 	private static double rmseBest = Integer.MAX_VALUE;
 	private static double rmseAvg = 0.0;
 	private static double rmseWorst = 0.0;
-
 	private static double dissimilarityBest = Integer.MAX_VALUE;
 	private static double dissimilarityAvg = 0.0;
 	private static double dissimilarityWorst = 0.0;
@@ -101,14 +111,15 @@ public class RunDeOptimizationMult {
 //			systemPairs[i][0].cont.plotMembershipFunctions(false);
 //			systemPairs[i][0].cont.plotControlSurface();
 
-//			systemPairs[i][0].cont.plotMembershipFunctions();
-//			systemPairs[i][0].cont.plotControlSurface();
-
 			systemPairs[i][1] = new SystemPair();
 			systemPairs[i][1].caption = "Mid Optimized " + i;
 			systemPairs[i][1].color = Color.BLUE;
 			systemPairs[i][1].pend = Simulator.generateNewPendulum();
 			systemPairs[i][1].cont = ((InvPendFuzzyContParamOpt) problem).midOptFuzzyCont;
+			systemPairs[i][1].rmseT = ((InvPendFuzzyContParamOpt) problem).midRmse;
+			systemPairs[i][1].variables = ((InvPendFuzzyContParamOpt) problem).midVariables;
+			systemPairs[i][1].dissimilarity = ((InvPendFuzzyContParamOpt) problem).midDissimilarity;
+			systemPairs[i][1].objective = ((InvPendFuzzyContParamOpt) problem).midObj;
 
 //			systemPairs[i][1].cont.plotMembershipFunctions(true);
 //			systemPairs[i][1].cont.plotControlSurface();
@@ -118,22 +129,108 @@ public class RunDeOptimizationMult {
 			systemPairs[i][2].color = Color.GREEN;
 			systemPairs[i][2].pend = Simulator.generateNewPendulum();
 			systemPairs[i][2].cont = new FuzzyControllerOpt(solution.getVariables());
+			systemPairs[i][2].rmseT = ((InvPendFuzzyContParamOpt) problem).bestRmse;
+			systemPairs[i][2].variables = solution.getVariables();
+			systemPairs[i][2].dissimilarity = ((InvPendFuzzyContParamOpt) problem).bestDissimilarity;
+			systemPairs[i][2].objective = ((InvPendFuzzyContParamOpt) problem).bestObj;
 
 //			systemPairs[i][2].cont.plotMembershipFunctions(true);
 //			systemPairs[i][2].cont.plotControlSurface();
+
+			/*
+			 * STATISTICAL VALUES ARE SET ACCORDING TO MID RESULT
+			 */
+			varsMinMid[0] = systemPairs[i][1].variables.get(0);
+			varsAvgMid[0] = systemPairs[i][1].variables.get(0);
+			varsMaxMid[0] = systemPairs[i][1].variables.get(0);
+			for (int vi = 1; vi < systemPairs[i][1].variables.size(); vi++) {
+				if (varsMinMid[vi] > systemPairs[i][1].variables.get(vi))
+					varsMinMid[vi] = systemPairs[i][1].variables.get(vi);
+				varsAvgMid[vi] += systemPairs[i][1].variables.get(vi);
+				if (varsMaxMid[vi] < systemPairs[i][1].variables.get(vi))
+					varsMaxMid[vi] = systemPairs[i][1].variables.get(vi);
+			}
+
+			if (objBestMid > systemPairs[i][1].objective)
+				objBestMid = systemPairs[i][1].objective;
+			objAvgMid += systemPairs[i][1].objective;
+			if (objWorstMid < systemPairs[i][1].objective)
+				objWorstMid = systemPairs[i][1].objective;
+
+			if (rmseBestMid > systemPairs[i][1].rmseT)
+				rmseBestMid = systemPairs[i][1].rmseT;
+			rmseAvgMid += systemPairs[i][1].rmseT;
+			if (rmseWorstMid < systemPairs[i][1].rmseT)
+				rmseWorstMid = systemPairs[i][1].rmseT;
+
+			if (dissimilarityBestMid > systemPairs[i][1].dissimilarity)
+				dissimilarityBestMid = systemPairs[i][1].dissimilarity;
+			dissimilarityAvgMid += systemPairs[i][1].dissimilarity;
+			if (dissimilarityWorstMid < systemPairs[i][1].dissimilarity)
+				dissimilarityWorstMid = systemPairs[i][1].dissimilarity;
+
+			/*
+			 * STATISTICAL VALUES ARE SET ACCORDING TO FINAL RESULT
+			 */
+			varsMin[0] = systemPairs[i][2].variables.get(0);
+			varsAvg[0] = systemPairs[i][2].variables.get(0);
+			varsMax[0] = systemPairs[i][2].variables.get(0);
+			for (int vi = 1; vi < systemPairs[i][2].variables.size(); vi++) {
+				if (varsMin[vi] > systemPairs[i][2].variables.get(vi))
+					varsMin[vi] = systemPairs[i][2].variables.get(vi);
+				varsAvg[vi] += systemPairs[i][2].variables.get(vi);
+				if (varsMax[vi] < systemPairs[i][2].variables.get(vi))
+					varsMax[vi] = systemPairs[i][2].variables.get(vi);
+			}
+
+			if (objBest > systemPairs[i][2].objective)
+				objBest = systemPairs[i][2].objective;
+			objAvg += systemPairs[i][2].objective;
+			if (objWorst < systemPairs[i][2].objective)
+				objWorst = systemPairs[i][2].objective;
+
+			if (rmseBest > systemPairs[i][2].rmseT)
+				rmseBest = systemPairs[i][2].rmseT;
+			rmseAvg += systemPairs[i][2].rmseT;
+			if (rmseWorst < systemPairs[i][2].rmseT)
+				rmseWorst = systemPairs[i][2].rmseT;
+
+			if (dissimilarityBest > systemPairs[i][2].dissimilarity)
+				dissimilarityBest = systemPairs[i][2].dissimilarity;
+			dissimilarityAvg += systemPairs[i][2].dissimilarity;
+			if (dissimilarityWorst < systemPairs[i][2].dissimilarity)
+				dissimilarityWorst = systemPairs[i][2].dissimilarity;
+
+			/*
+			 * SET THE BEST CONFIGURATION
+			 */
+			if ((systemPairBest == null)
+					|| (systemPairBest[2].objective > systemPairs[i][2].objective))
+				systemPairBest = systemPairs[i];
 		}
 
-		for (int i = 0; i < numOfRuns; i++) {
-			SystemPair spMid = systemPairs[i][1];
-			SystemPair spBest = systemPairs[i][1];
-		}
-		
+		for (int vi = 0; vi < systemPairBest[1].variables.size(); vi++) {
+			varsAvgMid[vi] /= numOfRuns;
+			objAvgMid /= numOfRuns;
+			rmseAvgMid /= numOfRuns;
+			dissimilarityAvgMid /= numOfRuns;
 
+			varsAvg[vi] /= numOfRuns;
+			objAvg /= numOfRuns;
+			rmseAvg /= numOfRuns;
+			dissimilarityAvg /= numOfRuns;
+		}		
 
-		Simulator.simulate(systemPairs[i], true);	//	plotLen %
+		systemPairBest[0].cont.plotMembershipFunctions(false);
+		systemPairBest[0].cont.plotControlSurface();
+		systemPairBest[1].cont.plotMembershipFunctions(true);
+		systemPairBest[1].cont.plotControlSurface();
+		systemPairBest[2].cont.plotMembershipFunctions(true);
+		systemPairBest[2].cont.plotControlSurface();
 
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[i][0].cont, (FuzzyControllerOpt) systemPairs[i][1].cont);
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[i][0].cont, (FuzzyControllerOpt) systemPairs[i][2].cont);
+		Simulator.simulate(systemPairBest, true);	//	plotLen %
 
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairBest[0].cont, (FuzzyControllerOpt) systemPairBest[1].cont);
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairBest[0].cont, (FuzzyControllerOpt) systemPairBest[2].cont);
 	}
 }
