@@ -38,6 +38,7 @@ public class RunDeOptimizationMult {
 	private static SystemPair[][] systemPairs = new SystemPair[numOfRuns][3];
 
 	private static SystemPair[] systemPairBest = null;
+	private static SystemPair[] systemPairWorst = null;
 
 	private static double[] varsMinMid = new double[InvPendFuzzyContParamOpt.numOfVars];
 	private static double[] varsAvgMid = new double[InvPendFuzzyContParamOpt.numOfVars];
@@ -207,19 +208,47 @@ public class RunDeOptimizationMult {
 			if ((systemPairBest == null)
 					|| (systemPairBest[2].objective > systemPairs[i][2].objective))
 				systemPairBest = systemPairs[i];
+			if ((systemPairWorst == null)
+					|| (systemPairWorst[2].objective < systemPairs[i][2].objective))
+				systemPairWorst = systemPairs[i];
 		}
+
+		objAvgMid /= numOfRuns;
+		rmseAvgMid /= numOfRuns;
+		dissimilarityAvgMid /= numOfRuns;
+
+		objAvg /= numOfRuns;
+		rmseAvg /= numOfRuns;
+		dissimilarityAvg /= numOfRuns;
+
+		System.out.println("objMinMid\t" + "objAvgMid\t" + "objMaxMid\t" + 
+							"rmseMinMid\t" + "rmseAvgMid\t" + "rmseMaxMid\t" + 
+							"dissimilarityMinMid\t" + "dissimilarityAvgMid\t" + "dissimilarityMaxMid\t" + 
+							"objMin\t" + "objAvg\t" + "objMax\t" + 
+							"rmseMin\t" + "rmseAvg\t" + "rmseMax\t" + 
+							"dissimilarityMin\t" + "dissimilarityAvg\t" + "dissimilarityMax");
+
+		System.out.println(objBestMid + "\t" + objAvgMid + "\t" + objWorstMid + "\t" +
+							rmseBestMid + "\t" + rmseAvgMid + "\t" + rmseWorstMid + "\t" +
+							dissimilarityBestMid + "\t" + dissimilarityAvgMid + "\t" + dissimilarityWorstMid + "\t" +
+							objBest + "\t" + objAvg + "\t" + objWorst + "\t" +
+							rmseBest + "\t" + rmseAvg + "\t" + rmseWorst + "\t" +
+							dissimilarityBest + "\t" + dissimilarityAvg + "\t" + dissimilarityWorst);
+
+		System.out.println("Vars\t" +
+							"varsAvgMid\t" +
+							"\t" +
+							"varsAvg\t");
 
 		for (int vi = 0; vi < systemPairBest[1].variables.size(); vi++) {
 			varsAvgMid[vi] /= numOfRuns;
-			objAvgMid /= numOfRuns;
-			rmseAvgMid /= numOfRuns;
-			dissimilarityAvgMid /= numOfRuns;
-
 			varsAvg[vi] /= numOfRuns;
-			objAvg /= numOfRuns;
-			rmseAvg /= numOfRuns;
-			dissimilarityAvg /= numOfRuns;
-		}		
+
+			System.out.println("Var_" + vi + "\t" +
+								varsAvgMid[vi] + "\t" +
+								"\t" +
+								varsAvg[vi]);
+		}
 
 		systemPairBest[0].cont.plotMembershipFunctions(false);
 		systemPairBest[0].cont.plotControlSurface();
@@ -232,5 +261,17 @@ public class RunDeOptimizationMult {
 
 		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairBest[0].cont, (FuzzyControllerOpt) systemPairBest[1].cont);
 		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairBest[0].cont, (FuzzyControllerOpt) systemPairBest[2].cont);
+
+		systemPairWorst[0].cont.plotMembershipFunctions(false);
+		systemPairWorst[0].cont.plotControlSurface();
+		systemPairWorst[1].cont.plotMembershipFunctions(true);
+		systemPairWorst[1].cont.plotControlSurface();
+		systemPairWorst[2].cont.plotMembershipFunctions(true);
+		systemPairWorst[2].cont.plotControlSurface();
+
+		Simulator.simulate(systemPairWorst, true);	//	plotLen %
+
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairWorst[0].cont, (FuzzyControllerOpt) systemPairWorst[1].cont);
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairWorst[0].cont, (FuzzyControllerOpt) systemPairWorst[2].cont);
 	}
 }

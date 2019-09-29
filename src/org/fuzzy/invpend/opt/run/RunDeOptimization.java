@@ -86,7 +86,7 @@ public class RunDeOptimization {
 		systemPairs[1].caption = "Mid Optimized";
 		systemPairs[1].color = Color.BLUE;
 		systemPairs[1].pend = Simulator.generateNewPendulum();
-		systemPairs[1].cont = InvPendFuzzyContParamOpt.midOptFuzzyCont;
+		systemPairs[1].cont = ((InvPendFuzzyContParamOpt) problem).midOptFuzzyCont;
 
 		systemPairs[1].cont.plotMembershipFunctions(true);
 		systemPairs[1].cont.plotControlSurface();
