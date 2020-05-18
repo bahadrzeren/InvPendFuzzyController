@@ -1,5 +1,12 @@
 package org.dynamics.invpend;
 
+/**
+ * First derivative of the State class.
+ * 
+ * @author bahadr
+ *
+ */
+
 public class StateDot {
 	private double xd = 0.0;
 	private double xdd = 0.0;

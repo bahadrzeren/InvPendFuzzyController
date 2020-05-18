@@ -66,7 +66,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	}
 
 	@Override
-	public double getControlInput(double theta, double thetaD) {
+	public double calculateControlInput(double theta, double thetaD) {
 		this.t.setInput(theta);
 		this.d.setInput(thetaD);
 		return rulebase.evaluate(1).get(this.f);

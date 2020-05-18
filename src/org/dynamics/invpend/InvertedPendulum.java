@@ -2,6 +2,12 @@ package org.dynamics.invpend;
 
 import java.util.Arrays;
 
+/**
+ * Class that represents pendulums.
+ *
+ * @author bahadr
+ *
+ */
 public class InvertedPendulum {
 
 	private double mp = 0.1;	//	kg
@@ -63,7 +69,7 @@ public class InvertedPendulum {
 		return s;
 	}
 
-	private StateDot iterate(State s, double f) {
+	private StateDot rungeKutta4Iterate(State s, double f) {
 
 		StateDot res = new StateDot(s.getXd(), 0.0, s.getTd(), 0.0);
 /*
@@ -73,21 +79,21 @@ public class InvertedPendulum {
  * 
  */
 		res.setXdd((
-					mp * g * s.sinT() * s.cosT()
-					+ mp * l * s.sqrTd() * s.sinT()
+					mp * g * s.calculateSinT() * s.calculateCosT()
+					+ mp * l * s.calculateSqrTd() * s.calculateSinT()
 					+ f
 					- fcc * s.getXd()
-					+ (s.getTd() * s.cosT() * fcp / l)
+					+ (s.getTd() * s.calculateCosT() * fcp / l)
 					) /
-						(mc + mp + mp * s.sqrSinT()));
+						(mc + mp + mp * s.calculateSqrSinT()));
 
 		res.setTdd((
-					- g * (mc + mp + mp) * s.sinT() 
-					+ s.cosT() * (l * mp * s.sqrTd() * s.sinT() - f)
-					+ fcc * s.getXd() * s.cosT()
+					- g * (mc + mp + mp) * s.calculateSinT() 
+					+ s.calculateCosT() * (l * mp * s.calculateSqrTd() * s.calculateSinT() - f)
+					+ fcc * s.getXd() * s.calculateCosT()
 					- (1 + (mc + mp) / mp) * (fcp / l) * s.getTd()
 					) /
-						(l * (mc + mp + mp * s.sqrSinT())));
+						(l * (mc + mp + mp * s.calculateSqrSinT())));
 
 //		res.setXdd((
 //				f
@@ -139,10 +145,10 @@ public class InvertedPendulum {
 		this.disturbanceHistory = Arrays.copyOf(this.disturbanceHistory, this.disturbanceHistory.length + 1);
 		this.disturbanceHistory[this.disturbanceHistory.length - 1] = d;
 
-		StateDot k1 = this.iterate(s, f + d);
-		StateDot k2 = this.iterate(s.iterate(k1, step / 2.0), f + d);
-		StateDot k3 = this.iterate(s.iterate(k2, step / 2.0), f + d);
-		StateDot k4 = this.iterate(s.iterate(k3, step), f + d);
+		StateDot k1 = this.rungeKutta4Iterate(this.s, f + d);
+		StateDot k2 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k1, step / 2.0), f + d);
+		StateDot k3 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k2, step / 2.0), f + d);
+		StateDot k4 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k3, step), f + d);
 		this.s.rungeKutta4merge(k1, k2, k3, k4, step);
 	}
 
