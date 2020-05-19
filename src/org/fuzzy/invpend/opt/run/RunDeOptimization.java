@@ -9,7 +9,7 @@ import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
 import org.fuzzy.invpend.opt.prob.InvPendFuzzyContParamOpt;
 import org.fuzzy.invpend.sim.Simulator;
-import org.fuzzy.invpend.sim.SystemPair;
+import org.fuzzy.invpend.sim.ControlSystem;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
@@ -69,41 +69,39 @@ public class RunDeOptimization {
 	    /*
 	     * Plot outputs
 	     */
-	    SystemPair[] systemPairs = new SystemPair[3];
-		systemPairs[0] = new SystemPair();
-		systemPairs[0].caption = "Dictionary";
-		systemPairs[0].color = Color.RED;
-		systemPairs[0].pend = Simulator.generateNewPendulum();
-		systemPairs[0].cont = Dictionary.defaultCont;
+	    ControlSystem[] systemPairs = new ControlSystem[3];
+		systemPairs[0] = new ControlSystem("Dictionary",
+											Color.RED,
+											Dictionary.defaultCont,
+											Simulator.generateNewPendulum());
 
-		systemPairs[0].cont.plotMembershipFunctions(false);
-		systemPairs[0].cont.plotControlSurface();
+		systemPairs[0].getCont().plotMembershipFunctions(false);
+		systemPairs[0].getCont().plotControlSurface();
 
 //		systemPairs[0].cont.plotMembershipFunctions();
 //		systemPairs[0].cont.plotControlSurface();
 
-		systemPairs[1] = new SystemPair();
-		systemPairs[1].caption = "Mid Optimized";
-		systemPairs[1].color = Color.BLUE;
-		systemPairs[1].pend = Simulator.generateNewPendulum();
-		systemPairs[1].cont = ((InvPendFuzzyContParamOpt) problem).midOptFuzzyCont;
+		systemPairs[1] = new ControlSystem("Mid Optimized",
+											Color.BLUE,
+											((InvPendFuzzyContParamOpt) problem).midOptFuzzyCont,
+											Simulator.generateNewPendulum());
 
-		systemPairs[1].cont.plotMembershipFunctions(true);
-		systemPairs[1].cont.plotControlSurface();
+		systemPairs[1].getCont().plotMembershipFunctions(true);
+		systemPairs[1].getCont().plotControlSurface();
 
-		systemPairs[2] = new SystemPair();
-		systemPairs[2].caption = "Optimized";
-		systemPairs[2].color = Color.GREEN;
-		systemPairs[2].pend = Simulator.generateNewPendulum();
-		systemPairs[2].cont = new FuzzyControllerOpt(solution.getVariables());
+		systemPairs[2] = new ControlSystem("Optimized",
+											Color.GREEN,
+											new FuzzyControllerOpt(solution.getVariables()),
+											Simulator.generateNewPendulum());
 
-		systemPairs[2].cont.plotMembershipFunctions(true);
-		systemPairs[2].cont.plotControlSurface();
+		systemPairs[2].getCont().plotMembershipFunctions(true);
+		systemPairs[2].getCont().plotControlSurface();
 
 		Simulator.simulate(systemPairs, true);	//	plotLen %
 
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].cont, (FuzzyControllerOpt) systemPairs[1].cont);
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].cont, (FuzzyControllerOpt) systemPairs[2].cont);
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].getCont(), (FuzzyControllerOpt) systemPairs[1].getCont());
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].getCont(), (FuzzyControllerOpt) systemPairs[2].getCont());
+		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[1].getCont(), (FuzzyControllerOpt) systemPairs[2].getCont());
 	}
 
 }

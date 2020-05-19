@@ -1,5 +1,9 @@
 package org.fuzzy.invpend.intrpr.cont;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.fuzzy.invpend.cont.FuzzyController;
 
 import generic.Input;
@@ -75,9 +79,9 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	@Override
 	public void plotMembershipFunctions(boolean updateNames) {
 		//plot some sets, discretizing each input into 100 steps.
-        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel * 2); 
-        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel * 2);
-        plotMFs("Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel * 2);
+        plotMFs("t", "Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel * 2); 
+        plotMFs("td", "ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel * 2);
+        plotMFs("f", "Force Membership Functions", new T1MF_Interface[]{fNVVBMF, fNVBMF, fNBMF, fNMF, fZMF, fPMF, fPBMF, fPVBMF, fPVVBMF}, this.f.getDomain(), discritisationLevel * 2);
 	}
 
 	@Override
@@ -85,13 +89,22 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotControlSurface(true);
 	}
 
-	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+	private void plotMFs(String fileName, String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
         for (int i=0;i<sets.length;i++) {
             plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
         plotter.show(name);
-    }
+
+        try {
+            Thread.sleep(10);
+        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_" + fileName + ".png"));
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+	}
 
 	private void plotControlSurface(boolean useCentroidDefuzzification) {
         double output;
@@ -127,5 +140,12 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);
         plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(-32.0, 32.0), true);   
         plotter.show(this.controllerName);
-    }
+
+//        try {
+//            Thread.sleep(10);
+//        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_surf.png"));
+//        } catch (Exception ex) {
+//        	ex.printStackTrace();
+//        }
+	}
 }

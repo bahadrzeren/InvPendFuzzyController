@@ -1,7 +1,10 @@
 package org.fuzzy.invpend.opt.cont;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +22,8 @@ import type1.system.T1_Rulebase;
 
 public abstract class FuzzyInvPendController implements FuzzyController {
 	public static int discritisationLevel = 50;
-	protected static double xMin = 0.0;
-	protected static double xMax = 10.0;
+	protected static double normMin = 0.0;
+	protected static double normMax = 10.0;
 
 	protected static double tMin = -40.0 * Math.PI / 180.0;
 	protected static double tMax = 40.0 * Math.PI / 180.0;
@@ -67,31 +70,31 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	public FuzzyInvPendController(String controllerName, List<Double> variables) {
 		this.controllerName = controllerName;
-		this.t = new Input("Theta", new Tuple(xMin, xMax));
-		this.d = new Input("ThetaD", new Tuple(xMin, xMax));
-		this.f = new Output("Force", new Tuple(xMin, xMax));
+		this.t = new Input("Theta", new Tuple(normMin, normMax));
+		this.d = new Input("ThetaD", new Tuple(normMin, normMax));
+		this.f = new Output("Force", new Tuple(normMin, normMax));
 		this.initialize(variables);
 	}
 
 	private double getNormalizedTValue(double realValue) {
-		return xMin + (xMax - xMin) * (realValue - tMin) / (tMax - tMin);
+		return normMin + (normMax - normMin) * (realValue - tMin) / (tMax - tMin);
 	}
 	private double getRealTValue(double normalizedValue) {
-		return tMin + (tMax - tMin) * (normalizedValue - xMin) / (xMax - xMin);
+		return tMin + (tMax - tMin) * (normalizedValue - normMin) / (normMax - normMin);
 	}
 
 	private double getNormalizedDValue(double realValue) {
-		return xMin + (xMax - xMin) * (realValue - dMin) / (dMax - dMin);
+		return normMin + (normMax - normMin) * (realValue - dMin) / (dMax - dMin);
 	}
 	private double getRealDValue(double normalizedValue) {
-		return dMin + (dMax - dMin) * (normalizedValue - xMin) / (xMax - xMin);
+		return dMin + (dMax - dMin) * (normalizedValue - normMin) / (normMax - normMin);
 	}
 
 //	private double getNormalizedFValue(double realValue) {
 //		return xMin + (xMax - xMin) * (realValue - fMin) / (fMax - fMin);
 //	}
 	private double getRealFValue(double normalizedValue) {
-		return fMin + (fMax - fMin) * (normalizedValue - xMin) / (xMax - xMin);
+		return fMin + (fMax - fMin) * (normalizedValue - normMin) / (normMax - normMin);
 	}
 
 	@Override
@@ -138,22 +141,31 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 			fMfP2.setName(Dictionary.getTheMostSimilarOnesName(fMfP2));
 			fMfPMax.setName(Dictionary.getTheMostSimilarOnesName(fMfPMax));
 		}
-        plotMFs("Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
-        plotMFs("ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
-        plotMFs("Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
+        plotMFs("t", "Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
+        plotMFs("td", "ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
+        plotMFs("f", "Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
 	}
 
 	public void plotControlSurface() {
         plotControlSurface(true);
 	}
 
-	private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+	private void plotMFs(String fileName, String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
         for (int i=0;i<sets.length;i++) {
             plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
         plotter.show(name);
-    }
+
+        try {
+            Thread.sleep(10);
+        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_" + fileName + ".png"));
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+	}
 
 	private void plotControlSurface(boolean useCentroidDefuzzification) {
         double output;
@@ -164,6 +176,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         //first, get the values
         int min = (int) Math.floor(this.t.getDomain().getLeft());
         int len = (int) Math.floor(this.t.getDomain().getSize() + 1);
+        System.out.println("[T]");
         for(int currentX = 0; currentX < len; currentX++) {
             x[currentX] = getRealTValue(min + currentX);
             System.out.print("[" + (min + currentX) + " " + x[currentX] + "]");
@@ -171,6 +184,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         }
         System.out.println();
 
+        System.out.println("[D]");
         min = (int) Math.floor(this.d.getDomain().getLeft());
         len = (int) Math.floor(this.d.getDomain().getSize() + 1);
         for(int currentY = 0; currentY < len; currentY++) {
@@ -180,6 +194,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         }
         System.out.println();
 
+        System.out.println("[F]");
         for(int currentX=0; currentX < x.length; currentX++) {
             this.t.setInput(getNormalizedTValue(x[currentX]));
             for(int currentY=0; currentY < y.length; currentY++) {
@@ -202,7 +217,14 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);
         plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(fMin, fMax), true);   
         plotter.show(this.controllerName);
-    }
+
+//		try {
+//			Thread.sleep(10);
+//			plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_surf.png"));
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
+	}
 
 	private static JaccardSimilarityEngine jse = new JaccardSimilarityEngine();
 

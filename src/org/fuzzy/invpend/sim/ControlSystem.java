@@ -1,7 +1,6 @@
 package org.fuzzy.invpend.sim;
 
 import java.awt.Color;
-import java.util.List;
 
 import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.invpend.cont.FuzzyController;
@@ -14,6 +13,10 @@ import org.fuzzy.invpend.cont.FuzzyController;
  *
  */
 public class ControlSystem {
+
+//	public static NumberFormat formatter1 = new DecimalFormat("#0.00");
+//	public static NumberFormat formatter4 = new DecimalFormat("#0.0000");
+
 	private String caption = null;
 	private Color color = Color.red;
 	private FuzzyController cont = null;
@@ -25,9 +28,9 @@ public class ControlSystem {
 	private double rmseX = 0.0;
 	private double rmseXd = 0.0;
 
-	private List<Double> variables = null;
-	private double objective = 0.0;
-	private double dissimilarity = 0.0;
+//	private List<Double> variables = null;
+//	private double objective = 0.0;
+//	private double dissimilarity = 0.0;
 
 	public ControlSystem(String caption,
 							Color color,
@@ -79,21 +82,21 @@ public class ControlSystem {
 		this.rmseXd = rmseXd;
 	}
 
-	public double getObjective() {
-		return objective;
-	}
-
-	public void setObjective(double objective) {
-		this.objective = objective;
-	}
-
-	public double getDissimilarity() {
-		return dissimilarity;
-	}
-
-	public void setDissimilarity(double dissimilarity) {
-		this.dissimilarity = dissimilarity;
-	}
+//	public double getObjective() {
+//		return objective;
+//	}
+//
+//	public void setObjective(double objective) {
+//		this.objective = objective;
+//	}
+//
+//	public double getDissimilarity() {
+//		return dissimilarity;
+//	}
+//
+//	public void setDissimilarity(double dissimilarity) {
+//		this.dissimilarity = dissimilarity;
+//	}
 
 	public String getCaption() {
 		return caption;
@@ -111,26 +114,51 @@ public class ControlSystem {
 		return pend;
 	}
 
-	public void proceed(double time,
-						double appStart,
-						double appEnd,
-						double disturbance,
-						double step) {
-		double force = 0.0;
-		force = this.cont.calculateControlInput(this.pend.getS().getT(), this.pend.getS().getTd());
+	public void runSimulation(double[] times,
+								boolean plot,
+								double duration,
+								double appStart,
+								double appEnd,
+								double disturbance,
+								double step) {
+		this.rmseT = 0.0;
+		this.rmseTd = 0.0;
+		this.rmseX = 0.0;
+		this.rmseXd = 0.0;
+		this.rmseF = 0.0;
+
+		this.pend.resetHistory(times.length);
+
+		for (int i = 0; i < times.length; i++) {
+			if ((times[i] >= appStart)
+					&& (times[i] < appEnd)) {
+				this.proceedToNextStep(i, step, disturbance);
+			} else {
+				this.proceedToNextStep(i, step, 0.0);
+			}
+		}
+
+    	this.rmseT = Math.sqrt(this.rmseT / times.length);
+    	this.rmseTd = Math.sqrt(this.rmseTd / times.length);
+    	this.rmseX = Math.sqrt(this.rmseX / times.length);
+    	this.rmseXd = Math.sqrt(this.rmseXd / times.length);
+    	this.rmseF = Math.sqrt(this.rmseF / times.length);
+	}
+
+	private void proceedToNextStep(int timeNdx,
+									double step,
+									double disturbance) {
+
+		double force = this.cont.calculateControlInput(this.pend.getS().getT(), this.pend.getS().getTd());
 
 		force = Math.floor(force * 10000.0) / 10000.0;
-//		State prevState = this.pend.getS().getCopy();
-		if ((time >= appStart)
-				&& (time < appEnd)) {
-			this.pend.move(step, force, disturbance);
-//			System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState +
-//					"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + " + disturbance + " -> " + this.pend);
 
-		} else {
-			this.pend.move(step, force, 0.0);
-//			System.out.println("Cont" + i + "> sec: " + formatter1.format(time) + " -> state: " + prevState + 
-//					"; sec: " + formatter1.format(time + step) + " -> output: " + formatter4.format(force) + " + 0.0 -> " + this.pend);
-		}
+		this.pend.move(timeNdx, step, force, disturbance);
+
+		this.rmseT += Math.pow(this.pend.getStateHistory()[timeNdx].getT() * 180.0 / Math.PI, 2);
+		this.rmseTd += Math.pow(this.pend.getStateHistory()[timeNdx].getTd() * 180.0 / Math.PI, 2);
+		this.rmseX += Math.pow(this.pend.getStateHistory()[timeNdx].getX(), 2);
+		this.rmseXd += Math.pow(this.pend.getStateHistory()[timeNdx].getXd(), 2);
+		this.rmseF += Math.pow(this.pend.getForceHistory()[timeNdx], 2);
 	}
 }

@@ -1,7 +1,5 @@
 package org.dynamics.invpend;
 
-import java.util.Arrays;
-
 /**
  * Class that represents pendulums.
  *
@@ -17,13 +15,13 @@ public class InvertedPendulum {
 	private double fcp = 0.0;	//	newton
 	private double fcc = 0.0;
 
-	private State s = null;
+	private State activeState = null;
 
-	private State[] stateHistory = new State[0];
-	private double[] forceHistory = new double[0];
-	private double[] disturbanceHistory = new double[0];
+	private State[] stateHistory = null;
+	private double[] forceHistory = null;
+	private double[] disturbanceHistory = null;
 
-	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, State s) {
+	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, State initialState) {
 		super();
 		this.mp = mp;
 		this.mc = mc;
@@ -31,13 +29,13 @@ public class InvertedPendulum {
 		this.g = g;
 		this.fcp = fcp;
 		this.fcc = fcc;
-		this.s = s;
+		this.activeState = initialState;
 	}
 
-	public void reset(double mp, double mc, double l, double g, double fcp, double fcc, double x, double xd, double t, double td) {
-		this.stateHistory = new State[0];
-		this.forceHistory = new double[0];
-		this.disturbanceHistory = new double[0];
+	public void reset(int simulationLength, double mp, double mc, double l, double g, double fcp, double fcc, double x, double xd, double t, double td) {
+		this.stateHistory = new State[simulationLength];
+		this.forceHistory = new double[simulationLength];
+		this.disturbanceHistory = new double[simulationLength];
 
 		this.mp = mp;
 		this.mc = mc;
@@ -46,7 +44,13 @@ public class InvertedPendulum {
 		this.fcp = fcp;
 		this.fcc = fcc;
 
-		this.s.reset(x, xd, t, td);
+		this.activeState.reset(x, xd, t, td);
+	}
+
+	public void resetHistory(int simulationLength) {
+		this.stateHistory = new State[simulationLength];
+		this.forceHistory = new double[simulationLength];
+		this.disturbanceHistory = new double[simulationLength];
 	}
 
 	public double getMp() {
@@ -66,7 +70,7 @@ public class InvertedPendulum {
 	}
 
 	public State getS() {
-		return s;
+		return activeState;
 	}
 
 	private StateDot rungeKutta4Iterate(State s, double f) {
@@ -137,19 +141,16 @@ public class InvertedPendulum {
 		return res;
 	}
 
-	public void move(double step, double f, double d) {
-		this.stateHistory = Arrays.copyOf(this.stateHistory, this.stateHistory.length + 1);
-		this.stateHistory[this.stateHistory.length - 1] = s.getCopy();
-		this.forceHistory = Arrays.copyOf(this.forceHistory, this.forceHistory.length + 1);
-		this.forceHistory[this.forceHistory.length - 1] = f;
-		this.disturbanceHistory = Arrays.copyOf(this.disturbanceHistory, this.disturbanceHistory.length + 1);
-		this.disturbanceHistory[this.disturbanceHistory.length - 1] = d;
+	public void move(int timeNdx, double step, double f, double d) {
+		this.stateHistory[timeNdx] = activeState.getCopy();
+		this.forceHistory[timeNdx] = f;
+		this.disturbanceHistory[timeNdx] = d;
 
-		StateDot k1 = this.rungeKutta4Iterate(this.s, f + d);
-		StateDot k2 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k1, step / 2.0), f + d);
-		StateDot k3 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k2, step / 2.0), f + d);
-		StateDot k4 = this.rungeKutta4Iterate(this.s.rungeKutta4Iterate(k3, step), f + d);
-		this.s.rungeKutta4merge(k1, k2, k3, k4, step);
+		StateDot k1 = this.rungeKutta4Iterate(this.activeState, f + d);
+		StateDot k2 = this.rungeKutta4Iterate(this.activeState.rungeKutta4Iterate(k1, step / 2.0), f + d);
+		StateDot k3 = this.rungeKutta4Iterate(this.activeState.rungeKutta4Iterate(k2, step / 2.0), f + d);
+		StateDot k4 = this.rungeKutta4Iterate(this.activeState.rungeKutta4Iterate(k3, step), f + d);
+		this.activeState.rungeKutta4merge(k1, k2, k3, k4, step);
 	}
 
 	public State[] getStateHistory() {
@@ -165,6 +166,6 @@ public class InvertedPendulum {
 	}
 
 	public String toString() {
-		return this.s.toString();
+		return this.activeState.toString();
 	}
 }

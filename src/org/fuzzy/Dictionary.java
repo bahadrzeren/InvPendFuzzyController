@@ -12,7 +12,7 @@ import type1.sets.T1MF_Gaussian;
 public class Dictionary {
 
 	public static List<T1MF_Gaussian> defaultMFs = null;
-	public static List<Double> dedaultVars = new ArrayList<Double>();
+	public static List<Double> defaultVars = new ArrayList<Double>();
 	public static FuzzyControllerOpt defaultCont = null;
 
 	static {
@@ -20,87 +20,87 @@ public class Dictionary {
 	     *	THETA
 	     */
 	    //	Tiny Center
-		dedaultVars.add(0.15);
+		defaultVars.add(0.15);
 		//	Tiny Sigma
-		dedaultVars.add(2.00546);
+		defaultVars.add(2.00546);
 
 	    //	Some Center
-		dedaultVars.add(3.31);
+		defaultVars.add(3.31);
 		//	Some Sigma
-		dedaultVars.add(1.93929);
+		defaultVars.add(1.93929);
 
 	    //	Medium Center
-		dedaultVars.add(5.025);
+		defaultVars.add(5.025);
 		//	Medium Sigma
-		dedaultVars.add(1.09813);
+		defaultVars.add(1.09813);
 
 	    //	Good amount Center
-		dedaultVars.add(6.46667);
+		defaultVars.add(6.46667);
 		//	Good amount Sigma
-		dedaultVars.add(1.74327);
+		defaultVars.add(1.74327);
 
 	    //	Very large Center
-		dedaultVars.add(9.95002);
+		defaultVars.add(9.95002);
 		//	Very large Sigma
-		dedaultVars.add(2.42824);
+		defaultVars.add(2.42824);
 
 	    /*
 	     *	THETA DELTA
 	     */
 	    //	Tiny Center
-		dedaultVars.add(0.15);
+		defaultVars.add(0.15);
 		//	Tiny Sigma
-		dedaultVars.add(2.00546);
+		defaultVars.add(2.00546);
 
 	    //	Medium Center
-		dedaultVars.add(5.025);
+		defaultVars.add(5.025);
 		//	Medium Sigma
-		dedaultVars.add(1.09813);
+		defaultVars.add(1.09813);
 
 	    //	Very large Center
-		dedaultVars.add(9.95002);
+		defaultVars.add(9.95002);
 		//	Very large Sigma
-		dedaultVars.add(2.42824);
+		defaultVars.add(2.42824);
 
 	    /*
 	     *	FORCE
 	     */
 	    //	Tiny Center
-		dedaultVars.add(0.15);
+		defaultVars.add(0.15);
 		//	Tiny Sigma
-		dedaultVars.add(2.00546);
+		defaultVars.add(2.00546);
 
 	    //	Small Center
-		dedaultVars.add(1.7);
+		defaultVars.add(1.7);
 		//	Small Sigma
-		dedaultVars.add(1.80021);
+		defaultVars.add(1.80021);
 
 	    //	Some Center
-		dedaultVars.add(3.31);
+		defaultVars.add(3.31);
 		//	Some Sigma
-		dedaultVars.add(1.93929);
+		defaultVars.add(1.93929);
 
 	    //	Medium Center
-		dedaultVars.add(5.025);
+		defaultVars.add(5.025);
 		//	Medium Sigma
-		dedaultVars.add(1.09813);
+		defaultVars.add(1.09813);
 
 	    //	Good amount Center
-		dedaultVars.add(6.46667);
+		defaultVars.add(6.46667);
 		//	Good amount Sigma
-		dedaultVars.add(1.74327);
+		defaultVars.add(1.74327);
 
 	    //	Large Center
-		dedaultVars.add(8.35001);
+		defaultVars.add(8.35001);
 		//	Large Sigma
-		dedaultVars.add(1.49622);
+		defaultVars.add(1.49622);
 
 	    //	Very large Center
-		dedaultVars.add(9.95002);
+		defaultVars.add(9.95002);
 		//	Very large Sigma
-		dedaultVars.add(2.42824);
+		defaultVars.add(2.42824);
 
-		defaultCont = new FuzzyControllerOpt(dedaultVars);
+		defaultCont = new FuzzyControllerOpt(defaultVars);
 
 		defaultMFs = new ArrayList<T1MF_Gaussian>();
 		defaultMFs.add(new T1MF_Gaussian("None to very little", 0.075, 2.19258));
