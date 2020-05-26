@@ -242,16 +242,13 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 			bestObj = solution.getObjective(0);
 			bestRmseT = controlSystems[0].getRmseT();
 			bestDissimilarity = jaccardDissimilarity;
-			if (midOptFuzzyCont == null) {
-				midOptFuzzyCont = solCont;
-				if (itr >= RunDeOptimization.maxItr / 2) {
-//					ArrayList<Double> hl = ((ArrayList<Double>) solution.getVariables());
-//					midVariables = (ArrayList<Double>) hl.clone();
-					midOptFuzzyCont = solCont;	//	new FuzzyControllerOpt(midVariables);
-					midObj = bestObj;
-					midRmseT = bestRmseT;
-					midDissimilarity = bestDissimilarity;
-				}
+			if (itr < RunDeOptimization.maxItr / 2) {
+//				ArrayList<Double> hl = ((ArrayList<Double>) solution.getVariables());
+//				midVariables = (ArrayList<Double>) hl.clone();
+				midOptFuzzyCont = solCont;	//	new FuzzyControllerOpt(midVariables);
+				midObj = bestObj;
+				midRmseT = bestRmseT;
+				midDissimilarity = bestDissimilarity;
 			}
 		}
 

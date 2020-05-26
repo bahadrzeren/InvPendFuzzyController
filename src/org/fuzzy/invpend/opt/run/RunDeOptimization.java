@@ -127,6 +127,10 @@ public class RunDeOptimization {
 													((InvPendFuzzyContParamOpt) problem).getMidDissimilarity() + "/" + 
 													((InvPendFuzzyContParamOpt) problem).getBestDissimilarity());
 
+	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
+	    											(1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity((FuzzyControllerOpt) controlSystems[1].getCont())) + "/" + 
+	    											(1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity((FuzzyControllerOpt) controlSystems[2].getCont())));
+
 		FuzzyInvPendController.reportSimilarity("DICTIONARY", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[1].getCont());
 		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
 		FuzzyInvPendController.reportSimilarity("MID OPTIMIZED", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[1].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
