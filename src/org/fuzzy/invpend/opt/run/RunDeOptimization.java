@@ -1,9 +1,13 @@
 package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
@@ -24,7 +28,9 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 public class RunDeOptimization {
 
-	public static final int maxItr = 5000;
+	private static Logger logger = null;
+
+	public static final int maxItr = 3000;
 	private static final int popSize = 100;
 
 	private static final double cr = 0.5;
@@ -33,8 +39,19 @@ public class RunDeOptimization {
 	private static final double centerSearchRange = 0.3;
 	private static final double sigmaSearchRange = 0.6;
 
+	static {
+		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
+		logger = LogManager.getLogger(RunDeOptimization.class);
+	}
+
 	public static void main(String[] args) {
-	    DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
+
+		logger.info("Inverted Pendulum Fuzzy Controller Parameters Optimizer");
+		logger.info("-------------------------------------------------------");
+		logger.info("-------------------------------------------------------");
+		logger.info("-------------------------------------------------------");
+
+		DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
 	    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
 	    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 	    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
@@ -58,50 +75,61 @@ public class RunDeOptimization {
 									        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
 									        .print();
 
-	    System.out.println("Total execution time: " + computingTime + "ms");
-	    System.out.println("Objectives values have been written to file FUN.tsv");
-	    System.out.println("Variables values have been written to file VAR.tsv");
-
-	    System.out.println("Fitness: " + solution.getObjective(0)) ;
+	    logger.info("Total execution time: " + computingTime + "ms");
+	    logger.info("Objectives values have been written to file FUN.tsv");
+	    logger.info("Variables values have been written to file VAR.tsv");
+	    logger.info("Fitness: " + solution.getObjective(0)) ;
 
 	    evaluator.shutdown();
 
 	    /*
 	     * Plot outputs
 	     */
-	    ControlSystem[] systemPairs = new ControlSystem[3];
-		systemPairs[0] = new ControlSystem("Dictionary",
+	    ControlSystem[] controlSystems = new ControlSystem[3];
+		controlSystems[0] = new ControlSystem("Dictionary",
 											Color.RED,
 											Dictionary.defaultCont,
 											Simulator.generateNewPendulum());
 
-		systemPairs[0].getCont().plotMembershipFunctions(false);
-		systemPairs[0].getCont().plotControlSurface();
+		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
+		controlSystems[0].getCont().plotControlSurface("dict");
 
 //		systemPairs[0].cont.plotMembershipFunctions();
 //		systemPairs[0].cont.plotControlSurface();
 
-		systemPairs[1] = new ControlSystem("Mid Optimized",
+		controlSystems[1] = new ControlSystem("Mid Optimized",
 											Color.BLUE,
-											((InvPendFuzzyContParamOpt) problem).midOptFuzzyCont,
+											((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
 											Simulator.generateNewPendulum());
 
-		systemPairs[1].getCont().plotMembershipFunctions(true);
-		systemPairs[1].getCont().plotControlSurface();
+		controlSystems[1].getCont().plotMembershipFunctions("mid", true);
+		controlSystems[1].getCont().plotControlSurface("mid");
 
-		systemPairs[2] = new ControlSystem("Optimized",
+		controlSystems[2] = new ControlSystem("Optimized",
 											Color.GREEN,
 											new FuzzyControllerOpt(solution.getVariables()),
 											Simulator.generateNewPendulum());
 
-		systemPairs[2].getCont().plotMembershipFunctions(true);
-		systemPairs[2].getCont().plotControlSurface();
+		controlSystems[2].getCont().plotMembershipFunctions("best", true);
+		controlSystems[2].getCont().plotControlSurface("best");
 
-		Simulator.simulate(systemPairs, true);	//	plotLen %
+		Simulator.simulate(controlSystems, true, "Sim+Opt");	//	plotLen %
 
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].getCont(), (FuzzyControllerOpt) systemPairs[1].getCont());
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[0].getCont(), (FuzzyControllerOpt) systemPairs[2].getCont());
-		FuzzyInvPendController.reportSimilarity((FuzzyControllerOpt) systemPairs[1].getCont(), (FuzzyControllerOpt) systemPairs[2].getCont());
+	    logger.info("RMSE_T(Begin/Mid/Best): " + controlSystems[0].getRmseT() + "/" +
+													((InvPendFuzzyContParamOpt) problem).getMidRmseT() + "/" + 
+													((InvPendFuzzyContParamOpt) problem).getBestRmseT());
+
+	    logger.info("RMSE_T(Begin/Mid/Best): " + controlSystems[0].getRmseT() + "/" +
+	    											controlSystems[1].getRmseT() + "/" + 
+	    											controlSystems[2].getRmseT());
+
+	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
+													((InvPendFuzzyContParamOpt) problem).getMidDissimilarity() + "/" + 
+													((InvPendFuzzyContParamOpt) problem).getBestDissimilarity());
+
+		FuzzyInvPendController.reportSimilarity("DICTIONARY", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[1].getCont());
+		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
+		FuzzyInvPendController.reportSimilarity("MID OPTIMIZED", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[1].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
 	}
 
 }

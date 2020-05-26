@@ -35,6 +35,6 @@ public class RunInterpretability {
 												new FuzzyControllerNormalizedDict(),
 												Simulator.generateNewPendulum());
 
-		Simulator.simulate(controlSystems, true);	//	plotLen %
+		Simulator.simulate(controlSystems, true, "SimOnly");	//	plotLen %
 	}
 }

@@ -114,6 +114,10 @@ public class ControlSystem {
 		return pend;
 	}
 
+	public void setCont(FuzzyController controller) {
+		this.cont = controller;
+	}
+
 	public void runSimulation(double[] times,
 								boolean plot,
 								double duration,

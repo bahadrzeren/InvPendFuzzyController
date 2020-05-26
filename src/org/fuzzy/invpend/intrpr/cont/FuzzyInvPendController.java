@@ -77,7 +77,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	}
 
 	@Override
-	public void plotMembershipFunctions(boolean updateNames) {
+	public void plotMembershipFunctions(String filePrefix, boolean updateNames) {
 		//plot some sets, discretizing each input into 100 steps.
         plotMFs("t", "Theta Membership Functions", new T1MF_Interface[]{tNVBMF, tNBMF, tNMF, tZMF, tPMF, tPBMF, tPVBMF}, this.t.getDomain(), discritisationLevel * 2); 
         plotMFs("td", "ThetaD Membership Functions", new T1MF_Interface[]{dNBMF, dNMF, dZMF, dPMF, dPBMF}, this.d.getDomain(), discritisationLevel * 2);
@@ -85,7 +85,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	}
 
 	@Override
-	public void plotControlSurface() {
+	public void plotControlSurface(String filePrefix) {
         plotControlSurface(true);
 	}
 

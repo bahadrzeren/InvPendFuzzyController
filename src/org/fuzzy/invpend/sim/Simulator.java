@@ -53,6 +53,19 @@ public class Simulator {
 	private static double appEnd = 1.1;
 	private static double disturbance = 0.0;	//	Newton
 
+	/*
+	 * Time series.
+	 */
+	private static double[] times = new double[(int) Math.ceil(duration / step)];
+
+	static {
+		double time = 0.0;
+		for (int i = 0; i < times.length; i++) {
+			times[i] = time;
+			time += step;
+		}
+	}
+
 
 	public static InvertedPendulum generateNewPendulum() {
 		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(xInit, xdInit, tInit, tdInit));
@@ -62,22 +75,23 @@ public class Simulator {
 		pend.reset(simulationLength, mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
-	public static void simulate(ControlSystem[] controlSystems, boolean plot) {
+	public static void simulate(ControlSystem[] controlSystems, boolean plot, String filePrefix) {
 
-		double time = 0.0;
-
-		double[] times = new double[0];
-
-		while (time < duration) {
-			times = Arrays.copyOf(times, times.length + 1);
-			times[times.length - 1] = time;
-			time += step;
-		}
+//		double time = 0.0;
+//
+//		double[] times = new double[0];
+//
+//		while (time < duration) {
+//			times = Arrays.copyOf(times, times.length + 1);
+//			times[times.length - 1] = time;
+//			time += step;
+//		}
 
 		for (int i = 0; i < controlSystems.length; i++) {
 			controlSystems[i].runSimulation(times, plot, duration, appStart, appEnd, disturbance, step);
 		}
-    	if (plot) {
+
+		if (plot) {
 
     		double[][] t = new double[controlSystems.length][times.length];
     		double[][] td = new double[controlSystems.length][times.length];
@@ -93,11 +107,11 @@ public class Simulator {
     			f[i] = controlSystems[i].getPend().getForceHistory();
     		}
 
-	    	plot(controlSystems, "t", "T response", "Theta (degree)", times, t);
-	    	plot(controlSystems, "td", "Td response", "ThetaDelta (degree/sec)", times, td);
-	    	plot(controlSystems, "x", "X response", "Position (meters)", times, x);
-	    	plot(controlSystems, "xd", "Xd response", "PositionDelta (meters/sec)", times, xd);
-	    	plot(controlSystems, "f", "Controller Output", "Force (Newton)", times, f);
+	    	plot(controlSystems, filePrefix + "_t", "T response", "Theta (degree)", times, t);
+	    	plot(controlSystems, filePrefix + "_td", "Td response", "ThetaDelta (degree/sec)", times, td);
+	    	plot(controlSystems, filePrefix + "_x", "X response", "Position (meters)", times, x);
+	    	plot(controlSystems, filePrefix + "_xd", "Xd response", "PositionDelta (meters/sec)", times, xd);
+	    	plot(controlSystems, filePrefix + "_f", "Controller Output", "Force (Newton)", times, f);
     	}
 
 //		double time = 0.0;
@@ -253,7 +267,7 @@ public class Simulator {
 
         try {
         	Thread.sleep(10);
-        	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_resp_" + fileName + ".png"));
+        	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_resp.png"));
         } catch (Exception ex) {
         	ex.printStackTrace();
         }

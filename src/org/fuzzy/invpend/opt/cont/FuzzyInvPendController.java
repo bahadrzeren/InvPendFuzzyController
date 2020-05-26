@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.cont.FuzzyController;
 
@@ -21,6 +23,9 @@ import type1.sets.T1MF_Interface;
 import type1.system.T1_Rulebase;
 
 public abstract class FuzzyInvPendController implements FuzzyController {
+
+	private static Logger logger = LogManager.getLogger(FuzzyInvPendController.class);
+
 	public static int discritisationLevel = 50;
 	protected static double normMin = 0.0;
 	protected static double normMax = 10.0;
@@ -111,7 +116,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		this.d.setInput(getNormalizedDValue(thetaD));
 		double res = rulebase.evaluate(1).get(this.f);
 
-//		System.out.println(itr++ + "; "
+//		logger.info(itr++ + "; "
 //						+ "TDF: " + formatter1.format(theta) + ", " + formatter1.format(thetaD) + ", " + formatter1.format(getRealFValue(res)) + "; "
 //						+ "degTDF: " + formatter1.format(theta * 180.0 / Math.PI) + ", " + formatter1.format(thetaD * 180.0 / Math.PI) + ", " + formatter1.format(getRealFValue(res)) + "; "
 //						+ "normTDF: " + formatter1.format(getNormalizedTValue(theta)) + ", " + formatter1.format(getNormalizedDValue(thetaD)) + ", " + formatter1.format(res));
@@ -120,7 +125,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	}
 
 	@Override
-	public void plotMembershipFunctions(boolean updateNames) {
+	public void plotMembershipFunctions(String filePrefix, boolean updateNames) {
 		//plot some sets, discretizing each input into 100 steps.
 		if (updateNames) {
 			tMfNMin.setName(Dictionary.getTheMostSimilarOnesName(tMfNMin));
@@ -141,13 +146,13 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 			fMfP2.setName(Dictionary.getTheMostSimilarOnesName(fMfP2));
 			fMfPMax.setName(Dictionary.getTheMostSimilarOnesName(fMfPMax));
 		}
-        plotMFs("t", "Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
-        plotMFs("td", "ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
-        plotMFs("f", "Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
+        plotMFs(filePrefix + "_t", "Theta Membership Functions", new T1MF_Interface[]{tMfNMin, tMfN1, tMf0, tMfP1, tMfPMax}, this.t.getDomain(), discritisationLevel * 2); 
+        plotMFs(filePrefix + "_td", "ThetaD Membership Functions", new T1MF_Interface[]{dMfNMin, dMf0, dMfPMax}, this.d.getDomain(), discritisationLevel * 2);
+        plotMFs(filePrefix + "_f", "Force Membership Functions", new T1MF_Interface[]{fMfNMin, fMfN2, fMfN1, fMf0, fMfP1, fMfP2, fMfPMax}, this.f.getDomain(), discritisationLevel * 2);
 	}
 
-	public void plotControlSurface() {
-        plotControlSurface(true);
+	public void plotControlSurface(String filePrefix) {
+        plotControlSurface(filePrefix, true);
 	}
 
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -157,17 +162,17 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         for (int i=0;i<sets.length;i++) {
             plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
-        plotter.show(name);
+        plotter.show(fileName + " " + name);
 
         try {
             Thread.sleep(10);
-        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_" + fileName + ".png"));
+        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_fuzzy" + ".png"));
         } catch (Exception ex) {
         	ex.printStackTrace();
         }
 	}
 
-	private void plotControlSurface(boolean useCentroidDefuzzification) {
+	private void plotControlSurface(String filePrefix, boolean useCentroidDefuzzification) {
         double output;
         double[] x = new double[(int) Math.floor(this.t.getDomain().getSize()) + 1];
         double[] y = new double[(int) Math.floor(this.d.getDomain().getSize()) + 1];
@@ -216,11 +221,11 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         //now do the plotting
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);
         plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(fMin, fMax), true);   
-        plotter.show(this.controllerName);
+        plotter.show(filePrefix + " " + this.controllerName);
 
 //		try {
 //			Thread.sleep(10);
-//			plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_surf.png"));
+//			plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + filePrefix + "_fuzzy_surf.png"));
 //		} catch (Exception ex) {
 //			ex.printStackTrace();
 //		}
@@ -257,16 +262,17 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	private static void reportSimilarity(String defaultName, T1MF_Gaussian defaultFuzzyMF, String optName, T1MF_Gaussian optFuzzyMF, List<Double> jacSim) {
 		double jaccard = jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel);
 		jacSim.add(jaccard);
-		System.out.println(defaultName + "#" + formatter.format(defaultFuzzyMF.getMean()) + "#" + formatter.format(defaultFuzzyMF.getSpread()) + "# " + optName + "#"
-														+ formatter.format(optFuzzyMF.getMean()) + "#" + formatter.format(optFuzzyMF.getSpread()) + "#" + formatter.format(jaccard));
+		logger.info(defaultName + "\t\t" + formatter.format(defaultFuzzyMF.getMean()) + "\t" + formatter.format(defaultFuzzyMF.getSpread()) + "\t\t\t" + 
+						optName + "\t\t" + formatter.format(optFuzzyMF.getMean()) + "\t" + formatter.format(optFuzzyMF.getSpread()) + "\t" + formatter.format(jaccard));
 	}
 
-	public static void reportSimilarity(FuzzyInvPendController dictFuzzyCont,
+	public static void reportSimilarity(String leftHeader, String rightHeader,
+										FuzzyInvPendController dictFuzzyCont,
 										FuzzyInvPendController optFuzzyCont) {
 
 		List<Double> jacSim = new ArrayList<Double>();
 
-		System.out.println("DICTIONARY###OPTIMIZED###JACCARD SIMILARITY");
+		logger.info(leftHeader + "\t\t\t" + rightHeader + "\t\t\tJACCARD SIMILARITY");
 
 		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfNMin), optFuzzyCont.tMfNMin, jacSim);
 		reportSimilarity("Some", dictFuzzyCont.tMfN1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfN1), optFuzzyCont.tMfN1, jacSim);
@@ -299,6 +305,6 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		simavg = simtot / jacSim.size();
 		simavg = simtot / jacSim.size();
 
-		System.out.println("Jaccard similarity (max/avg/min/tot): ###" + formatter.format(simmax) + "/" + formatter.format(simavg) + "/" + formatter.format(simmin) + "/" + formatter.format(simtot));
+		logger.info("Jaccard similarity (max/avg/min/tot): " + formatter.format(simmax) + "/" + formatter.format(simavg) + "/" + formatter.format(simmin) + "/" + formatter.format(simtot));
 	}
 }

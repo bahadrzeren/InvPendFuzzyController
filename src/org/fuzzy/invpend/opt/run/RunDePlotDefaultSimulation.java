@@ -1,6 +1,8 @@
 package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
@@ -10,8 +12,13 @@ import org.fuzzy.invpend.sim.ControlSystem;
 
 public class RunDePlotDefaultSimulation {
 
+//	private static Logger logger = LogManager.getLogger(RunDePlotDefaultSimulation.class);
+
 	public static void main(String[] args) {
-	    /*
+
+		System.setProperty("fuzzyOptLogFileName", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+
+		/*
 	     * Plot outputs
 	     */
 	    ControlSystem[] controlSystems = new ControlSystem[1];
@@ -20,9 +27,9 @@ public class RunDePlotDefaultSimulation {
 												Dictionary.defaultCont,
 												Simulator.generateNewPendulum());
 
-		Simulator.simulate(controlSystems, true);	//	plotLen %
+		Simulator.simulate(controlSystems, true, "Sim");	//	plotLen %
 		System.out.println("RMSE: " + controlSystems[0].getRmseT());
 
-		FuzzyInvPendController.reportSimilarity(Dictionary.defaultCont, (FuzzyControllerOpt) controlSystems[0].getCont());
+		FuzzyInvPendController.reportSimilarity("DICTIONARY", "DICTIONARY", Dictionary.defaultCont, (FuzzyControllerOpt) controlSystems[0].getCont());
 	}
 }
