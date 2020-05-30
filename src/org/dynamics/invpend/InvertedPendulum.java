@@ -14,6 +14,13 @@ public class InvertedPendulum {
 	private double g = 9.8;		//	meter/sn2
 	private double fcp = 0.0;	//	newton
 	private double fcc = 0.0;
+	/*
+	 * Initial state.
+	 */
+	private double xInit = 0.0;
+	private double xdInit = 0.0;
+	private double tInit = -30.0 * Math.PI / 180.0;
+	private double tdInit = 4.0 * Math.PI / 180.0;
 
 	private State activeState = null;
 
@@ -21,7 +28,8 @@ public class InvertedPendulum {
 	private double[] forceHistory = null;
 	private double[] disturbanceHistory = null;
 
-	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, State initialState) {
+	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, 
+							double xInit, double xdInit, double tInit, double tdInit) {
 		super();
 		this.mp = mp;
 		this.mc = mc;
@@ -29,28 +37,19 @@ public class InvertedPendulum {
 		this.g = g;
 		this.fcp = fcp;
 		this.fcc = fcc;
-		this.activeState = initialState;
+		this.xInit = xInit;
+		this.xdInit = xdInit;
+		this.tInit = tInit;
+		this.tdInit = tdInit;
+		this.activeState = new State(xInit, xdInit, tInit, tdInit);
 	}
 
-	public void reset(int simulationLength, double mp, double mc, double l, double g, double fcp, double fcc, double x, double xd, double t, double td) {
+	public void reset(int simulationLength) {
 		this.stateHistory = new State[simulationLength];
 		this.forceHistory = new double[simulationLength];
 		this.disturbanceHistory = new double[simulationLength];
 
-		this.mp = mp;
-		this.mc = mc;
-		this.l = l;
-		this.g = g;
-		this.fcp = fcp;
-		this.fcc = fcc;
-
-		this.activeState.reset(x, xd, t, td);
-	}
-
-	public void resetHistory(int simulationLength) {
-		this.stateHistory = new State[simulationLength];
-		this.forceHistory = new double[simulationLength];
-		this.disturbanceHistory = new double[simulationLength];
+		this.activeState.reset(xInit, xdInit, tInit, tdInit);
 	}
 
 	public double getMp() {

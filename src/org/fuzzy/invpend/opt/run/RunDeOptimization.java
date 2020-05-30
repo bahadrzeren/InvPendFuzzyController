@@ -30,7 +30,7 @@ public class RunDeOptimization {
 
 	private static Logger logger = null;
 
-	public static final int maxItr = 3000;
+	public static final int maxItr = 5000;
 	private static final int popSize = 100;
 
 	private static final double cr = 0.5;
@@ -98,9 +98,9 @@ public class RunDeOptimization {
 //		systemPairs[0].cont.plotControlSurface();
 
 		controlSystems[1] = new ControlSystem("Mid Optimized",
-											Color.BLUE,
-											((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
-											Simulator.generateNewPendulum());
+												Color.BLUE,
+												((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
+												Simulator.generateNewPendulum());
 
 		controlSystems[1].getCont().plotMembershipFunctions("mid", true);
 		controlSystems[1].getCont().plotControlSurface("mid");

@@ -254,6 +254,6 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 		logger.info((++itr) + " - obj: " + solution.getObjective(0) + "/" + bestObj + 
 								" - RMSET: " + controlSystems[0].getRmseT() + "/" + bestRmseT + 
-								" - JacSim: "  + jaccardDissimilarity + "/" + bestDissimilarity);
+								" - JacDissim: "  + jaccardDissimilarity + "/" + bestDissimilarity);
 	}
 }

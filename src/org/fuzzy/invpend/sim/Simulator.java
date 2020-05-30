@@ -10,7 +10,6 @@ import java.util.Arrays;
 import javax.swing.JFrame;
 
 import org.dynamics.invpend.InvertedPendulum;
-import org.dynamics.invpend.State;
 import org.math.plot.Plot2DPanel;
 
 /**
@@ -68,11 +67,7 @@ public class Simulator {
 
 
 	public static InvertedPendulum generateNewPendulum() {
-		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, new State(xInit, xdInit, tInit, tdInit));
-	}
-
-	public static void resetPendulum(int simulationLength, InvertedPendulum pend) {
-		pend.reset(simulationLength, mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
+		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
 	public static void simulate(ControlSystem[] controlSystems, boolean plot, String filePrefix) {
@@ -88,7 +83,7 @@ public class Simulator {
 //		}
 
 		for (int i = 0; i < controlSystems.length; i++) {
-			controlSystems[i].runSimulation(times, plot, duration, appStart, appEnd, disturbance, step);
+			controlSystems[i].runSimulation(times, appStart, appEnd, disturbance, step);
 		}
 
 		if (plot) {

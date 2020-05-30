@@ -119,8 +119,6 @@ public class ControlSystem {
 	}
 
 	public void runSimulation(double[] times,
-								boolean plot,
-								double duration,
 								double appStart,
 								double appEnd,
 								double disturbance,
@@ -131,7 +129,7 @@ public class ControlSystem {
 		this.rmseXd = 0.0;
 		this.rmseF = 0.0;
 
-		this.pend.resetHistory(times.length);
+		this.pend.reset(times.length);
 
 		for (int i = 0; i < times.length; i++) {
 			if ((times[i] >= appStart)
