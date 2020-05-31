@@ -8,6 +8,9 @@ package org.dynamics.invpend;
  */
 public class InvertedPendulum {
 
+	/*
+	 * Pendulum properties.
+	 */
 	private double mp = 0.1;	//	kg
 	private double mc = 1.0;	//	kg
 	private double l = 1.0;		//	meter
@@ -28,19 +31,7 @@ public class InvertedPendulum {
 	private double[] forceHistory = null;
 	private double[] disturbanceHistory = null;
 
-	public InvertedPendulum(double mp, double mc, double l, double g, double fcp, double fcc, 
-							double xInit, double xdInit, double tInit, double tdInit) {
-		super();
-		this.mp = mp;
-		this.mc = mc;
-		this.l = l;
-		this.g = g;
-		this.fcp = fcp;
-		this.fcc = fcc;
-		this.xInit = xInit;
-		this.xdInit = xdInit;
-		this.tInit = tInit;
-		this.tdInit = tdInit;
+	public InvertedPendulum() {
 		this.activeState = new State(xInit, xdInit, tInit, tdInit);
 	}
 

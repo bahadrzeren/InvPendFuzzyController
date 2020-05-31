@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import javax.swing.JFrame;
 
-import org.dynamics.invpend.InvertedPendulum;
 import org.math.plot.Plot2DPanel;
 
 /**
@@ -19,25 +18,6 @@ import org.math.plot.Plot2DPanel;
  * 
  */
 public class Simulator {
-
-	/*
-	 * Pendulum properties.
-	 */
-	private static double mp = 0.1;	//	kg
-	private static double mc = 1.0;	//	kg
-	private static double l = 1.0;		//	meter
-	private static double g = 9.8;		//	meter/sn2
-	private static double fcp = 0.0;
-	private static double fcc = 0.0;
-
-	/*
-	 * Initial state.
-	 */
-	private static double xInit = 0.0;
-	private static double xdInit = 0.0;
-	private static double tInit = -30.0 * Math.PI / 180.0;
-	private static double tdInit = 4.0 * Math.PI / 180.0;
-
 	/*
 	 * Test duration.
 	 */
@@ -63,11 +43,6 @@ public class Simulator {
 			times[i] = time;
 			time += step;
 		}
-	}
-
-
-	public static InvertedPendulum generateNewPendulum() {
-		return new InvertedPendulum(mp, mc, l, g, fcp, fcc, xInit, xdInit, tInit, tdInit);
 	}
 
 	public static void simulate(ControlSystem[] controlSystems, boolean plot, String filePrefix) {
@@ -261,7 +236,7 @@ public class Simulator {
         frame.setVisible(true);
 
         try {
-        	Thread.sleep(10);
+        	Thread.sleep(25);
         	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_resp.png"));
         } catch (Exception ex) {
         	ex.printStackTrace();

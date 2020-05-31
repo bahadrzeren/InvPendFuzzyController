@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.run.RunDeOptimization;
@@ -41,131 +42,6 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 			if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
 			upperLimit.add(Dictionary.defaultVars.get(2 * i + 1) + sigmaSearchRage);
 	    }
-//	    //	Tiny Center
-//		lowerLimit.add(Dictionary.defaultVars.get(0) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(0) + centerSearchRage);
-//		//	Tiny Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(1) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(1) + sigmaSearchRage);
-//
-//	    //	Some Center
-//		lowerLimit.add(Dictionary.defaultVars.get(2) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(2) + centerSearchRage);
-//		//	Some Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(3) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(3) + sigmaSearchRage);
-//
-//	    //	Medium Center
-//		lowerLimit.add(Dictionary.defaultVars.get(4) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(4) + centerSearchRage);
-//		//	Medium Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(5) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(5) + sigmaSearchRage);
-//
-//	    //	Good amount Center
-//		lowerLimit.add(Dictionary.defaultVars.get(6) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(6) + centerSearchRage);
-//		//	Good amount Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(7) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(7) + sigmaSearchRage);
-//
-//	    //	Very large Center
-//		lowerLimit.add(Dictionary.defaultVars.get(8) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(8) + centerSearchRage);
-//		//	Very large Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(9) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(9) + sigmaSearchRage);
-//
-//	    /*
-//	     *	THETA DELTA
-//	     */
-//	    //	Tiny Center
-//		lowerLimit.add(Dictionary.defaultVars.get(10) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(10) + centerSearchRage);
-//		//	Tiny Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(11) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(11) + sigmaSearchRage);
-//
-//	    //	Medium Center
-//		lowerLimit.add(Dictionary.defaultVars.get(12) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(12) + centerSearchRage);
-//		//	Medium Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(13) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(13) + sigmaSearchRage);
-//
-//	    //	Very large Center
-//		lowerLimit.add(Dictionary.defaultVars.get(14) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(14) + centerSearchRage);
-//		//	Very large Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(15) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(15) + sigmaSearchRage);
-//
-//	    /*
-//	     *	FORCE
-//	     */
-//	    //	Tiny Center
-//		lowerLimit.add(Dictionary.defaultVars.get(16) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(16) + centerSearchRage);
-//		//	Tiny Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(17) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(17) + sigmaSearchRage);
-//
-//	    //	Small Center
-//		lowerLimit.add(Dictionary.defaultVars.get(18) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(18) + centerSearchRage);
-//		//	Small Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(19) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(19) + sigmaSearchRage);
-//
-//	    //	Some Center
-//		lowerLimit.add(Dictionary.defaultVars.get(20) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(20) + centerSearchRage);
-//		//	Some Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(21) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(21) + sigmaSearchRage);
-//
-//	    //	Medium Center
-//		lowerLimit.add(Dictionary.defaultVars.get(22) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(22) + centerSearchRage);
-//		//	Medium Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(23) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(23) + sigmaSearchRage);
-//
-//	    //	Good amount Center
-//		lowerLimit.add(Dictionary.defaultVars.get(24) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(24) + centerSearchRage);
-//		//	Good amount Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(25) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(25) + sigmaSearchRage);
-//
-//	    //	Large Center
-//		lowerLimit.add(Dictionary.defaultVars.get(26) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(26) + centerSearchRage);
-//		//	Large Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(27) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(27) + sigmaSearchRage);
-//
-//	    //	Very large Center
-//		lowerLimit.add(Dictionary.defaultVars.get(28) - centerSearchRage);
-//		upperLimit.add(Dictionary.defaultVars.get(28) + centerSearchRage);
-//		//	Very large Sigma
-//		lowerLimit.add(Dictionary.defaultVars.get(29) - sigmaSearchRage);
-//		if (lowerLimit.get(lowerLimit.size() - 1) < 0.0) lowerLimit.set(lowerLimit.size() - 1, 0.0);
-//		upperLimit.add(Dictionary.defaultVars.get(29) + sigmaSearchRage);
 
 	    setLowerLimit(lowerLimit);
 	    setUpperLimit(upperLimit);
@@ -177,7 +53,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		controlSystems[0] = new ControlSystem("Optimized",
 											Color.RED,
 											null,
-											Simulator.generateNewPendulum());
+											new InvertedPendulum());
 	}
 
 	private ControlSystem[] controlSystems = null;

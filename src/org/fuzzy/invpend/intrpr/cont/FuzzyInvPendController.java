@@ -99,7 +99,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotter.show(name);
 
         try {
-            Thread.sleep(10);
+            Thread.sleep(25);
         	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_" + fileName + ".png"));
         } catch (Exception ex) {
         	ex.printStackTrace();
@@ -142,7 +142,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotter.show(this.controllerName);
 
 //        try {
-//            Thread.sleep(10);
+//            Thread.sleep(25);
 //        	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_fuzzy_surf.png"));
 //        } catch (Exception ex) {
 //        	ex.printStackTrace();

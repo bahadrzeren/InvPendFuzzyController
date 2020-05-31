@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
@@ -31,13 +32,13 @@ public class RunDeOptimization {
 	private static Logger logger = null;
 
 	public static final int maxItr = 5000;
-	private static final int popSize = 100;
+	private static final int popSize = 20;
 
 	private static final double cr = 0.5;
 	private static final double f = 0.5;
 
-	private static final double centerSearchRange = 0.3;
-	private static final double sigmaSearchRange = 0.6;
+	private static final double centerSearchRange = 0.5;
+	private static final double sigmaSearchRange = 1.0;
 
 	static {
 		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
@@ -89,7 +90,7 @@ public class RunDeOptimization {
 		controlSystems[0] = new ControlSystem("Dictionary",
 											Color.RED,
 											Dictionary.defaultCont,
-											Simulator.generateNewPendulum());
+											new InvertedPendulum());
 
 		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
 		controlSystems[0].getCont().plotControlSurface("dict");
@@ -100,7 +101,7 @@ public class RunDeOptimization {
 		controlSystems[1] = new ControlSystem("Mid Optimized",
 												Color.BLUE,
 												((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
-												Simulator.generateNewPendulum());
+												new InvertedPendulum());
 
 		controlSystems[1].getCont().plotMembershipFunctions("mid", true);
 		controlSystems[1].getCont().plotControlSurface("mid");
@@ -108,7 +109,7 @@ public class RunDeOptimization {
 		controlSystems[2] = new ControlSystem("Optimized",
 											Color.GREEN,
 											new FuzzyControllerOpt(solution.getVariables()),
-											Simulator.generateNewPendulum());
+											new InvertedPendulum());
 
 		controlSystems[2].getCont().plotMembershipFunctions("best", true);
 		controlSystems[2].getCont().plotControlSurface("best");

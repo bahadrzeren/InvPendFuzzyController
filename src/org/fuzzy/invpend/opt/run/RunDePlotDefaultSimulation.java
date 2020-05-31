@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
@@ -25,7 +26,7 @@ public class RunDePlotDefaultSimulation {
 		controlSystems[0] = new ControlSystem("Interpretable",
 												Color.RED,
 												Dictionary.defaultCont,
-												Simulator.generateNewPendulum());
+												new InvertedPendulum());
 
 		Simulator.simulate(controlSystems, true, "Sim");	//	plotLen %
 		System.out.println("RMSE: " + controlSystems[0].getRmseT());
