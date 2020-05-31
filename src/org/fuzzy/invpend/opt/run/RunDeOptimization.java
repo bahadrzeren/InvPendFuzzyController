@@ -49,8 +49,6 @@ public class RunDeOptimization {
 
 		logger.info("Inverted Pendulum Fuzzy Controller Parameters Optimizer");
 		logger.info("-------------------------------------------------------");
-		logger.info("-------------------------------------------------------");
-		logger.info("-------------------------------------------------------");
 
 		DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
 	    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
@@ -120,17 +118,9 @@ public class RunDeOptimization {
 													((InvPendFuzzyContParamOpt) problem).getMidRmseT() + "/" + 
 													((InvPendFuzzyContParamOpt) problem).getBestRmseT());
 
-	    logger.info("RMSE_T(Begin/Mid/Best): " + controlSystems[0].getRmseT() + "/" +
-	    											controlSystems[1].getRmseT() + "/" + 
-	    											controlSystems[2].getRmseT());
-
 	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
 													((InvPendFuzzyContParamOpt) problem).getMidDissimilarity() + "/" + 
 													((InvPendFuzzyContParamOpt) problem).getBestDissimilarity());
-
-	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
-	    											(1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity((FuzzyControllerOpt) controlSystems[1].getCont())) + "/" + 
-	    											(1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity((FuzzyControllerOpt) controlSystems[2].getCont())));
 
 		FuzzyInvPendController.reportSimilarity("DICTIONARY", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[1].getCont());
 		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
