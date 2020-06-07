@@ -1,6 +1,8 @@
 package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,7 +27,6 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
-import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 public class RunDeOptimization {
 
@@ -44,6 +45,8 @@ public class RunDeOptimization {
 		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
 		logger = LogManager.getLogger(RunDeOptimization.class);
 	}
+
+	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
 	public static void main(String[] args) {
 
@@ -70,13 +73,13 @@ public class RunDeOptimization {
 	    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1);
 	    population.add(solution);
 	    new SolutionListOutput(population).setSeparator("\t")
-									        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-									        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+//									        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
+//									        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
 									        .print();
 
 	    logger.info("Total execution time: " + computingTime + "ms");
-	    logger.info("Objectives values have been written to file FUN.tsv");
-	    logger.info("Variables values have been written to file VAR.tsv");
+//	    logger.info("Objectives values have been written to file FUN.tsv");
+//	    logger.info("Variables values have been written to file VAR.tsv");
 	    logger.info("Fitness: " + solution.getObjective(0)) ;
 
 	    evaluator.shutdown();
@@ -114,17 +117,16 @@ public class RunDeOptimization {
 
 		Simulator.simulate(controlSystems, true, "Sim+Opt");	//	plotLen %
 
-	    logger.info("RMSE_T(Begin/Mid/Best): " + controlSystems[0].getRmseT() + "/" +
-													((InvPendFuzzyContParamOpt) problem).getMidRmseT() + "/" + 
-													((InvPendFuzzyContParamOpt) problem).getBestRmseT());
+		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", "FULL OPTIMIZED",
+												(FuzzyControllerOpt) controlSystems[0].getCont(),
+												(FuzzyControllerOpt) controlSystems[1].getCont(),
+												(FuzzyControllerOpt) controlSystems[2].getCont());
+	    logger.info("RMSE_T(Begin/Mid/Best): " + formatter.format(controlSystems[0].getRmseT()) + "\t" +
+	    											formatter.format(((InvPendFuzzyContParamOpt) problem).getMidRmseT()) + "\t" + 
+	    											formatter.format(((InvPendFuzzyContParamOpt) problem).getBestRmseT()));
 
-	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
-													((InvPendFuzzyContParamOpt) problem).getMidDissimilarity() + "/" + 
-													((InvPendFuzzyContParamOpt) problem).getBestDissimilarity());
-
-		FuzzyInvPendController.reportSimilarity("DICTIONARY", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[1].getCont());
-		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
-		FuzzyInvPendController.reportSimilarity("MID OPTIMIZED", "FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[1].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
+	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0\t" +
+	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getMidDissimilarity()) + "\t" + 
+	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getBestDissimilarity()));
 	}
-
 }

@@ -28,16 +28,16 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	private static Logger logger = LogManager.getLogger(FuzzyInvPendController.class);
 
-	protected static int discritisationLevel = 50;
-	protected static double normMin = 0.0;
-	protected static double normMax = 10.0;
+	public static int discritisationLevel = 50;
+	private static double normMin = 0.0;
+	private static double normMax = 10.0;
 
-	protected static double tMin = -40.0 * Math.PI / 180.0;
-	protected static double tMax = 40.0 * Math.PI / 180.0;
-	protected static double dMin = -120.0 * Math.PI / 180.0;
-	protected static double dMax = 120.0 * Math.PI / 180.0;
-	protected static double fMin = -32.0;
-	protected static double fMax = 32.0;
+	private static double tMin = -40.0 * Math.PI / 180.0;
+	private static double tMax = 40.0 * Math.PI / 180.0;
+	private static double dMin = -120.0 * Math.PI / 180.0;
+	private static double dMax = 120.0 * Math.PI / 180.0;
+	private static double fMin = -32.0;
+	private static double fMax = 32.0;
 
 	protected String controllerName = null;
 
@@ -261,39 +261,21 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
-	private static void reportSimilarity(String defaultName, T1MF_Gaussian defaultFuzzyMF, String optName, T1MF_Gaussian optFuzzyMF, List<Double> jacSim) {
-		double jaccard = jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel);
-		jacSim.add(jaccard);
-		logger.info(defaultName + "\t\t" + formatter.format(defaultFuzzyMF.getMean()) + "\t" + formatter.format(defaultFuzzyMF.getSpread()) + "\t\t\t" + 
-						optName + "\t\t" + formatter.format(optFuzzyMF.getMean()) + "\t" + formatter.format(optFuzzyMF.getSpread()) + "\t" + formatter.format(jaccard));
+	private static void reportSimilarity(String defaultName, T1MF_Gaussian defaultFuzzyMF,
+											String midName, T1MF_Gaussian midFuzzyMF,
+											List<Double> midJacSim,
+											String optName, T1MF_Gaussian optFuzzyMF,
+											List<Double> optJacSim) {
+		double jacMid = jse.getSimilarity(defaultFuzzyMF, midFuzzyMF, discritisationLevel);
+		midJacSim.add(jacMid);
+		double jacOpt = jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel);
+		optJacSim.add(jacOpt);
+		logger.info(defaultName + "/c:" + formatter.format(defaultFuzzyMF.getMean()) + "/s:" + formatter.format(defaultFuzzyMF.getSpread()) + "\t" +
+						midName + "/c:" + formatter.format(midFuzzyMF.getMean()) + "/s:" + formatter.format(midFuzzyMF.getSpread()) + "/j:" + formatter.format(jacMid) + "\t" +
+						optName + "/c:" + formatter.format(optFuzzyMF.getMean()) + "/s:" + formatter.format(optFuzzyMF.getSpread()) + "/j:" + formatter.format(jacOpt));
 	}
 
-	public static void reportSimilarity(String leftHeader, String rightHeader,
-										FuzzyInvPendController dictFuzzyCont,
-										FuzzyInvPendController optFuzzyCont) {
-
-		List<Double> jacSim = new ArrayList<Double>();
-
-		logger.info(leftHeader + "\t\t\t" + rightHeader + "\t\t\tJACCARD SIMILARITY");
-
-		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfNMin), optFuzzyCont.tMfNMin, jacSim);
-		reportSimilarity("Some", dictFuzzyCont.tMfN1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfN1), optFuzzyCont.tMfN1, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.tMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMf0), optFuzzyCont.tMf0, jacSim);
-		reportSimilarity("Good amount", dictFuzzyCont.tMfP1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfP1), optFuzzyCont.tMfP1, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.tMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfPMax), optFuzzyCont.tMfPMax, jacSim);
-                         
-		reportSimilarity("Tiny", dictFuzzyCont.dMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfNMin), optFuzzyCont.dMfNMin, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.dMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMf0), optFuzzyCont.dMf0, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.dMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfPMax), optFuzzyCont.dMfPMax, jacSim);
-                         
-		reportSimilarity("Tiny", dictFuzzyCont.fMfNMin, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfNMin), optFuzzyCont.fMfNMin, jacSim);
-		reportSimilarity("Small", dictFuzzyCont.fMfN2, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN2), optFuzzyCont.fMfN2, jacSim);
-		reportSimilarity("Some", dictFuzzyCont.fMfN1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN1), optFuzzyCont.fMfN1, jacSim);
-		reportSimilarity("Medium", dictFuzzyCont.fMf0, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMf0), optFuzzyCont.fMf0, jacSim);
-		reportSimilarity("Good amount", dictFuzzyCont.fMfP1, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP1), optFuzzyCont.fMfP1, jacSim);
-		reportSimilarity("Large", dictFuzzyCont.fMfP2, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP2), optFuzzyCont.fMfP2, jacSim);
-		reportSimilarity("Very large", dictFuzzyCont.fMfPMax, Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfPMax), optFuzzyCont.fMfPMax, jacSim);
-
+	public static String reportSimilarityStats(String logPrefix, List<Double> jacSim) {
 		double simmin = Integer.MAX_VALUE;
 		double simmax = Integer.MIN_VALUE;
 		double simtot = 0.0;
@@ -307,7 +289,68 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		simavg = simtot / jacSim.size();
 		simavg = simtot / jacSim.size();
 
-		logger.info("Jaccard similarity (max/avg/min/tot): " + formatter.format(simmax) + "/" + formatter.format(simavg) + "/" + formatter.format(simmin) + "/" + formatter.format(simtot));
+		return logPrefix + "JacMin:" + formatter.format(simmin) + "/" + logPrefix + "JacAvg:" + formatter.format(simavg) + "/" + logPrefix + "JacMax:" + formatter.format(simmax);
+	}
+
+	public static void reportSimilarity(String defaultHeader, String midHeader, String optHeader,
+										FuzzyInvPendController dictFuzzyCont,
+										FuzzyInvPendController midFuzzyCont,
+										FuzzyInvPendController optFuzzyCont) {
+
+		List<Double> midJacSim = new ArrayList<Double>();
+		List<Double> optJacSim = new ArrayList<Double>();
+
+		logger.info(defaultHeader + "\t" + midHeader + "\t" + optHeader);
+
+		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMfNMin), midFuzzyCont.tMfNMin, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfNMin), optFuzzyCont.tMfNMin, optJacSim);
+		reportSimilarity("Some", dictFuzzyCont.tMfN1,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMfN1), midFuzzyCont.tMfN1, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfN1), optFuzzyCont.tMfN1, optJacSim);
+		reportSimilarity("Medium", dictFuzzyCont.tMf0,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMf0), midFuzzyCont.tMf0, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMf0), optFuzzyCont.tMf0, optJacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.tMfP1,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMfP1), midFuzzyCont.tMfP1, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfP1), optFuzzyCont.tMfP1, optJacSim);
+		reportSimilarity("Very large", dictFuzzyCont.tMfPMax,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMfPMax), midFuzzyCont.tMfPMax, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.tMfPMax), optFuzzyCont.tMfPMax, optJacSim);
+
+		reportSimilarity("Tiny", dictFuzzyCont.dMfNMin,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.dMfNMin), midFuzzyCont.dMfNMin, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfNMin), optFuzzyCont.dMfNMin, optJacSim);
+		reportSimilarity("Medium", dictFuzzyCont.dMf0,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.dMf0), midFuzzyCont.dMf0, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMf0), optFuzzyCont.dMf0, optJacSim);
+		reportSimilarity("Very large", dictFuzzyCont.dMfPMax,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.dMfPMax), midFuzzyCont.dMfPMax, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.dMfPMax), optFuzzyCont.dMfPMax, optJacSim);
+
+		reportSimilarity("Tiny", dictFuzzyCont.fMfNMin,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfNMin), midFuzzyCont.fMfNMin, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfNMin), optFuzzyCont.fMfNMin, optJacSim);
+		reportSimilarity("Small", dictFuzzyCont.fMfN2,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfN2), midFuzzyCont.fMfN2, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN2), optFuzzyCont.fMfN2, optJacSim);
+		reportSimilarity("Some", dictFuzzyCont.fMfN1,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfN1), midFuzzyCont.fMfN1, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfN1), optFuzzyCont.fMfN1, optJacSim);
+		reportSimilarity("Medium", dictFuzzyCont.fMf0,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMf0), midFuzzyCont.fMf0, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMf0), optFuzzyCont.fMf0, optJacSim);
+		reportSimilarity("Good amount", dictFuzzyCont.fMfP1,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfP1), midFuzzyCont.fMfP1, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP1), optFuzzyCont.fMfP1, optJacSim);
+		reportSimilarity("Large", dictFuzzyCont.fMfP2,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfP2), midFuzzyCont.fMfP2, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfP2), optFuzzyCont.fMfP2, optJacSim);
+		reportSimilarity("Very large", dictFuzzyCont.fMfPMax,
+							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfPMax), midFuzzyCont.fMfPMax, midJacSim,
+							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfPMax), optFuzzyCont.fMfPMax, optJacSim);
+
+		logger.info("\t" + reportSimilarityStats("mid", midJacSim) + "\t" + reportSimilarityStats("opt", optJacSim));
 	}
 
 	private static MembershipParams generateMembershipParams(T1MF_Gaussian defaultFuzzyMF, T1MF_Gaussian optFuzzyMF) {
