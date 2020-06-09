@@ -270,9 +270,9 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		midJacSim.add(jacMid);
 		double jacOpt = jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel);
 		optJacSim.add(jacOpt);
-		logger.info(defaultName + "/c:" + formatter.format(defaultFuzzyMF.getMean()) + "/s:" + formatter.format(defaultFuzzyMF.getSpread()) + "\t" +
-						midName + "/c:" + formatter.format(midFuzzyMF.getMean()) + "/s:" + formatter.format(midFuzzyMF.getSpread()) + "/j:" + formatter.format(jacMid) + "\t" +
-						optName + "/c:" + formatter.format(optFuzzyMF.getMean()) + "/s:" + formatter.format(optFuzzyMF.getSpread()) + "/j:" + formatter.format(jacOpt));
+		logger.info(defaultName + "(Center/Sigma/Jaccard):" + formatter.format(defaultFuzzyMF.getMean()) + "/" + formatter.format(defaultFuzzyMF.getSpread()) + "/1.0\t" +
+						midName + "(Center/Sigma/Jaccard):" + formatter.format(midFuzzyMF.getMean()) + "/" + formatter.format(midFuzzyMF.getSpread()) + "/" + formatter.format(jacMid) + "\t" +
+						optName + "(Center/Sigma/Jaccard):" + formatter.format(optFuzzyMF.getMean()) + "/" + formatter.format(optFuzzyMF.getSpread()) + "/" + formatter.format(jacOpt));
 	}
 
 	public static String reportSimilarityStats(String logPrefix, List<Double> jacSim) {
@@ -289,7 +289,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		simavg = simtot / jacSim.size();
 		simavg = simtot / jacSim.size();
 
-		return logPrefix + "JacMin:" + formatter.format(simmin) + "/" + logPrefix + "JacAvg:" + formatter.format(simavg) + "/" + logPrefix + "JacMax:" + formatter.format(simmax);
+		return logPrefix + "(Min/Avg/Max):" + formatter.format(simmin) + "/" + formatter.format(simavg) + "/" + formatter.format(simmax);
 	}
 
 	public static void reportSimilarity(String defaultHeader, String midHeader, String optHeader,
@@ -301,6 +301,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		List<Double> optJacSim = new ArrayList<Double>();
 
 		logger.info(defaultHeader + "\t" + midHeader + "\t" + optHeader);
+		logger.info("-----------------------------------------------------------------------");
 
 		reportSimilarity("Tiny", dictFuzzyCont.tMfNMin,
 							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.tMfNMin), midFuzzyCont.tMfNMin, midJacSim,
@@ -349,8 +350,9 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		reportSimilarity("Very large", dictFuzzyCont.fMfPMax,
 							Dictionary.getTheMostSimilarOnesName(midFuzzyCont.fMfPMax), midFuzzyCont.fMfPMax, midJacSim,
 							Dictionary.getTheMostSimilarOnesName(optFuzzyCont.fMfPMax), optFuzzyCont.fMfPMax, optJacSim);
-
-		logger.info("\t" + reportSimilarityStats("mid", midJacSim) + "\t" + reportSimilarityStats("opt", optJacSim));
+		logger.info("-----------------------------------------------------------------------");
+		logger.info("def(Min/Avg/Max):1.0/1.0/1.0\t" + reportSimilarityStats("mid", midJacSim) + "\t" + reportSimilarityStats("opt", optJacSim));
+		logger.info("-----------------------------------------------------------------------");
 	}
 
 	private static MembershipParams generateMembershipParams(T1MF_Gaussian defaultFuzzyMF, T1MF_Gaussian optFuzzyMF) {

@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 
 import org.dynamics.invpend.InvertedPendulum;
 import org.fuzzy.Dictionary;
-import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
-import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.ControlSystem;
 
@@ -31,6 +29,6 @@ public class RunDePlotDefaultSimulation {
 		Simulator.simulate(controlSystems, true, "Sim");	//	plotLen %
 		System.out.println("RMSE: " + controlSystems[0].getRmseT());
 
-		FuzzyInvPendController.reportSimilarity("DICTIONARY", "DICTIONARY", Dictionary.defaultCont, (FuzzyControllerOpt) controlSystems[0].getCont());
+//		FuzzyInvPendController.reportSimilarity("DICTIONARY", "DICTIONARY", Dictionary.defaultCont, (FuzzyControllerOpt) controlSystems[0].getCont());
 	}
 }

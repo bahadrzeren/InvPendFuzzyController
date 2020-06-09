@@ -117,16 +117,20 @@ public class RunDeOptimization {
 
 		Simulator.simulate(controlSystems, true, "Sim+Opt");	//	plotLen %
 
+		logger.info("-----------------------------------------------------------------------");
+
 		FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", "FULL OPTIMIZED",
 												(FuzzyControllerOpt) controlSystems[0].getCont(),
 												(FuzzyControllerOpt) controlSystems[1].getCont(),
 												(FuzzyControllerOpt) controlSystems[2].getCont());
-	    logger.info("RMSE_T(Begin/Mid/Best): " + formatter.format(controlSystems[0].getRmseT()) + "\t" +
-	    											formatter.format(((InvPendFuzzyContParamOpt) problem).getMidRmseT()) + "\t" + 
-	    											formatter.format(((InvPendFuzzyContParamOpt) problem).getBestRmseT()));
+	    logger.info("RMSE_T(Begin/Mid/Best):" + formatter.format(controlSystems[0].getRmseT()) + "/" +
+	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getMidRmseT()) + "/" + 
+	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getBestRmseT()));
 
-	    logger.info("JaccardDissimilarity(Begin/Mid/Best): 0.0\t" +
-	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getMidDissimilarity()) + "\t" + 
+	    logger.info("JaccardDissimilarity(Begin/Mid/Best):0.0/" +
+	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getMidDissimilarity()) + "/" + 
 	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getBestDissimilarity()));
+
+		logger.info("-----------------------------------------------------------------------");
 	}
 }
