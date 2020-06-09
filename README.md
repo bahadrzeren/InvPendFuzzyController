@@ -15,7 +15,7 @@ Libraries used:
 - JMathPlot, http://code.google.com/p/jmathplot
 
 
-2) Optimizes parameters (centers, sigmas) of fuzzy controllers that controls inverted pendulum using Differential Evolution algorithm.
+2) Optimizes parameters (centers, sigmas) of Gaussian fuzzy controllers that controls inverted pendulum using Differential Evolution algorithm.
 
 Additional libraries used:
 
