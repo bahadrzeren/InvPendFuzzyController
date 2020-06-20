@@ -32,7 +32,7 @@ public class RunDeOptimization {
 
 	private static Logger logger = null;
 
-	public static final int maxItr = 5000;
+	private static final int maxItr = 5000;
 	private static final int popSize = 20;
 
 	private static final double cr = 0.5;
@@ -53,7 +53,7 @@ public class RunDeOptimization {
 		logger.info("Inverted Pendulum Fuzzy Controller Parameters Optimizer");
 		logger.info("-------------------------------------------------------");
 
-		DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
+		DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange);
 	    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
 	    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 	    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
@@ -72,14 +72,9 @@ public class RunDeOptimization {
 
 	    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1);
 	    population.add(solution);
-	    new SolutionListOutput(population).setSeparator("\t")
-//									        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-//									        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-									        .print();
+	    new SolutionListOutput(population).setSeparator("\t").print();
 
 	    logger.info("Total execution time: " + computingTime + "ms");
-//	    logger.info("Objectives values have been written to file FUN.tsv");
-//	    logger.info("Variables values have been written to file VAR.tsv");
 	    logger.info("Fitness: " + solution.getObjective(0)) ;
 
 	    evaluator.shutdown();
@@ -123,7 +118,8 @@ public class RunDeOptimization {
 												(FuzzyControllerOpt) controlSystems[0].getCont(),
 												(FuzzyControllerOpt) controlSystems[1].getCont(),
 												(FuzzyControllerOpt) controlSystems[2].getCont());
-	    logger.info("RMSE_T(Begin/Mid/Best):" + formatter.format(controlSystems[0].getRmseT()) + "/" +
+
+		logger.info("RMSE_T(Begin/Mid/Best):" + formatter.format(controlSystems[0].getRmseT()) + "/" +
 	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getMidRmseT()) + "/" + 
 	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getBestRmseT()));
 

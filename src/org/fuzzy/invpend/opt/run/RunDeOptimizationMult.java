@@ -1,6 +1,8 @@
 package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,9 +15,6 @@ import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.opt.cont.FuzzyControllerOpt;
 import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
 import org.fuzzy.invpend.opt.prob.InvPendFuzzyContParamOpt;
-import org.fuzzy.invpend.opt.run.solution.ControllerParams;
-import org.fuzzy.invpend.opt.run.solution.MembershipParams;
-import org.fuzzy.invpend.opt.run.solution.SolutionParams;
 import org.fuzzy.invpend.sim.Simulator;
 import org.fuzzy.invpend.sim.ControlSystem;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -33,7 +32,7 @@ public class RunDeOptimizationMult {
 
 	private static Logger logger = null;
 
-	public static final int maxItr = 5000;
+	private static final int maxItr = 2000;
 	private static final int popSize = 20;
 
 	private static final double cr = 0.5;
@@ -42,12 +41,14 @@ public class RunDeOptimizationMult {
 	private static final double centerSearchRange = 0.5;
 	private static final double sigmaSearchRange = 1.0;
 
-	private static final int numOfRuns = 30;
+	private static final int numOfRuns = 5;
 
 	static {
 		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
 		logger = LogManager.getLogger(RunDeOptimizationMult.class);
 	}
+
+	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
 	public static void main(String[] args) {
 	    ControlSystem[] controlSystems = new ControlSystem[3];
@@ -60,11 +61,12 @@ public class RunDeOptimizationMult {
 		controlSystems[0].getCont().plotControlSurface("dict");
 
 		for (int i = 1; i <= numOfRuns; i++) {
+			logger.info("----------------------------------------------------------");
 			logger.info(i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
 			logger.info("----------------------------------------------------------");
 			logger.info("----------------------------------------------------------");
 
-			DoubleProblem problem = new InvPendFuzzyContParamOpt(centerSearchRange, sigmaSearchRange);
+			DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange);
 		    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
 		    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 		    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
@@ -86,8 +88,6 @@ public class RunDeOptimizationMult {
 		    new SolutionListOutput(population).setSeparator("\t").print();
 
 		    logger.info(i + "# Total execution time: " + computingTime + "ms");
-		    logger.info(i + "# Objectives values have been written to file FUN.tsv");
-		    logger.info(i + "# Variables values have been written to file VAR.tsv");
 		    logger.info(i + "# Fitness: " + solution.getObjective(0)) ;
 
 		    evaluator.shutdown();
@@ -113,19 +113,22 @@ public class RunDeOptimizationMult {
 
 			Simulator.simulate(controlSystems, true, i + "# Sim+Opt");	//	plotLen %
 
-			SolutionParams sp = new SolutionParams(objective, jaccardDissimilarity, rmseT, rmseTd, rmseF, rmseX, rmseXd, midContParams, bestContParams)
+			logger.info("-----------------------------------------------------------------------");
 
-//		    logger.info(i + "# RMSE_T(Begin/Mid/Best): " + controlSystems[0].getRmseT() + "/" +
-//														((InvPendFuzzyContParamOpt) problem).getMidRmseT() + "/" + 
-//														((InvPendFuzzyContParamOpt) problem).getBestRmseT());
-//
-//		    logger.info(i + "# JaccardDissimilarity(Begin/Mid/Best): 0.0/" +
-//														((InvPendFuzzyContParamOpt) problem).getMidDissimilarity() + "/" + 
-//														((InvPendFuzzyContParamOpt) problem).getBestDissimilarity());
-//
-//			FuzzyInvPendController.reportSimilarity("DICTIONARY", i + "# FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[1].getCont());
-//			FuzzyInvPendController.reportSimilarity("DICTIONARY", i + "# MID OPTIMIZED", (FuzzyControllerOpt) controlSystems[0].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
-//			FuzzyInvPendController.reportSimilarity(i + "# MID OPTIMIZED", i + "# FULL OPTIMIZED", (FuzzyControllerOpt) controlSystems[1].getCont(), (FuzzyControllerOpt) controlSystems[2].getCont());
+			FuzzyInvPendController.reportSimilarity("DICTIONARY", "MID OPTIMIZED", "FULL OPTIMIZED",
+													(FuzzyControllerOpt) controlSystems[0].getCont(),
+													(FuzzyControllerOpt) controlSystems[1].getCont(),
+													(FuzzyControllerOpt) controlSystems[2].getCont());
+
+			logger.info("RMSE_T(Begin/Mid/Best):" + formatter.format(controlSystems[0].getRmseT()) + "/" +
+		    											formatter.format(((InvPendFuzzyContParamOpt) problem).getMidRmseT()) + "/" + 
+		    											formatter.format(((InvPendFuzzyContParamOpt) problem).getBestRmseT()));
+
+		    logger.info("JaccardDissimilarity(Begin/Mid/Best):0.0/" +
+		    											formatter.format(((InvPendFuzzyContParamOpt) problem).getMidDissimilarity()) + "/" + 
+		    											formatter.format(((InvPendFuzzyContParamOpt) problem).getBestDissimilarity()));
+
+			logger.info("-----------------------------------------------------------------------");
 		}
 	}
 }

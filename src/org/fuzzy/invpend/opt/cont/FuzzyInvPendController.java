@@ -12,8 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fuzzy.Dictionary;
 import org.fuzzy.invpend.cont.FuzzyController;
-import org.fuzzy.invpend.opt.run.solution.ControllerParams;
-import org.fuzzy.invpend.opt.run.solution.MembershipParams;
 
 import generic.Input;
 import generic.Output;
@@ -354,33 +352,4 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 		logger.info("def(Min/Avg/Max):1.0/1.0/1.0\t" + reportSimilarityStats("mid", midJacSim) + "\t" + reportSimilarityStats("opt", optJacSim));
 		logger.info("-----------------------------------------------------------------------");
 	}
-
-	private static MembershipParams generateMembershipParams(T1MF_Gaussian defaultFuzzyMF, T1MF_Gaussian optFuzzyMF) {
-		return new MembershipParams(Dictionary.getTheMostSimilarOnesName(optFuzzyMF),
-									1.0 - jse.getSimilarity(defaultFuzzyMF, optFuzzyMF, discritisationLevel),
-									optFuzzyMF.getMean(),
-									optFuzzyMF.getSpread());
-	}
-
-	public static ControllerParams generateControllerParams(FuzzyInvPendController dictFuzzyCont,
-															FuzzyInvPendController optFuzzyCont) {
-		return new ControllerParams(generateMembershipParams(dictFuzzyCont.tMfNMin, optFuzzyCont.tMfNMin),
-													generateMembershipParams(dictFuzzyCont.tMfN1, optFuzzyCont.tMfN1),
-													generateMembershipParams(dictFuzzyCont.tMf0, optFuzzyCont.tMf0),
-													generateMembershipParams(dictFuzzyCont.tMfP1, optFuzzyCont.tMfP1),
-													generateMembershipParams(dictFuzzyCont.tMfPMax, optFuzzyCont.tMfPMax),
-													
-													generateMembershipParams(dictFuzzyCont.dMfNMin, optFuzzyCont.dMfNMin),
-													generateMembershipParams(dictFuzzyCont.dMf0, optFuzzyCont.dMf0),
-													generateMembershipParams(dictFuzzyCont.dMfPMax, optFuzzyCont.dMfPMax),
-													
-													generateMembershipParams(dictFuzzyCont.fMfNMin, optFuzzyCont.fMfNMin),
-													generateMembershipParams(dictFuzzyCont.fMfN2, optFuzzyCont.fMfN2),
-													generateMembershipParams(dictFuzzyCont.fMfN1, optFuzzyCont.fMfN1),
-													generateMembershipParams(dictFuzzyCont.fMf0, optFuzzyCont.fMf0),
-													generateMembershipParams(dictFuzzyCont.fMfP1, optFuzzyCont.fMfP1),
-													generateMembershipParams(dictFuzzyCont.fMfP2, optFuzzyCont.fMfP2),
-													generateMembershipParams(dictFuzzyCont.fMfPMax, optFuzzyCont.fMfPMax));
-	}
-
 }
