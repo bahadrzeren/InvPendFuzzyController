@@ -22,8 +22,10 @@ public class InvertedPendulum {
 	 */
 	private double xInit = 0.0;
 	private double xdInit = 0.0;
-	private double tInit = -30.0 * Math.PI / 180.0;
-	private double tdInit = 4.0 * Math.PI / 180.0;
+//	private double tInit = -30.0 * Math.PI / 180.0;
+//	private double tdInit = 4.0 * Math.PI / 180.0;
+	private double tInit = 5.0 * Math.PI / 180.0;
+	private double tdInit = 3.0 * Math.PI / 180.0;
 
 	private State activeState = null;
 
@@ -132,7 +134,7 @@ public class InvertedPendulum {
 	}
 
 	public void move(int timeNdx, double step, double f, double d) {
-		this.stateHistory[timeNdx] = activeState.getCopy();
+		this.stateHistory[timeNdx] = this.activeState.getCopy();
 		this.forceHistory[timeNdx] = f;
 		this.disturbanceHistory[timeNdx] = d;
 

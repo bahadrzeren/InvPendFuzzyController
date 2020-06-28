@@ -191,7 +191,7 @@ public class Simulator {
 	private static Font legendFont = new Font("Tahoma", 1, 12);
 	private static Font axisFont = new Font("Tahoma", 1, 12);
 	private static Font axisLightFont = new Font("Tahoma", 1, 10);
-	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
 	private static void plot(ControlSystem[] controlSystems, String fileName, String title, String fieldName, double[] times, double[][] values) {
 
@@ -236,7 +236,7 @@ public class Simulator {
         frame.setVisible(true);
 
         try {
-        	Thread.sleep(25);
+        	Thread.sleep(50);
         	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_resp.png"));
         } catch (Exception ex) {
         	ex.printStackTrace();

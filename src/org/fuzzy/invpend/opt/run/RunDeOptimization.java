@@ -91,9 +91,6 @@ public class RunDeOptimization {
 		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
 		controlSystems[0].getCont().plotControlSurface("dict");
 
-//		systemPairs[0].cont.plotMembershipFunctions();
-//		systemPairs[0].cont.plotControlSurface();
-
 		controlSystems[1] = new ControlSystem("Mid Optimized",
 												Color.BLUE,
 												((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
@@ -128,5 +125,6 @@ public class RunDeOptimization {
 	    										formatter.format(((InvPendFuzzyContParamOpt) problem).getBestDissimilarity()));
 
 		logger.info("-----------------------------------------------------------------------");
+
 	}
 }

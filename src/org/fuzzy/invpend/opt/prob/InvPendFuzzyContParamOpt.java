@@ -20,14 +20,14 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	private static final long serialVersionUID = 6052688537783762715L;
 
-	private int maxItr = 2000;
-	public static int numOfVars = 2 * (5 + 3 + 7);
+	private int maxItr = 0;
+//	private static int numOfVars = 2 * (5 + 3 + 7);
 
 	public InvPendFuzzyContParamOpt(int maxItr,
 									double centerSearchRage,
 									double sigmaSearchRage) {
 		this.maxItr = maxItr;
-	    setNumberOfVariables(numOfVars);
+	    setNumberOfVariables(30);
 	    setNumberOfObjectives(1);
 	    setName("InvPendFuzzyContParamOpt");
 
@@ -37,7 +37,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	    /*
 	     *	THETA 
 	     */
-	    for (int i = 0; i < numOfVars / 2; i++) {
+	    for (int i = 0; i < 30 / 2; i++) {
 			lowerLimit.add(Dictionary.defaultVars.get(2 * i) - centerSearchRage);
 			upperLimit.add(Dictionary.defaultVars.get(2 * i) + centerSearchRage);
 			lowerLimit.add(Dictionary.defaultVars.get(2 * i + 1) - sigmaSearchRage);

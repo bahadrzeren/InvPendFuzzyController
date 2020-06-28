@@ -3,6 +3,7 @@ package org.fuzzy.invpend.intrpr.cont;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.fuzzy.invpend.cont.FuzzyController;
 
@@ -62,6 +63,10 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 	public FuzzyInvPendController(String controllerName) {
 		this.controllerName = controllerName;
 		this.initialize();
+	}
+
+	public List<Double> getVariables() {
+		return null;
 	}
 
 	@Override

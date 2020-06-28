@@ -73,6 +73,49 @@ public abstract class FuzzyInvPendController implements FuzzyController {
 
 	protected abstract void initialize(List<Double> variables);
 
+	private List<Double> variables = null;
+
+	public List<Double> getVariables() {
+		if (variables == null) {
+			variables = new ArrayList<Double>();
+
+			variables.add(this.tMfNMin.getMean());
+			variables.add(this.tMfNMin.getSpread());
+			variables.add(this.tMfN1.getMean());
+			variables.add(this.tMfN1.getSpread());
+			variables.add(this.tMf0.getMean());
+			variables.add(this.tMf0.getSpread());
+			variables.add(this.tMfP1.getMean());
+			variables.add(this.tMfP1.getSpread());
+			variables.add(this.tMfPMax.getMean());
+			variables.add(this.tMfPMax.getSpread());
+
+			variables.add(this.dMfNMin.getMean());
+			variables.add(this.dMfNMin.getSpread());
+			variables.add(this.dMf0.getMean());
+			variables.add(this.dMf0.getSpread());
+			variables.add(this.dMfPMax.getMean());
+			variables.add(this.dMfPMax.getSpread());
+
+			variables.add(this.fMfNMin.getMean());
+			variables.add(this.fMfNMin.getSpread());
+			variables.add(this.fMfN2.getMean());
+			variables.add(this.fMfN2.getSpread());
+			variables.add(this.fMfN1.getMean());
+			variables.add(this.fMfN1.getSpread());
+			variables.add(this.fMf0.getMean());
+			variables.add(this.fMf0.getSpread());
+			variables.add(this.fMfP1.getMean());
+			variables.add(this.fMfP1.getSpread());
+			variables.add(this.fMfP2.getMean());
+			variables.add(this.fMfP2.getSpread());
+			variables.add(this.fMfPMax.getMean());
+			variables.add(this.fMfPMax.getSpread());
+		}
+
+		return variables;
+	}
+
 	public FuzzyInvPendController(String controllerName, List<Double> variables) {
 		this.controllerName = controllerName;
 		this.t = new Input("Theta", new Tuple(normMin, normMax));
@@ -155,7 +198,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotControlSurface(filePrefix, true);
 	}
 
-	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
 	private void plotMFs(String fileName, String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel) {
         JMathPlotter plotter = new JMathPlotter(12,12,12);
@@ -165,7 +208,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         plotter.show(fileName + " " + name);
 
         try {
-            Thread.sleep(25);
+            Thread.sleep(50);
         	plotter.toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_fuzzy" + ".png"));
         } catch (Exception ex) {
         	ex.printStackTrace();
