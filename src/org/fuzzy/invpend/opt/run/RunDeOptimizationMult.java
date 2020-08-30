@@ -1,6 +1,9 @@
 package org.fuzzy.invpend.opt.run;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -8,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +24,7 @@ import org.fuzzy.invpend.opt.cont.FuzzyInvPendController;
 import org.fuzzy.invpend.opt.prob.InvPendFuzzyContParamOpt;
 import org.fuzzy.invpend.sim.ControlSystem;
 import org.fuzzy.invpend.sim.Simulator;
+import org.math.plot.Plot2DPanel;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
@@ -34,7 +40,7 @@ public class RunDeOptimizationMult {
 
 	private static Logger logger = null;
 
-	private static final int maxItr = 2000;
+	private static final int maxItr = 4000;
 	private static final int popSize = 20;
 
 	private static final double cr = 0.5;
@@ -43,9 +49,15 @@ public class RunDeOptimizationMult {
 	private static final double centerSearchRange = 0.5;
 	private static final double sigmaSearchRange = 1.0;
 
-	private static final int numOfRuns = 30;
+	private static final int numOfRuns = 1;
 
+	private static double[] itrs = null;
 	private static List<OptOutput> optOutputs = new ArrayList<OptOutput>();
+
+//	private static double minRmseT = Integer.MAX_VALUE;
+//	private static double minDissimilarity = Integer.MAX_VALUE;
+//	private static double maxRmseT = 0.0;
+//	private static double maxDissimilarity = 0.0;
 
 	static {
 		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
@@ -55,6 +67,9 @@ public class RunDeOptimizationMult {
 	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
 	public static void main(String[] args) throws InterruptedException {
+		itrs = new double[maxItr];
+		for (int i = 0; i < itrs.length; i++)
+			itrs[i] = i;
 		for (int i = 1; i <= numOfRuns; i++) {
 			logger.info("----------------------------------------------------------");
 			logger.info(i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
@@ -87,7 +102,22 @@ public class RunDeOptimizationMult {
 
 		    evaluator.shutdown();
 
-		    OptOutput output = new OptOutput(((InvPendFuzzyContParamOpt) problem).getMidDissimilarity(),
+//			if (minRmseT > ((InvPendFuzzyContParamOpt) problem).getMinRmseT())
+//				minRmseT = ((InvPendFuzzyContParamOpt) problem).getMinRmseT();
+//			if (minDissimilarity > ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity())
+//				minDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity();
+//			
+//			if (maxRmseT < ((InvPendFuzzyContParamOpt) problem).getMaxRmseT())
+//				maxRmseT = ((InvPendFuzzyContParamOpt) problem).getMaxRmseT();
+//			if (maxDissimilarity < ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity())
+//				maxDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity();
+
+		    OptOutput output = new OptOutput(((InvPendFuzzyContParamOpt) problem).getDissimilaritys(),
+									    		((InvPendFuzzyContParamOpt) problem).getNormDissimilaritys(),
+											    ((InvPendFuzzyContParamOpt) problem).getRmseTs(),
+											    ((InvPendFuzzyContParamOpt) problem).getNormRmseTs(),
+											    ((InvPendFuzzyContParamOpt) problem).getObjs(),
+		    									((InvPendFuzzyContParamOpt) problem).getMidDissimilarity(),
 											    ((InvPendFuzzyContParamOpt) problem).getMidRmseT(),
 											    ((InvPendFuzzyContParamOpt) problem).getMidObj(),
 											    ((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
@@ -99,7 +129,14 @@ public class RunDeOptimizationMult {
 
 		    optOutputs.add(output);
 		}
+
 		report();
+
+//		logger.info("minRmseT = " + minRmseT);
+//		logger.info("minDissimilarity = " + minDissimilarity);
+//		logger.info("maxRmseT = " + maxRmseT);
+//		logger.info("maxDissimilarity = " + maxDissimilarity);
+//		logger.info("The normalization limits have been identified!");
 	}
 
 	public static void report() throws InterruptedException {
@@ -136,7 +173,6 @@ public class RunDeOptimizationMult {
 									}).get();
 		FuzzyController bestsBest = bestOutput.getBestController();
 		FuzzyController bestsMid = bestOutput.getMidController();
-
 
 //		List<Double> midsAvgVars = new ArrayList<Double>();
 //		for (int i = 0; i < 30; i++) {
@@ -184,6 +220,9 @@ public class RunDeOptimizationMult {
 
 		controlSystems[2].getCont().plotMembershipFunctions("final best", true);
 		controlSystems[2].getCont().plotControlSurface("final best");
+
+		plotConvergence("FinalBestConvergence", "Convergence", itrs, bestOutput.getObjs(), bestOutput.getRmseTs(), bestOutput.getDissimilaritys());
+		plotConvergence("FinalBestNormConvergence", "NormConvergence", itrs, bestOutput.getObjs(), bestOutput.getNormRmseTs(), bestOutput.getNormDissimilaritys());
 
 		Simulator.simulate(controlSystems, true, "Sim+Opt+FinalMid+FinalBest");	//	plotLen %
 
@@ -251,6 +290,74 @@ public class RunDeOptimizationMult {
 //		logger.info("-----------------------------------------------------------------------");
 //		logger.info("-----------------------------------------------------------------------");
 
-
 	}
+
+	private static Font legendFont = new Font("Tahoma", 1, 12);
+	private static Font axisFont = new Font("Tahoma", 1, 12);
+	private static Font axisLightFont = new Font("Tahoma", 1, 10);
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+
+	private static void plotConvergence(String fileName, String title, double[] iters, double[] objs, double[] rmseTs, double[] dissimilaritys) {
+
+		double minV = Integer.MAX_VALUE;
+		double maxV = Integer.MIN_VALUE;
+
+        for (int i = 0; i < maxItr; i++) {
+        	if (objs[i] > maxV) maxV = objs[i];
+        	if (objs[i] < minV) minV = objs[i];
+        }
+
+        for (int i = 0; i < maxItr; i++) {
+        	if (rmseTs[i] > maxV) maxV = rmseTs[i];
+        	if (rmseTs[i] < minV) minV = rmseTs[i];
+        }
+
+        for (int i = 0; i < maxItr; i++) {
+        	if (dissimilaritys[i] > maxV) maxV = dissimilaritys[i];
+        	if (dissimilaritys[i] < minV) minV = dissimilaritys[i];
+        }
+
+        if (minV > 0) minV *= 0.9; else minV *= 1.1;
+        if (maxV < 0) maxV *= 0.9; else maxV *= 1.1;
+
+        Container plot = new Plot2DPanel();
+
+        ((Plot2DPanel)plot).setFont(legendFont);
+        ((Plot2DPanel)plot).getAxis(0).setLabelText("Itr");
+        ((Plot2DPanel)plot).getAxis(0).setLabelFont(axisFont);
+        ((Plot2DPanel)plot).getAxis(0).setLightLabelFont(axisLightFont);
+        ((Plot2DPanel)plot).getAxis(1).setLabelText("Convergence (Cost)");
+        ((Plot2DPanel)plot).getAxis(1).setLabelFont(axisFont);
+        ((Plot2DPanel)plot).getAxis(1).setLightLabelFont(axisLightFont);
+        // define the legend position
+        ((Plot2DPanel)plot).addLegend("SOUTH");            
+
+        // add a line plot to the PlotPanel
+        ((Plot2DPanel)plot).addLinePlot("Obj", Color.RED, iters, objs);
+        ((Plot2DPanel)plot).setFixedBounds(1, minV, maxV);
+        ((Plot2DPanel)plot).setFixedBounds(0, 0, maxItr);
+        // add a line plot to the PlotPanel
+        ((Plot2DPanel)plot).addLinePlot("RmseT", Color.BLUE, iters, rmseTs);
+        ((Plot2DPanel)plot).setFixedBounds(1, minV, maxV);
+        ((Plot2DPanel)plot).setFixedBounds(0, 0, maxItr);
+        // add a line plot to the PlotPanel
+        ((Plot2DPanel)plot).addLinePlot("Dissimilarity", Color.GREEN, iters, dissimilaritys);
+        ((Plot2DPanel)plot).setFixedBounds(1, minV, maxV);
+        ((Plot2DPanel)plot).setFixedBounds(0, 0, maxItr);
+
+
+        JFrame frame = new JFrame(title);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1000, 500);
+        frame.setContentPane(plot);
+        frame.setVisible(true);
+
+        try {
+        	Thread.sleep(50);
+        	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_convergence.png"));
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+	}
+
 }

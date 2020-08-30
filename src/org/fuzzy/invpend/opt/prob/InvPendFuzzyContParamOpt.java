@@ -1,6 +1,8 @@
 package org.fuzzy.invpend.opt.prob;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,13 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	private int maxItr = 0;
 //	private static int numOfVars = 2 * (5 + 3 + 7);
+
+	private double normMinRmseT = 0.65;
+	private double normMaxRmseT = 39.0;
+	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
+	private double normMinDissimilarity = 0.01;
+	private double normMaxDissimilarity = 0.55;
+	private double normRangeDissimilarity = normMaxDissimilarity - normMinDissimilarity;
 
 	public InvPendFuzzyContParamOpt(int maxItr,
 									double centerSearchRage,
@@ -56,19 +65,76 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 											Color.RED,
 											null,
 											new InvertedPendulum());
+
+		this.objs = new double[maxItr];
+		this.rmseTs = new double[maxItr];
+		this.dissimilaritys = new double[maxItr];
+		this.normRmseTs = new double[maxItr];
+		this.normDissimilaritys = new double[maxItr];
 	}
 
 	private ControlSystem[] controlSystems = null;
 
 	private int itr = 0;
 
+	private double minRmseT = Integer.MAX_VALUE;
+	private double minDissimilarity = Integer.MAX_VALUE;
+	private double maxRmseT = 0.0;
+	private double maxDissimilarity = 0.0;
+
+	private double[] objs = null;
+	private double[] rmseTs = null;
+	private double[] dissimilaritys = null;
+	private double[] normRmseTs = null;
+	private double[] normDissimilaritys = null;
+
 	private double midObj = Integer.MAX_VALUE;
 	private double midRmseT = Integer.MAX_VALUE;
+	private double midNormRmseT = Integer.MAX_VALUE;
 	private double midDissimilarity = Integer.MAX_VALUE;
+	private double midNormDissimilarity = Integer.MAX_VALUE;
 
 	private double bestObj = Integer.MAX_VALUE;
 	private double bestRmseT = Integer.MAX_VALUE;
+	private double bestNormRmseT = Integer.MAX_VALUE;
 	private double bestDissimilarity = Integer.MAX_VALUE;
+	private double bestNormDissimilarity = Integer.MAX_VALUE;
+
+	public double[] getObjs() {
+		return this.objs;
+	}
+
+	public double[] getRmseTs() {
+		return this.rmseTs;
+	}
+
+	public double[] getDissimilaritys() {
+		return this.dissimilaritys;
+	}
+
+	public double[] getNormRmseTs() {
+		return this.normRmseTs;
+	}
+
+	public double[] getNormDissimilaritys() {
+		return this.normDissimilaritys;
+	}
+
+	public double getMinRmseT() {
+		return minRmseT;
+	}
+
+	public double getMinDissimilarity() {
+		return minDissimilarity;
+	}
+
+	public double getMaxRmseT() {
+		return maxRmseT;
+	}
+
+	public double getMaxDissimilarity() {
+		return maxDissimilarity;
+	}
 
 	public double getMidObj() {
 		return midObj;
@@ -78,8 +144,16 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		return midRmseT;
 	}
 
+	public double getMidNormRmseT() {
+		return midNormRmseT;
+	}
+
 	public double getMidDissimilarity() {
 		return midDissimilarity;
+	}
+
+	public double getMidNormDissimilarity() {
+		return midNormDissimilarity;
 	}
 
 	public double getBestObj() {
@@ -90,8 +164,16 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		return bestRmseT;
 	}
 
+	public double getBestNormRmseT() {
+		return bestNormRmseT;
+	}
+
 	public double getBestDissimilarity() {
 		return bestDissimilarity;
+	}
+
+	public double getBestNormDissimilarity() {
+		return bestNormDissimilarity;
 	}
 
 	//	private List<Double> midVariables = null;
@@ -100,6 +182,8 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	public FuzzyControllerOpt getMidOptFuzzyCont() {
 		return midOptFuzzyCont;
 	}
+
+	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
 	@Override
 	public synchronized void evaluate(DoubleSolution solution) {
@@ -111,27 +195,55 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 		controlSystems[0].setCont(null);
 
-		double jaccardDissimilarity = 1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
+		double dissimilarity = 1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
+		double rmseT = controlSystems[0].getRmseT();
+		double normDissimilarity = (dissimilarity - normMinDissimilarity) / normRangeDissimilarity;
+		double normRmseT = (rmseT - normMinRmseT) / normRangeRmseT;
 
 //		solution.setObjective(0, systemPairs[0].rmseT);
-		solution.setObjective(0, 0.5 * controlSystems[0].getRmseT() + 0.5 * jaccardDissimilarity);
+//		solution.setObjective(0, 0.9 * rmseT + 0.1 * dissimilarity);
+		solution.setObjective(0, 0.9 * normRmseT + 0.1 * normDissimilarity);
+
+		if (minRmseT > rmseT)
+			minRmseT = rmseT;
+		if (minDissimilarity > dissimilarity)
+			minDissimilarity = dissimilarity;
+
+		if (maxRmseT < rmseT)
+			maxRmseT = rmseT;
+		if (maxDissimilarity < dissimilarity)
+			maxDissimilarity = dissimilarity;
 
 		if (bestObj > solution.getObjective(0)) {
 			bestObj = solution.getObjective(0);
-			bestRmseT = controlSystems[0].getRmseT();
-			bestDissimilarity = jaccardDissimilarity;
+			bestRmseT = rmseT;
+			bestNormRmseT = (bestRmseT - normMinRmseT) / normRangeRmseT;
+			bestDissimilarity = dissimilarity;
+			bestNormDissimilarity = (bestDissimilarity - normMinDissimilarity) / normRangeDissimilarity;;
+
 			if (itr < this.maxItr / 2) {
 //				ArrayList<Double> hl = ((ArrayList<Double>) solution.getVariables());
 //				midVariables = (ArrayList<Double>) hl.clone();
 				midOptFuzzyCont = solCont;	//	new FuzzyControllerOpt(midVariables);
 				midObj = bestObj;
 				midRmseT = bestRmseT;
+				midNormRmseT = bestNormRmseT;
 				midDissimilarity = bestDissimilarity;
+				midNormDissimilarity = bestNormDissimilarity;
 			}
 		}
 
-		logger.info((++itr) + " - obj: " + solution.getObjective(0) + "/" + bestObj + 
-								" - RMSET: " + controlSystems[0].getRmseT() + "/" + bestRmseT + 
-								" - JacDissim: "  + jaccardDissimilarity + "/" + bestDissimilarity);
+		this.objs[itr] = bestObj;
+		this.rmseTs[itr] = bestRmseT;
+		this.normRmseTs[itr] = bestNormRmseT;
+		this.dissimilaritys[itr] = bestDissimilarity;
+		this.normDissimilaritys[itr] = bestNormDissimilarity;
+
+		logger.info((++itr) + " - obj: " + formatter.format(solution.getObjective(0)) + "/" + formatter.format(bestObj) + 
+								" - RMSET: " + formatter.format(rmseT) + "/" + formatter.format(bestRmseT) + 
+								" - NormRMSET: " + formatter.format(normRmseT) + "/" + formatter.format(bestNormRmseT) + 
+								" - JacDissim: "  + formatter.format(dissimilarity) + "/" + formatter.format(bestDissimilarity) +
+								" - NormJacDissim: "  + formatter.format(normDissimilarity) + "/" + formatter.format(bestNormDissimilarity)
+								);
 	}
 }
