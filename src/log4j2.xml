@@ -4,11 +4,15 @@
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
         </Console>
-        <File name="LogToFile" fileName="${sys:xyz}">
+        <RollingFile name="LogToFile" fileName="${sys:xyz}" filePattern="%d{yyyy-dd-MM}-%i.log">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
             </PatternLayout>
-        </File>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB"/>
+				<DefaultRolloverStrategy max="100"/>
+			</Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="com.invpendfuzzycont" level="debug" additivity="false">

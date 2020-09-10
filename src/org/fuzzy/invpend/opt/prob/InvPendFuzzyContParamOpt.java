@@ -25,6 +25,9 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	private int maxItr = 0;
 //	private static int numOfVars = 2 * (5 + 3 + 7);
 
+	private double objCoefRmseT = 0.5;
+	private double objCoefDissim = 0.5;
+
 	private double normMinRmseT = 0.65;
 	private double normMaxRmseT = 39.0;
 	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
@@ -34,7 +37,9 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	public InvPendFuzzyContParamOpt(int maxItr,
 									double centerSearchRage,
-									double sigmaSearchRage) {
+									double sigmaSearchRage,
+									double objCoefRmseT,
+									double objCoefDissim) {
 		this.maxItr = maxItr;
 	    setNumberOfVariables(30);
 	    setNumberOfObjectives(1);
@@ -56,6 +61,9 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 	    setLowerLimit(lowerLimit);
 	    setUpperLimit(upperLimit);
+
+	    this.objCoefRmseT = objCoefRmseT;
+	    this.objCoefDissim = objCoefDissim;
 
 	    /*
 	     * Simulator
@@ -202,7 +210,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 //		solution.setObjective(0, systemPairs[0].rmseT);
 //		solution.setObjective(0, 0.9 * rmseT + 0.1 * dissimilarity);
-		solution.setObjective(0, 0.9 * normRmseT + 0.1 * normDissimilarity);
+		solution.setObjective(0, objCoefRmseT * normRmseT + objCoefDissim * normDissimilarity);
 
 		if (minRmseT > rmseT)
 			minRmseT = rmseT;

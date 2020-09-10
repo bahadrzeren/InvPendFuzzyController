@@ -3,6 +3,7 @@ package org.fuzzy.invpend.opt.run;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -49,15 +51,17 @@ public class RunDeOptimizationMult {
 	private static final double centerSearchRange = 0.5;
 	private static final double sigmaSearchRange = 1.0;
 
-	private static final int numOfRuns = 1;
+	private static final int numOfCoefSetups = 5;
+	private static final int numOfRuns = 5;
 
 	private static double[] itrs = null;
-	private static List<OptOutput> optOutputs = new ArrayList<OptOutput>();
 
 //	private static double minRmseT = Integer.MAX_VALUE;
 //	private static double minDissimilarity = Integer.MAX_VALUE;
 //	private static double maxRmseT = 0.0;
 //	private static double maxDissimilarity = 0.0;
+
+	private static List<BestOptOutput> bestOptOutputs = new ArrayList<BestOptOutput>();
 
 	static {
 		System.setProperty("xyz", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".log");
@@ -70,67 +74,117 @@ public class RunDeOptimizationMult {
 		itrs = new double[maxItr];
 		for (int i = 0; i < itrs.length; i++)
 			itrs[i] = i;
-		for (int i = 1; i <= numOfRuns; i++) {
+
+		Random r = new Random();
+
+		for (int a = 0; a < numOfCoefSetups; a++) {
+
+			double objCoefRmseT = Math.floor(r.nextDouble() * 10000.0) / 10000.0;
+			double objCoefDissim = 1.0 - objCoefRmseT;
+
+			List<OptOutput> optOutputs = new ArrayList<OptOutput>();
+
 			logger.info("----------------------------------------------------------");
-			logger.info(i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
+			logger.info("----------------------------------------------------------");
+			logger.info(a + " => objCoefRmseT: " + objCoefRmseT + ", objCoefDissim: " + objCoefDissim);
 			logger.info("----------------------------------------------------------");
 			logger.info("----------------------------------------------------------");
 
-			DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange);
-		    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
-		    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
-		    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
+			for (int i = 1; i <= numOfRuns; i++) {
+				logger.info("----------------------------------------------------------");
+				logger.info("objCoefRmseT: " + objCoefRmseT + ", objCoefDissim: " + objCoefDissim);
+				logger.info(a + "/" + i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
+				logger.info("----------------------------------------------------------");
+				logger.info("----------------------------------------------------------");
 
-		    Algorithm<DoubleSolution> algorithm = new DifferentialEvolutionBuilder(problem).setCrossover(crossover)
-																				            .setSelection(selection)
-																				            .setSolutionListEvaluator(evaluator)
-																				            .setMaxEvaluations(maxItr)
-																				            .setPopulationSize(popSize)
-																				            .build();
+				DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange, objCoefRmseT, objCoefDissim);
 
-		    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+				DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
+			    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
+			    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
 
-		    DoubleSolution solution = algorithm.getResult();
-		    long computingTime = algorithmRunner.getComputingTime();
+			    Algorithm<DoubleSolution> algorithm = new DifferentialEvolutionBuilder(problem).setCrossover(crossover)
+																					            .setSelection(selection)
+																					            .setSolutionListEvaluator(evaluator)
+																					            .setMaxEvaluations(maxItr)
+																					            .setPopulationSize(popSize)
+																					            .build();
 
-		    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1);
-		    population.add(solution);
-		    new SolutionListOutput(population).setSeparator("\t").print();
+			    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 
-		    logger.info(i + "# Total execution time: " + computingTime + "ms");
-		    logger.info(i + "# Fitness: " + solution.getObjective(0)) ;
+			    DoubleSolution solution = algorithm.getResult();
+			    long computingTime = algorithmRunner.getComputingTime();
 
-		    evaluator.shutdown();
+			    List<DoubleSolution> population = new ArrayList<DoubleSolution>(1);
+			    population.add(solution);
+			    new SolutionListOutput(population).setSeparator("\t").print();
 
-//			if (minRmseT > ((InvPendFuzzyContParamOpt) problem).getMinRmseT())
-//				minRmseT = ((InvPendFuzzyContParamOpt) problem).getMinRmseT();
-//			if (minDissimilarity > ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity())
-//				minDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity();
+			    logger.info(a + "/" + i + "# Total execution time: " + computingTime + "ms");
+			    logger.info(a + "/" + i + "# Fitness: " + solution.getObjective(0)) ;
+
+			    evaluator.shutdown();
+
+//				if (minRmseT > ((InvPendFuzzyContParamOpt) problem).getMinRmseT())
+//					minRmseT = ((InvPendFuzzyContParamOpt) problem).getMinRmseT();
+//				if (minDissimilarity > ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity())
+//					minDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity();
 //			
-//			if (maxRmseT < ((InvPendFuzzyContParamOpt) problem).getMaxRmseT())
-//				maxRmseT = ((InvPendFuzzyContParamOpt) problem).getMaxRmseT();
-//			if (maxDissimilarity < ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity())
-//				maxDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity();
+//				if (maxRmseT < ((InvPendFuzzyContParamOpt) problem).getMaxRmseT())
+//					maxRmseT = ((InvPendFuzzyContParamOpt) problem).getMaxRmseT();
+//				if (maxDissimilarity < ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity())
+//					maxDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity();
 
-		    OptOutput output = new OptOutput(((InvPendFuzzyContParamOpt) problem).getDissimilaritys(),
-									    		((InvPendFuzzyContParamOpt) problem).getNormDissimilaritys(),
-											    ((InvPendFuzzyContParamOpt) problem).getRmseTs(),
-											    ((InvPendFuzzyContParamOpt) problem).getNormRmseTs(),
-											    ((InvPendFuzzyContParamOpt) problem).getObjs(),
-		    									((InvPendFuzzyContParamOpt) problem).getMidDissimilarity(),
-											    ((InvPendFuzzyContParamOpt) problem).getMidRmseT(),
-											    ((InvPendFuzzyContParamOpt) problem).getMidObj(),
-											    ((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
-									
-											    ((InvPendFuzzyContParamOpt) problem).getBestDissimilarity(),
-											    ((InvPendFuzzyContParamOpt) problem).getBestRmseT(),
-											    ((InvPendFuzzyContParamOpt) problem).getBestObj(),
-											    new FuzzyControllerOpt(solution.getVariables()));
+			    OptOutput output = new OptOutput(((InvPendFuzzyContParamOpt) problem).getRmseTs(),
+												    ((InvPendFuzzyContParamOpt) problem).getNormRmseTs(),
+												    ((InvPendFuzzyContParamOpt) problem).getDissimilaritys(),
+										    		((InvPendFuzzyContParamOpt) problem).getNormDissimilaritys(),
+												    ((InvPendFuzzyContParamOpt) problem).getObjs(),
+			    									((InvPendFuzzyContParamOpt) problem).getMidRmseT(),
+			    									((InvPendFuzzyContParamOpt) problem).getMidNormRmseT(),
+			    									((InvPendFuzzyContParamOpt) problem).getMidDissimilarity(),
+			    									((InvPendFuzzyContParamOpt) problem).getMidNormDissimilarity(),
+												    ((InvPendFuzzyContParamOpt) problem).getMidObj(),
+												    ((InvPendFuzzyContParamOpt) problem).getMidOptFuzzyCont(),
+												    ((InvPendFuzzyContParamOpt) problem).getBestRmseT(),
+												    ((InvPendFuzzyContParamOpt) problem).getBestNormRmseT(),
+												    ((InvPendFuzzyContParamOpt) problem).getBestDissimilarity(),
+												    ((InvPendFuzzyContParamOpt) problem).getBestNormDissimilarity(),
+												    ((InvPendFuzzyContParamOpt) problem).getBestObj(),
+												    new FuzzyControllerOpt(solution.getVariables()));
 
-		    optOutputs.add(output);
+			    optOutputs.add(output);
+			}
+
+			OptOutput bestOutput = report(optOutputs);
+
+			bestOptOutputs.add(new BestOptOutput(objCoefRmseT, objCoefDissim, bestOutput));
 		}
 
-		report();
+		bestOptOutputs.stream().sorted(new Comparator<BestOptOutput>() {
+			@Override
+			public int compare(BestOptOutput o1, BestOptOutput o2) {
+				if (o1.getObjCoefRmseT() < o2.getObjCoefRmseT())
+					return 1;
+				else
+					if (o1.getObjCoefRmseT() > o2.getObjCoefRmseT())
+						return -1;
+					else
+						if (o1.getObjCoefDissim() < o2.getObjCoefDissim())
+							return 1;
+						else
+							if (o1.getObjCoefDissim() > o2.getObjCoefDissim())
+								return -1;
+							else
+								return 0;
+			}
+		}).forEach(bestOptOutput -> {
+			logger.info(bestOptOutput.getObjCoefRmseT() + ", " + bestOptOutput.getObjCoefDissim() + " -> Obj: " +
+						bestOptOutput.getOptOutput().getBestObj() + ", Norm[" +
+						bestOptOutput.getOptOutput().getBestNormRmseT() + ", " +
+						bestOptOutput.getOptOutput().getBestNormDissimilarity() + "], Plain[" +
+						bestOptOutput.getOptOutput().getBestRmseT() + ", " +
+						bestOptOutput.getOptOutput().getBestDissimilarity() + "]");
+		});
 
 //		logger.info("minRmseT = " + minRmseT);
 //		logger.info("minDissimilarity = " + minDissimilarity);
@@ -139,7 +193,7 @@ public class RunDeOptimizationMult {
 //		logger.info("The normalization limits have been identified!");
 	}
 
-	public static void report() throws InterruptedException {
+	public static OptOutput report(List<OptOutput> optOutputs) throws InterruptedException {
 	    ControlSystem[] controlSystems = new ControlSystem[3];
 		controlSystems[0] = new ControlSystem("Dictionary",
 											Color.RED,
@@ -148,18 +202,6 @@ public class RunDeOptimizationMult {
 
 		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
 		controlSystems[0].getCont().plotControlSurface("dict");
-
-//		FuzzyController midsBest = optOutputs.stream().max(new Comparator<OptOutput>() {
-//										@Override
-//										public int compare(OptOutput o1, OptOutput o2) {
-//											if (o1.getMidObj() < o2.getMidObj()) return 1;
-//											else
-//												if (o1.getMidObj() > o2.getMidObj()) return -1;
-//												else
-//													return 0;
-//										}
-//									}).get().getMidController();
-
 
 		OptOutput bestOutput = optOutputs.stream().max(new Comparator<OptOutput>() {
 										@Override
@@ -174,21 +216,6 @@ public class RunDeOptimizationMult {
 		FuzzyController bestsBest = bestOutput.getBestController();
 		FuzzyController bestsMid = bestOutput.getMidController();
 
-//		List<Double> midsAvgVars = new ArrayList<Double>();
-//		for (int i = 0; i < 30; i++) {
-//			final int fi = i;
-//			midsAvgVars.add(optOutputs.stream().mapToDouble(o -> o.getMidController().getVariables().get(fi)).average().getAsDouble());
-//		}
-//
-//		List<Double> bestsAvgVars = new ArrayList<Double>();
-//		for (int i = 0; i < 30; i++) {
-//			final int fi = i;
-//			bestsAvgVars.add(optOutputs.stream().mapToDouble(o -> o.getBestController().getVariables().get(fi)).average().getAsDouble());
-//		}
-//
-//		FuzzyController midsAvg = new FuzzyControllerOpt(midsAvgVars);
-//		FuzzyController bestsAvg = new FuzzyControllerOpt(bestsAvgVars);
-
 		/*
 		 * COMPARISON REPORT USING SIMULATION (BESTS)
 		 */
@@ -196,14 +223,6 @@ public class RunDeOptimizationMult {
 		logger.info("-----------------------------------------------------------------------");
 		logger.info("COMPARISON REPORT USING SIMULATION (BESTS)");
 		logger.info("-----------------------------------------------------------------------");
-
-//		controlSystems[1] = new ControlSystem("Mid Best Optimized",
-//												Color.BLUE,
-//												midsBest,
-//												new InvertedPendulum());
-//
-//		controlSystems[1].getCont().plotMembershipFunctions("mid best", true);
-//		controlSystems[1].getCont().plotControlSurface("mid best");
 
 		controlSystems[1] = new ControlSystem("Final Mid Optimized",
 											Color.BLUE,
@@ -246,6 +265,7 @@ public class RunDeOptimizationMult {
 
 		Thread.sleep(500);
 
+		return bestOutput;
 //		/*
 //		 * COMPARISON REPORT USING SIMULATION (AVG)
 //		 */
@@ -355,6 +375,7 @@ public class RunDeOptimizationMult {
         try {
         	Thread.sleep(50);
         	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_convergence.png"));
+        	frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         } catch (Exception ex) {
         	ex.printStackTrace();
         }

@@ -2,6 +2,7 @@ package org.fuzzy.invpend.sim;
 
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -238,6 +239,7 @@ public class Simulator {
         try {
         	Thread.sleep(50);
         	((Plot2DPanel)plot).toGraphicFile(new File(LocalDateTime.now().format(dateTimeFormatter) + "_" + fileName + "_resp.png"));
+        	frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         } catch (Exception ex) {
         	ex.printStackTrace();
         }

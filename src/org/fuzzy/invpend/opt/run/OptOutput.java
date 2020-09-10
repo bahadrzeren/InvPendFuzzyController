@@ -3,37 +3,45 @@ package org.fuzzy.invpend.opt.run;
 import org.fuzzy.invpend.cont.FuzzyController;
 
 public class OptOutput {
-	private double[] dissimilaritys = null;
-	private double[] normDissimilaritys = null;
 	private double[] rmseTs = null;
 	private double[] normRmseTs = null;
+	private double[] dissimilaritys = null;
+	private double[] normDissimilaritys = null;
 	private double[] objs = null;
 
-	private double midDissimilarity = 0.0;
 	private double midRmseT = 0.0;
+	private double midNormRmseT = 0.0;
+	private double midDissimilarity = 0.0;
+	private double midNormDissimilarity = 0.0;
 	private double midObj = 0.0;
 	private FuzzyController midController = null;
 
-	private double bestDissimilarity = 0.0;
 	private double bestRmseT = 0.0;
+	private double bestNormRmseT = 0.0;
+	private double bestDissimilarity = 0.0;
+	private double bestNormDissimilarity = 0.0;
 	private double bestObj = 0.0;
 	private FuzzyController bestController = null;
 
-	public OptOutput(double[] dissimilaritys, double[] normDissimilaritys, double[] rmseTs, double[] normRmseTs, double[] objs, 
-						double midDissimilarity, double midRmseT, double midObj, FuzzyController midController,
-						double bestDissimilarity, double bestRmseT, double bestObj, FuzzyController bestController) {
+	public OptOutput(double[] rmseTs, double[] normRmseTs, double[] dissimilaritys, double[] normDissimilaritys, double[] objs, 
+						double midRmseT, double midNormRmseT, double midDissimilarity, double midNormDissimilarity, double midObj, FuzzyController midController,
+						double bestRmseT, double bestNormRmseT, double bestDissimilarity, double bestNormDissimilarity, double bestObj, FuzzyController bestController) {
 		super();
-		this.dissimilaritys = dissimilaritys;
-		this.normDissimilaritys = normDissimilaritys;
 		this.rmseTs = rmseTs;
 		this.normRmseTs = normRmseTs;
+		this.dissimilaritys = dissimilaritys;
+		this.normDissimilaritys = normDissimilaritys;
 		this.objs = objs;
-		this.midDissimilarity = midDissimilarity;
 		this.midRmseT = midRmseT;
+		this.midNormRmseT = midNormRmseT;
+		this.midDissimilarity = midDissimilarity;
+		this.midNormDissimilarity = midNormDissimilarity;
 		this.midObj = midObj;
 		this.midController = midController;
-		this.bestDissimilarity = bestDissimilarity;
 		this.bestRmseT = bestRmseT;
+		this.bestNormRmseT = bestNormRmseT;
+		this.bestDissimilarity = bestDissimilarity;
+		this.bestNormDissimilarity = bestNormDissimilarity;
 		this.bestObj = bestObj;
 		this.bestController = bestController;
 	}
@@ -84,6 +92,22 @@ public class OptOutput {
 
 	public double getBestObj() {
 		return bestObj;
+	}
+
+	public double getMidNormRmseT() {
+		return midNormRmseT;
+	}
+
+	public double getMidNormDissimilarity() {
+		return midNormDissimilarity;
+	}
+
+	public double getBestNormRmseT() {
+		return bestNormRmseT;
+	}
+
+	public double getBestNormDissimilarity() {
+		return bestNormDissimilarity;
 	}
 
 	public FuzzyController getBestController() {

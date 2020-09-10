@@ -53,7 +53,7 @@ public class RunDeOptimization {
 		logger.info("Inverted Pendulum Fuzzy Controller Parameters Optimizer");
 		logger.info("-------------------------------------------------------");
 
-		DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange);
+		DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange, 0.5, 0.5);
 	    DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
 	    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 	    SolutionListEvaluator<DoubleSolution> evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
