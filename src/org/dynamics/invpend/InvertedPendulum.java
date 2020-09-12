@@ -158,6 +158,18 @@ public class InvertedPendulum {
 	}
 
 	public String toString() {
-		return this.activeState.toString();
+		return "Pendulum properties:\r" +
+				"mp = " + mp + "kg\r" +
+				"mc = " + mc + "kg\r" +
+				"l = " + l + "meter\r" +
+				"g = " + g + "meter/sn2\r" +
+				"fcp = " + fcp + "newton\r" +
+				"fcc = " + fcc + "newton\r" +
+				"Initial state:\r" +
+				"xInit = " + xInit + "\r" +
+				"xdInit = " + xdInit + "\r" + 
+				"tInit = " + tInit + " degree\r" + 
+				"tdInit = " + tdInit + " degree\r" + 
+				this.activeState.toString();
 	}
 }

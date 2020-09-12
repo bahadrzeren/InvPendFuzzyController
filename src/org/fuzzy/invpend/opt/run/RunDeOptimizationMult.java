@@ -10,6 +10,7 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -42,7 +43,7 @@ public class RunDeOptimizationMult {
 
 	private static Logger logger = null;
 
-	private static final int maxItr = 4000;
+	private static final int maxItr = 5000;
 	private static final int popSize = 20;
 
 	private static final double cr = 0.5;
@@ -51,8 +52,8 @@ public class RunDeOptimizationMult {
 	private static final double centerSearchRange = 0.5;
 	private static final double sigmaSearchRange = 1.0;
 
-	private static final int numOfCoefSetups = 5;
-	private static final int numOfRuns = 5;
+	private static final int numOfCoefSetups = 100;
+	private static final int numOfRuns = 30;
 
 	private static double[] itrs = null;
 
@@ -76,11 +77,12 @@ public class RunDeOptimizationMult {
 			itrs[i] = i;
 
 		Random r = new Random();
+		BestOptOutputComparator comp = new BestOptOutputComparator();
 
-		for (int a = 0; a < numOfCoefSetups; a++) {
+		for (int a = 1; a <= numOfCoefSetups; a++) {
 
 			double objCoefRmseT = Math.floor(r.nextDouble() * 10000.0) / 10000.0;
-			double objCoefDissim = 1.0 - objCoefRmseT;
+			double objCoefDissim = Math.floor((1.0 - objCoefRmseT) * 10000.0) / 10000.0;
 
 			List<OptOutput> optOutputs = new ArrayList<OptOutput>();
 
@@ -93,7 +95,7 @@ public class RunDeOptimizationMult {
 			for (int i = 1; i <= numOfRuns; i++) {
 				logger.info("----------------------------------------------------------");
 				logger.info("objCoefRmseT: " + objCoefRmseT + ", objCoefDissim: " + objCoefDissim);
-				logger.info(a + "/" + i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
+				logger.info(a + "th setup, " + i + "# Inverted Pendulum Fuzzy Controller Parameters Optimizer");
 				logger.info("----------------------------------------------------------");
 				logger.info("----------------------------------------------------------");
 
@@ -119,8 +121,8 @@ public class RunDeOptimizationMult {
 			    population.add(solution);
 			    new SolutionListOutput(population).setSeparator("\t").print();
 
-			    logger.info(a + "/" + i + "# Total execution time: " + computingTime + "ms");
-			    logger.info(a + "/" + i + "# Fitness: " + solution.getObjective(0)) ;
+			    logger.info(a + "th setup, " + i + "# Total execution time: " + computingTime + "ms");
+			    logger.info(a + "th setup, " + i + "# Fitness: " + solution.getObjective(0)) ;
 
 			    evaluator.shutdown();
 
@@ -155,36 +157,33 @@ public class RunDeOptimizationMult {
 			    optOutputs.add(output);
 			}
 
-			OptOutput bestOutput = report(optOutputs);
+			OptOutput bestOutput = report(objCoefRmseT + "-" + objCoefDissim, optOutputs);
 
 			bestOptOutputs.add(new BestOptOutput(objCoefRmseT, objCoefDissim, bestOutput));
+
+			logger.info("Best outputs so far:");
+
+			bestOptOutputs.stream().sorted(comp).forEach(bestOptOutput -> {
+				logger.info("[rmsetCoeff: " + formatter.format(bestOptOutput.getObjCoefRmseT()) + ", dissimCoeff: " + formatter.format(bestOptOutput.getObjCoefDissim()) + "] -> Obj: " +
+							formatter.format(bestOptOutput.getOptOutput().getBestObj()) + ", Norm[" +
+							formatter.format(bestOptOutput.getOptOutput().getBestNormRmseT()) + ", " +
+							formatter.format(bestOptOutput.getOptOutput().getBestNormDissimilarity()) + "], Plain[" +
+							formatter.format(bestOptOutput.getOptOutput().getBestRmseT()) + ", " +
+							formatter.format(bestOptOutput.getOptOutput().getBestDissimilarity()) + "]");
+			});
+
+			logger.info("Best variables so far:");
+
+			bestOptOutputs.stream().sorted(comp).forEach(bestOptOutput -> {
+				logger.info("[rmsetCoeff: " + formatter.format(bestOptOutput.getObjCoefRmseT()) + ", dissimCoeff: " + formatter.format(bestOptOutput.getObjCoefDissim()) + "] -> " +
+							Arrays.toString(bestOptOutput.getOptOutput().getBestController().getVariables().stream().map(x -> formatter.format(x)).toArray()) + "]");
+			});
+
+			logger.info("End of " + a + "th setup.");
 		}
 
-		bestOptOutputs.stream().sorted(new Comparator<BestOptOutput>() {
-			@Override
-			public int compare(BestOptOutput o1, BestOptOutput o2) {
-				if (o1.getObjCoefRmseT() < o2.getObjCoefRmseT())
-					return 1;
-				else
-					if (o1.getObjCoefRmseT() > o2.getObjCoefRmseT())
-						return -1;
-					else
-						if (o1.getObjCoefDissim() < o2.getObjCoefDissim())
-							return 1;
-						else
-							if (o1.getObjCoefDissim() > o2.getObjCoefDissim())
-								return -1;
-							else
-								return 0;
-			}
-		}).forEach(bestOptOutput -> {
-			logger.info(bestOptOutput.getObjCoefRmseT() + ", " + bestOptOutput.getObjCoefDissim() + " -> Obj: " +
-						bestOptOutput.getOptOutput().getBestObj() + ", Norm[" +
-						bestOptOutput.getOptOutput().getBestNormRmseT() + ", " +
-						bestOptOutput.getOptOutput().getBestNormDissimilarity() + "], Plain[" +
-						bestOptOutput.getOptOutput().getBestRmseT() + ", " +
-						bestOptOutput.getOptOutput().getBestDissimilarity() + "]");
-		});
+		InvertedPendulum ip = new InvertedPendulum();
+		logger.info(ip.toString());
 
 //		logger.info("minRmseT = " + minRmseT);
 //		logger.info("minDissimilarity = " + minDissimilarity);
@@ -193,15 +192,15 @@ public class RunDeOptimizationMult {
 //		logger.info("The normalization limits have been identified!");
 	}
 
-	public static OptOutput report(List<OptOutput> optOutputs) throws InterruptedException {
+	public static OptOutput report(String filePrefix, List<OptOutput> optOutputs) throws InterruptedException {
 	    ControlSystem[] controlSystems = new ControlSystem[3];
 		controlSystems[0] = new ControlSystem("Dictionary",
 											Color.RED,
 											Dictionary.defaultCont,
 											new InvertedPendulum());
 
-		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
-		controlSystems[0].getCont().plotControlSurface("dict");
+//		controlSystems[0].getCont().plotMembershipFunctions("dict", false);
+//		controlSystems[0].getCont().plotControlSurface("dict");
 
 		OptOutput bestOutput = optOutputs.stream().max(new Comparator<OptOutput>() {
 										@Override
@@ -229,21 +228,21 @@ public class RunDeOptimizationMult {
 											bestsMid,
 											new InvertedPendulum());
 
-		controlSystems[1].getCont().plotMembershipFunctions("final mid", true);
-		controlSystems[1].getCont().plotControlSurface("final mid");
+//		controlSystems[1].getCont().plotMembershipFunctions("final mid", true);
+//		controlSystems[1].getCont().plotControlSurface("final mid");
 
 		controlSystems[2] = new ControlSystem("Final Best Optimized",
 											Color.GREEN,
 											bestsBest,
 											new InvertedPendulum());
 
-		controlSystems[2].getCont().plotMembershipFunctions("final best", true);
-		controlSystems[2].getCont().plotControlSurface("final best");
+//		controlSystems[2].getCont().plotMembershipFunctions("final best", true);
+//		controlSystems[2].getCont().plotControlSurface("final best");
 
-		plotConvergence("FinalBestConvergence", "Convergence", itrs, bestOutput.getObjs(), bestOutput.getRmseTs(), bestOutput.getDissimilaritys());
-		plotConvergence("FinalBestNormConvergence", "NormConvergence", itrs, bestOutput.getObjs(), bestOutput.getNormRmseTs(), bestOutput.getNormDissimilaritys());
+		plotConvergence(filePrefix + "_FinalBestConv", "Convergence", itrs, bestOutput.getObjs(), bestOutput.getRmseTs(), bestOutput.getDissimilaritys());
+		plotConvergence(filePrefix + "_FinalBestNormConv", "NormConvergence", itrs, bestOutput.getObjs(), bestOutput.getNormRmseTs(), bestOutput.getNormDissimilaritys());
 
-		Simulator.simulate(controlSystems, true, "Sim+Opt+FinalMid+FinalBest");	//	plotLen %
+		Simulator.simulate(controlSystems, true, filePrefix + "_Sim+Opt+FinalMid+FinalBest");	//	plotLen %
 
 		logger.info("-----------------------------------------------------------------------");
 
@@ -367,7 +366,7 @@ public class RunDeOptimizationMult {
 
 
         JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1000, 500);
         frame.setContentPane(plot);
         frame.setVisible(true);

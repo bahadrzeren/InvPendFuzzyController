@@ -205,7 +205,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         for (int i=0;i<sets.length;i++) {
             plotter.plotMF(sets[i].getName(), sets[i], discretizationLevel, xAxisRange, new Tuple(0.0, 1.0), false);
         }
-//        plotter.show(fileName + " " + name);
+        plotter.show(fileName + " " + name);
 
         try {
             Thread.sleep(50);
@@ -264,7 +264,7 @@ public abstract class FuzzyInvPendController implements FuzzyController {
         //now do the plotting
         JMathPlotter plotter = new JMathPlotter(12, 12, 12);
         plotter.plotControlSurface("Control Surface of " + this.controllerName, new String[]{this.t.getName(), this.d.getName(), this.f.getName()}, x, y, z, new Tuple(fMin, fMax), true);   
-//        plotter.show(filePrefix + " " + this.controllerName);
+        plotter.show(filePrefix + " " + this.controllerName);
 
 //		try {
 //			Thread.sleep(25);

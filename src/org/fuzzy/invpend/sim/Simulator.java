@@ -231,7 +231,7 @@ public class Simulator {
         }
 
         JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1000, 500);
         frame.setContentPane(plot);
         frame.setVisible(true);
