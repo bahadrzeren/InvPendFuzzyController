@@ -63,7 +63,7 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 //	2020-09-13 13:04:11 INFO  RunDeOptimizationMult:224 - maxDissimilarity = 0.41421704805954696
 
 	private double normMinRmseT = 0.65;
-	private double normMinDissimilarity = 0.001;
+	private double normMinDissimilarity = 0.0008;
 	private double normMaxRmseT = 39.0;
 	private double normMaxDissimilarity = 0.55;
 	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
