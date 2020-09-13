@@ -33,14 +33,37 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 //	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:215 - minDissimilarity = 0.002704859026779527
 //	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:216 - maxRmseT = 30.159535726920165
 //	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:217 - maxDissimilarity = 0.475356475609351
-
+//
+//	2020-09-13 12:09:43 INFO  RunDeOptimizationMult:221 - minRmseT = 5.62416750593947
+//	2020-09-13 12:09:43 INFO  RunDeOptimizationMult:222 - minDissimilarity = 0.0011740059851901297
+//	2020-09-13 12:09:43 INFO  RunDeOptimizationMult:223 - maxRmseT = 29.910931952816796
+//	2020-09-13 12:09:43 INFO  RunDeOptimizationMult:224 - maxDissimilarity = 0.40457212339451487
+//
+//	2020-09-13 13:04:06 INFO  RunDeOptimizationMult:221 - minRmseT = 5.449252717536699
+//	2020-09-13 13:04:06 INFO  RunDeOptimizationMult:222 - minDissimilarity = 0.0011740059851901297
+//	2020-09-13 13:04:06 INFO  RunDeOptimizationMult:223 - maxRmseT = 33.49791787742926
+//	2020-09-13 13:04:06 INFO  RunDeOptimizationMult:224 - maxDissimilarity = 0.40970153693223355
+//
+//
+//
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:213 - Max/Min costs so far:
 //	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:214 - minRmseT = 0.7246634436187402
 //	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:215 - minDissimilarity = 0.008130564278186592
 //	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:216 - maxRmseT = 32.87187242165629
 //	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:217 - maxDissimilarity = 0.4950770095545515
+//
+//	2020-09-13 12:09:47 INFO  RunDeOptimizationMult:221 - minRmseT = 0.8875118205424842
+//	2020-09-13 12:09:47 INFO  RunDeOptimizationMult:222 - minDissimilarity = 0.0010499318176603323
+//	2020-09-13 12:09:47 INFO  RunDeOptimizationMult:223 - maxRmseT = 32.717263326461115
+//	2020-09-13 12:09:47 INFO  RunDeOptimizationMult:224 - maxDissimilarity = 0.4073763505121716
+//
+//	2020-09-13 13:04:11 INFO  RunDeOptimizationMult:221 - minRmseT = 0.8812448959139009
+//	2020-09-13 13:04:11 INFO  RunDeOptimizationMult:222 - minDissimilarity = 0.0010499318176603323
+//	2020-09-13 13:04:11 INFO  RunDeOptimizationMult:223 - maxRmseT = 32.717263326461115
+//	2020-09-13 13:04:11 INFO  RunDeOptimizationMult:224 - maxDissimilarity = 0.41421704805954696
 
 	private double normMinRmseT = 0.65;
-	private double normMinDissimilarity = 0.002;
+	private double normMinDissimilarity = 0.001;
 	private double normMaxRmseT = 39.0;
 	private double normMaxDissimilarity = 0.55;
 	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
