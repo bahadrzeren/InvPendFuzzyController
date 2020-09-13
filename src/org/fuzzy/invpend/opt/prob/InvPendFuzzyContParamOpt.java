@@ -46,11 +46,11 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
 	private double normRangeDissimilarity = normMaxDissimilarity - normMinDissimilarity;
 
-	public InvPendFuzzyContParamOpt(int maxItr,
-									double centerSearchRage,
-									double sigmaSearchRage,
-									double objCoefRmseT,
-									double objCoefDissim) {
+	public void init(int maxItr,
+						double centerSearchRage,
+						double sigmaSearchRage,
+						double objCoefRmseT,
+						double objCoefDissim) {
 		this.maxItr = maxItr;
 	    setNumberOfVariables(30);
 	    setNumberOfObjectives(1);
@@ -90,6 +90,30 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		this.dissimilaritys = new double[maxItr];
 		this.normRmseTs = new double[maxItr];
 		this.normDissimilaritys = new double[maxItr];
+	}
+
+	public InvPendFuzzyContParamOpt(int maxItr,
+			double centerSearchRage,
+			double sigmaSearchRage,
+			double objCoefRmseT,
+			double objCoefDissim) {
+		this.init(maxItr, centerSearchRage, sigmaSearchRage, objCoefRmseT, objCoefDissim);
+	}
+
+	public InvPendFuzzyContParamOpt(int maxItr,
+									double centerSearchRage,
+									double sigmaSearchRage,
+									double objCoefRmseT,
+									double objCoefDissim,
+									double normMinRmseT,
+									double normMinDissimilarity,
+									double normMaxRmseT,
+									double normMaxDissimilarity) {
+		this.init(maxItr, centerSearchRage, sigmaSearchRage, objCoefRmseT, objCoefDissim);
+	    this.normMinRmseT = normMinRmseT;
+	    this.normMinDissimilarity = normMinDissimilarity;
+	    this.normMaxRmseT = normMaxRmseT;
+	    this.normMaxDissimilarity = normMaxDissimilarity;
 	}
 
 	private ControlSystem[] controlSystems = null;

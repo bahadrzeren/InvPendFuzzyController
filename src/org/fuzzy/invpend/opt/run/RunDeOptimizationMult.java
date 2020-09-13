@@ -73,9 +73,19 @@ public class RunDeOptimizationMult {
 
 	public static void main(String[] args) throws InterruptedException {
 
+		double normMinRmseT = 0.0;
+		double normMinDissimilarity = 0.0;
+		double normMaxRmseT = 0.0;
+		double normMaxDissimilarity = 0.0;
+
 		if (args.length > 1) {
 			InvertedPendulum.tInit = Double.parseDouble(args[0]) * Math.PI / 180.0;
 			InvertedPendulum.tdInit = Double.parseDouble(args[1]) * Math.PI / 180.0;
+
+			normMinRmseT = Double.parseDouble(args[2]);
+			normMinDissimilarity = Double.parseDouble(args[3]);
+			normMaxRmseT = Double.parseDouble(args[4]);
+			normMaxDissimilarity = Double.parseDouble(args[5]);
 		}
 		logger.info("tInit = " + InvertedPendulum.tInit + " rad");
 		logger.info("tdInit = " + InvertedPendulum.tdInit + " rad");
@@ -124,7 +134,10 @@ public class RunDeOptimizationMult {
 				logger.info("----------------------------------------------------------");
 				logger.info("----------------------------------------------------------");
 
-				DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr, centerSearchRange, sigmaSearchRange, objCoefRmseT, objCoefDissim);
+				DoubleProblem problem = new InvPendFuzzyContParamOpt(maxItr,
+																		centerSearchRange, sigmaSearchRange,
+																		objCoefRmseT, objCoefDissim,
+																		normMinRmseT, normMinDissimilarity, normMaxRmseT, normMaxDissimilarity);
 
 				DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
 			    DifferentialEvolutionCrossover crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
@@ -204,17 +217,17 @@ public class RunDeOptimizationMult {
 							Arrays.toString(bestOptOutput.getOptOutput().getBestController().getVariables().stream().map(x -> formatter.format(x)).toArray()) + "]");
 			});
 
+			logger.info("Max/Min costs so far:");
+			logger.info("minRmseT = " + minRmseT);
+			logger.info("minDissimilarity = " + minDissimilarity);
+			logger.info("maxRmseT = " + maxRmseT);
+			logger.info("maxDissimilarity = " + maxDissimilarity);
+
 			logger.info("End of " + a + "th setup.");
 		}
-
+		
 		InvertedPendulum ip = new InvertedPendulum();
 		logger.info(ip.toString());
-
-		logger.info("Max/Min costs so far:");
-		logger.info("minRmseT = " + minRmseT);
-		logger.info("minDissimilarity = " + minDissimilarity);
-		logger.info("maxRmseT = " + maxRmseT);
-		logger.info("maxDissimilarity = " + maxDissimilarity);
 	}
 
 	public static OptOutput report(String filePrefix, List<OptOutput> optOutputs) throws InterruptedException {

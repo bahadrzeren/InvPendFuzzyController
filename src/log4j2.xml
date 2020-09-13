@@ -10,8 +10,8 @@
             </PatternLayout>
 			<Policies>
 				<SizeBasedTriggeringPolicy size="10 MB"/>
-				<DefaultRolloverStrategy max="100"/>
 			</Policies>
+			<DefaultRolloverStrategy max="100"/>
         </RollingFile>
     </Appenders>
     <Loggers>
