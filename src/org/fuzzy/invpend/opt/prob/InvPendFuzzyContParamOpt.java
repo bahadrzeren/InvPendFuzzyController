@@ -28,11 +28,22 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 	private double objCoefRmseT = 0.5;
 	private double objCoefDissim = 0.5;
 
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:213 - Max/Min costs so far:
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:214 - minRmseT = 4.941936629717052
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:215 - minDissimilarity = 0.002704859026779527
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:216 - maxRmseT = 30.159535726920165
+//	2020-09-13 07:04:31 INFO  RunDeOptimizationMult:217 - maxDissimilarity = 0.475356475609351
+
+//	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:214 - minRmseT = 0.7246634436187402
+//	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:215 - minDissimilarity = 0.008130564278186592
+//	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:216 - maxRmseT = 32.87187242165629
+//	2020-09-13 07:06:40 INFO  RunDeOptimizationMult:217 - maxDissimilarity = 0.4950770095545515
+
 	private double normMinRmseT = 0.65;
+	private double normMinDissimilarity = 0.002;
 	private double normMaxRmseT = 39.0;
-	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
-	private double normMinDissimilarity = 0.01;
 	private double normMaxDissimilarity = 0.55;
+	private double normRangeRmseT = normMaxRmseT - normMinRmseT;
 	private double normRangeDissimilarity = normMaxDissimilarity - normMinDissimilarity;
 
 	public InvPendFuzzyContParamOpt(int maxItr,
@@ -203,13 +214,14 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 
 		controlSystems[0].setCont(null);
 
-		double dissimilarity = 1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
 		double rmseT = controlSystems[0].getRmseT();
-		double normDissimilarity = (dissimilarity - normMinDissimilarity) / normRangeDissimilarity;
+		double dissimilarity = 1.0 - Dictionary.defaultCont.getAvgJaccardSimilarity(solCont);
 		double normRmseT = (rmseT - normMinRmseT) / normRangeRmseT;
+		double normDissimilarity = (dissimilarity - normMinDissimilarity) / normRangeDissimilarity;
 
 //		solution.setObjective(0, systemPairs[0].rmseT);
 //		solution.setObjective(0, 0.9 * rmseT + 0.1 * dissimilarity);
+//		solution.setObjective(0, objCoefRmseT * rmseT + objCoefDissim * dissimilarity);
 		solution.setObjective(0, objCoefRmseT * normRmseT + objCoefDissim * normDissimilarity);
 
 		if (minRmseT > rmseT)
@@ -225,8 +237,8 @@ public class InvPendFuzzyContParamOpt extends AbstractDoubleProblem {
 		if (bestObj > solution.getObjective(0)) {
 			bestObj = solution.getObjective(0);
 			bestRmseT = rmseT;
-			bestNormRmseT = (bestRmseT - normMinRmseT) / normRangeRmseT;
 			bestDissimilarity = dissimilarity;
+			bestNormRmseT = (bestRmseT - normMinRmseT) / normRangeRmseT;
 			bestNormDissimilarity = (bestDissimilarity - normMinDissimilarity) / normRangeDissimilarity;;
 
 			if (itr < this.maxItr / 2) {

@@ -24,8 +24,10 @@ public class InvertedPendulum {
 	private double xdInit = 0.0;
 //	private double tInit = -30.0 * Math.PI / 180.0;
 //	private double tdInit = 4.0 * Math.PI / 180.0;
-	private double tInit = 5.0 * Math.PI / 180.0;
-	private double tdInit = 3.0 * Math.PI / 180.0;
+//	public static double tInit = 5.0 * Math.PI / 180.0;
+//	public static double tdInit = 3.0 * Math.PI / 180.0;
+	public static double tInit = 5.0 * Math.PI / 180.0;
+	public static double tdInit = 3.0 * Math.PI / 180.0;
 
 	private State activeState = null;
 
@@ -168,8 +170,8 @@ public class InvertedPendulum {
 				"Initial state:\r" +
 				"xInit = " + xInit + "\r" +
 				"xdInit = " + xdInit + "\r" + 
-				"tInit = " + tInit + " degree\r" + 
-				"tdInit = " + tdInit + " degree\r" + 
+				"tInit = " + tInit + " rad\r" + 
+				"tdInit = " + tdInit + " rad\r" + 
 				this.activeState.toString();
 	}
 }

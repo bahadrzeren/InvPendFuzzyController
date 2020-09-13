@@ -57,10 +57,10 @@ public class RunDeOptimizationMult {
 
 	private static double[] itrs = null;
 
-//	private static double minRmseT = Integer.MAX_VALUE;
-//	private static double minDissimilarity = Integer.MAX_VALUE;
-//	private static double maxRmseT = 0.0;
-//	private static double maxDissimilarity = 0.0;
+	private static double minRmseT = Integer.MAX_VALUE;
+	private static double minDissimilarity = Integer.MAX_VALUE;
+	private static double maxRmseT = 0.0;
+	private static double maxDissimilarity = 0.0;
 
 	private static List<BestOptOutput> bestOptOutputs = new ArrayList<BestOptOutput>();
 
@@ -72,6 +72,14 @@ public class RunDeOptimizationMult {
 	public static NumberFormat formatter = new DecimalFormat("#0.0000");
 
 	public static void main(String[] args) throws InterruptedException {
+
+		if (args.length > 1) {
+			InvertedPendulum.tInit = Double.parseDouble(args[0]) * Math.PI / 180.0;
+			InvertedPendulum.tdInit = Double.parseDouble(args[1]) * Math.PI / 180.0;
+		}
+		logger.info("tInit = " + InvertedPendulum.tInit + " rad");
+		logger.info("tdInit = " + InvertedPendulum.tdInit + " rad");
+
 		itrs = new double[maxItr];
 		for (int i = 0; i < itrs.length; i++)
 			itrs[i] = i;
@@ -83,6 +91,23 @@ public class RunDeOptimizationMult {
 
 			double objCoefRmseT = Math.floor(r.nextDouble() * 10000.0) / 10000.0;
 			double objCoefDissim = Math.floor((1.0 - objCoefRmseT) * 10000.0) / 10000.0;
+
+//if (a == 1) {
+//	objCoefRmseT = 0.01;
+//} else
+//	if (a == 2) {
+//		objCoefRmseT = 0.1;
+//	} else
+//		if (a == 3) {
+//			objCoefRmseT = 0.5;
+//		} else
+//			if (a == 4) {
+//				objCoefRmseT = 0.9;
+//			} else
+//				if (a == 5) {
+//					objCoefRmseT = 0.99;
+//				}
+//objCoefDissim = 1.0 - objCoefRmseT;
 
 			List<OptOutput> optOutputs = new ArrayList<OptOutput>();
 
@@ -126,15 +151,15 @@ public class RunDeOptimizationMult {
 
 			    evaluator.shutdown();
 
-//				if (minRmseT > ((InvPendFuzzyContParamOpt) problem).getMinRmseT())
-//					minRmseT = ((InvPendFuzzyContParamOpt) problem).getMinRmseT();
-//				if (minDissimilarity > ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity())
-//					minDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity();
-//			
-//				if (maxRmseT < ((InvPendFuzzyContParamOpt) problem).getMaxRmseT())
-//					maxRmseT = ((InvPendFuzzyContParamOpt) problem).getMaxRmseT();
-//				if (maxDissimilarity < ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity())
-//					maxDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity();
+				if (minRmseT > ((InvPendFuzzyContParamOpt) problem).getMinRmseT())
+					minRmseT = ((InvPendFuzzyContParamOpt) problem).getMinRmseT();
+				if (minDissimilarity > ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity())
+					minDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMinDissimilarity();
+				
+				if (maxRmseT < ((InvPendFuzzyContParamOpt) problem).getMaxRmseT())
+					maxRmseT = ((InvPendFuzzyContParamOpt) problem).getMaxRmseT();
+				if (maxDissimilarity < ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity())
+					maxDissimilarity = ((InvPendFuzzyContParamOpt) problem).getMaxDissimilarity();
 
 			    OptOutput output = new OptOutput(((InvPendFuzzyContParamOpt) problem).getRmseTs(),
 												    ((InvPendFuzzyContParamOpt) problem).getNormRmseTs(),
@@ -185,11 +210,11 @@ public class RunDeOptimizationMult {
 		InvertedPendulum ip = new InvertedPendulum();
 		logger.info(ip.toString());
 
-//		logger.info("minRmseT = " + minRmseT);
-//		logger.info("minDissimilarity = " + minDissimilarity);
-//		logger.info("maxRmseT = " + maxRmseT);
-//		logger.info("maxDissimilarity = " + maxDissimilarity);
-//		logger.info("The normalization limits have been identified!");
+		logger.info("Max/Min costs so far:");
+		logger.info("minRmseT = " + minRmseT);
+		logger.info("minDissimilarity = " + minDissimilarity);
+		logger.info("maxRmseT = " + maxRmseT);
+		logger.info("maxDissimilarity = " + maxDissimilarity);
 	}
 
 	public static OptOutput report(String filePrefix, List<OptOutput> optOutputs) throws InterruptedException {
